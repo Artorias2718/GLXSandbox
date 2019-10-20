@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="OGLExtensions.h" />
+    <ClInclude Include="33061\glext.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="32686\wglext.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{49d68806-0eec-4185-b7a9-0dfa091f83c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{68e21662-fb02-467b-9d95-b02c60259691}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Windows\OGLExtensions.WIN.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
