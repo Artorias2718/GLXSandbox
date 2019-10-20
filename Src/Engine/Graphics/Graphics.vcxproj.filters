@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Configuration.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="OGL\Includes.h">
+      <Filter>OGL</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D\Includes.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="sPosition.h" />
+    <ClInclude Include="sVertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="OGL\Graphics.OGL.cpp">
+      <Filter>OGL</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Graphics.D3D.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="OGL">
+      <UniqueIdentifier>{7965c822-70e5-4ca5-812d-88c098fd9d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D">
+      <UniqueIdentifier>{6c33b2fd-8295-4c88-b3fc-2c73fd0b32c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
