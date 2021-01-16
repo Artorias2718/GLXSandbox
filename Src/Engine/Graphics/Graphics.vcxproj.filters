@@ -10,8 +10,13 @@
     <ClInclude Include="OGL\Includes.h">
       <Filter>OGL</Filter>
     </ClInclude>
-    <ClInclude Include="sPosition.h" />
-    <ClInclude Include="sVertex.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="sVertex.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sPosition.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -21,6 +26,7 @@
     <ClCompile Include="OGL\Graphics.OGL.cpp">
       <Filter>OGL</Filter>
     </ClCompile>
+    <ClCompile Include="Functions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">

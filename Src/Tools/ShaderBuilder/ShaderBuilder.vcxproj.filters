@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="D3D">
+      <UniqueIdentifier>{030b9805-5d9e-4ad9-9373-3d7430bbc0c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL">
+      <UniqueIdentifier>{b8d5d233-c8a7-4294-9c43-c45f457dd1c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cShaderBuilder.h" />
+    <ClInclude Include="eShaderTypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cShaderBuilder.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="D3D\cShaderBuilder.D3D.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\cShaderBuilder.GL.cpp">
+      <Filter>OGL</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

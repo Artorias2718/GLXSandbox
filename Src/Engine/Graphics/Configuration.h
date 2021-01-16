@@ -9,6 +9,7 @@
 // Usually device debug info is only enabled on debug builds
 #ifdef _DEBUG
 	#define GRAPHICS_ISDEVICEDEBUGINFOENABLED
+	#define GRAPHICS_AREDEBUGSHADERSENABLED
 #endif
 
 #endif	// !ENGINE_GRAPHICS_CONFIGURATION_H

@@ -8,7 +8,9 @@
 #include <cstdint>
 #include "Includes.h"
 #include "../../Asserts/Asserts.h"
+#include "../Functions.h"
 #include "../../Logging/Logging.h"
+#include "../../Platform/Platform.h"
 #include "../../Time/Time.h"
 
 // Static Data Initialization
@@ -23,6 +25,7 @@ namespace
 	IDXGISwapChain* s_swapChain = NULL;
 	ID3D11DeviceContext* s_direct3dImmediateContext = NULL;
 	ID3D11RenderTargetView* s_renderTargetView = NULL;
+	ID3D11InputLayout* s_inputLayout = NULL;
 
 	// D3D has an "input layout" object that associates the layout of the struct above
 	// with the input from a vertex shader
@@ -69,10 +72,10 @@ namespace
 {
 	bool CreateConstantBuffer();
 	bool CreateDevice(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
-	bool CreateVertexBuffer(ID3D10Blob& i_compiledShader);
+	bool CreateVertexBuffer(Engine::Platform::sDataFromFile& i_compiledShader);
 	bool CreateView(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
 	bool LoadFragmentShader();
-	bool LoadVertexShader(ID3D10Blob*& o_compiledShader);
+	bool LoadVertexShader(Engine::Platform::sDataFromFile& o_compiledShader);
 }
 
 // Interface
@@ -167,8 +170,8 @@ void Engine::Graphics::RenderFrame()
 		{
 			// As of this comment we are only drawing a single triangle
 			// (you will have to update this code in future assignments!)
-			const unsigned int triangleCount = 1;
-			const unsigned int vertexCountPerTriangle = 3;
+			const unsigned int triangleCount = 2;
+			const unsigned int vertexCountPerTriangle = 6;
 			const unsigned int vertexCountToRender = triangleCount * vertexCountPerTriangle;
 			// It's possible to start rendering primitives in the middle of the stream
 			const unsigned int indexOfFirstVertexToRender = 0;
@@ -195,7 +198,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 	bool wereThereErrors = false;
 
 	s_renderingWindow = i_initializationParameters.mainWindow;
-	ID3D10Blob* compiledVertexShader = NULL;
+	Platform::sDataFromFile compiledVertexShader;
 
 	// Create an interface to a Direct3D device
 	if (!CreateDevice(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight))
@@ -216,7 +219,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		wereThereErrors = true;
 		goto OnExit;
 	}
-	if (!CreateVertexBuffer(*compiledVertexShader))
+	if (!CreateVertexBuffer(compiledVertexShader))
 	{
 		wereThereErrors = true;
 		goto OnExit;
@@ -238,10 +241,9 @@ OnExit:
 	// The compiled vertex shader is the actual compiled code,
 	// and once it has been used to create the vertex input layout
 	// it can be freed.
-	if (compiledVertexShader)
+	if (&compiledVertexShader)
 	{
-		compiledVertexShader->Release();
-		compiledVertexShader = NULL;
+		compiledVertexShader.Free();
 	}
 
 	return !wereThereErrors;
@@ -289,6 +291,12 @@ bool Engine::Graphics::CleanUp()
 
 		s_direct3dDevice->Release();
 		s_direct3dDevice = NULL;
+
+		if (s_inputLayout)
+		{
+			s_inputLayout->Release();
+			s_inputLayout = NULL;
+		}
 	}
 	if (s_direct3dImmediateContext)
 	{
@@ -404,37 +412,33 @@ namespace
 		}
 	}
 
-	bool CreateVertexBuffer(ID3D10Blob& i_compiledShader)
+	bool CreateVertexBuffer(Engine::Platform::sDataFromFile& i_compiledShader)
 	{
 		// Create the vertex layout
+		// These elements must match the Structures::sVertex layout struct exactly.
+		// They instruct Direct3D how to match the binary data in the vertex buffer
+		// to the input elements in a vertex shader
+		// (by using so-called "semantic" names so that, for example,
+		// "POSITION" here matches with "POSITION" in shader code).
+		// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
+		const unsigned int vertexElementCount = 1;
+		D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = { 0 };
 		{
-			// These elements must match the Structures::sVertex layout struct exactly.
-			// They instruct Direct3D how to match the binary data in the vertex buffer
-			// to the input elements in a vertex shader
-			// (by using so-called "semantic" names so that, for example,
-			// "POSITION" here matches with "POSITION" in shader code).
-			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			const unsigned int vertexElementCount = 1;
-			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = { 0 };
-			{
-				// POSITION
-				// 2 floats == 8 bytes
-				// Offset = 0
-				{
-					D3D11_INPUT_ELEMENT_DESC& positionElement = layoutDescription[0];
-
-					positionElement.SemanticName = "POSITION";
-					positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-					positionElement.Format = DXGI_FORMAT_R32G32_FLOAT;
-					positionElement.InputSlot = 0;
-					positionElement.AlignedByteOffset = offsetof(Engine::Graphics::Structures::sVertex, position.x);
-					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
-				}
-			}
+			// Initialize the vertex format
+			Engine::Graphics::Functions::CreateVertexFormat(layoutDescription);
 
 			const HRESULT result = s_direct3dDevice->CreateInputLayout(layoutDescription, vertexElementCount,
-				i_compiledShader.GetBufferPointer(), i_compiledShader.GetBufferSize(), &s_vertexLayout);
+				i_compiledShader.data, i_compiledShader.size, &s_inputLayout);
+			if (FAILED(result))
+			{
+				ASSERT(false);
+				Engine::Logging::OutputError("Direct3D failed to create a vertex input layout with HRESULT %#010x", result);
+				return false;
+			}
+		}
+		{
+			const HRESULT result = s_direct3dDevice->CreateInputLayout(layoutDescription, vertexElementCount,
+				i_compiledShader.data, i_compiledShader.size, &s_vertexLayout);
 			if (FAILED(result))
 			{
 				ASSERT(false);
@@ -447,8 +451,8 @@ namespace
 		// You will have to update this in a future assignment
 		// (one of the most common mistakes in the class is to leave hard-coded values here).
 
-		const unsigned int triangleCount = 1;
-		const unsigned int vertexCountPerTriangle = 3;
+		const unsigned int triangleCount = 2;
+		const unsigned int vertexCountPerTriangle = 6;
 		const unsigned int vertexCount = triangleCount * vertexCountPerTriangle;
 		const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::Structures::sVertex);
 		Engine::Graphics::Structures::sVertex vertexData[vertexCount];
@@ -461,6 +465,15 @@ namespace
 
 			vertexData[2].position.x = 0.125f;
 			vertexData[2].position.y = -0.125f;
+
+			vertexData[3].position.x = -0.125f;
+			vertexData[3].position.y = -0.125f;
+
+			vertexData[4].position.x = -0.125f;
+			vertexData[4].position.y = 0.125f;
+
+			vertexData[5].position.x = 0.125f;
+			vertexData[5].position.y = 0.125f;
 		}
 
 		D3D11_BUFFER_DESC bufferDescription = { 0 };
@@ -553,115 +566,73 @@ namespace
 
 	bool LoadFragmentShader()
 	{
-		// Load the source code and compile it
-		ID3D10Blob* compiledShader = NULL;
+		bool wereThereErrors = false;
+
+		// Load the compiled shader
+		Engine::Platform::sDataFromFile compiledShader;
+		const char* const path = "data/shaders/fragment.shader";
 		{
-			const char* const sourceCodeFileName = "data/shaders/fragment.hlsl";
-			D3D10_SHADER_MACRO* const noMacros = NULL;
-			ID3DInclude* const noIncludes = NULL;
-			const char* const entryPoint = "main";
-			const char* const profile = "ps_4_0";
-			const unsigned int noFlags = 0;
-			ID3DX11ThreadPump* const blockUntilLoaded = NULL;
-			ID3D10Blob* errorMessages = NULL;
-			HRESULT result;
-			result = D3DX11CompileFromFile(sourceCodeFileName, noMacros, noIncludes, entryPoint, profile,
-				noFlags, noFlags, blockUntilLoaded, &compiledShader, &errorMessages, &result);
-			if (SUCCEEDED(result))
+			std::string errorMessage;
+			if (!Engine::Platform::LoadBinaryFile(path, compiledShader, &errorMessage))
 			{
-				if (errorMessages)
-				{
-					errorMessages->Release();
-				}
-			}
-			else
-			{
-				if (errorMessages)
-				{
-					ASSERTF(false, reinterpret_cast<char*>(errorMessages->GetBufferPointer()));
-					Engine::Logging::OutputError("Direct3D failed to compile the fragment shader from the file %s: %s",
-						sourceCodeFileName, reinterpret_cast<char*>(errorMessages->GetBufferPointer()));
-					errorMessages->Release();
-				}
-				else
-				{
-					ASSERT(false);
-					Engine::Logging::OutputError("Direct3D failed to compile the fragment shader from the file %s",
-						sourceCodeFileName);
-				}
-				return false;
+				wereThereErrors = true;
+				ASSERTF(false, errorMessage.c_str());
+				Engine::Logging::OutputError("Failed to load the shader file \"%s\": %s", path, errorMessage.c_str());
+				goto OnExit;
 			}
 		}
-		// Create the fragment shader object
-		bool wereThereErrors = false;
+		// Create the shader object
 		{
 			ID3D11ClassLinkage* const noInterfaces = NULL;
-			const HRESULT result = s_direct3dDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(),
-				noInterfaces, &s_fragmentShader);
+			const HRESULT result = s_direct3dDevice->CreatePixelShader(
+				compiledShader.data, compiledShader.size, noInterfaces, &s_fragmentShader);
 			if (FAILED(result))
 			{
-				ASSERT(false);
-				Engine::Logging::OutputError("Direct3D failed to create the fragment shader with HRESULT %#010x", result);
 				wereThereErrors = true;
+				ASSERT(false);
+				Engine::Logging::OutputError("Direct3D failed to create the shader %s with HRESULT %#010x", path, result);
+				goto OnExit;
 			}
-			compiledShader->Release();
 		}
+
+	OnExit:
+
+		compiledShader.Free();
+
 		return !wereThereErrors;
 	}
 
-	bool LoadVertexShader(ID3D10Blob*& o_compiledShader)
+	bool LoadVertexShader(Engine::Platform::sDataFromFile& o_compiledShader)
 	{
+		bool wereThereErrors = false;
+
+		const char* const path = "data/shaders/vertex.shader";
 		// Load the source code and compile it
 		{
-			const char* const sourceCodeFileName = "data/shaders/vertex.hlsl";
-			D3D10_SHADER_MACRO* const noMacros = NULL;
-			ID3DInclude* const noIncludes = NULL;
-			const char* const entryPoint = "main";
-			const char* const profile = "vs_4_0";
-			const unsigned int noFlags = 0;
-			ID3DX11ThreadPump* const blockUntilLoaded = NULL;
-			ID3D10Blob* errorMessages = NULL;
-			HRESULT result;
-			result = D3DX11CompileFromFile(sourceCodeFileName, noMacros, noIncludes, entryPoint, profile,
-				noFlags, noFlags, blockUntilLoaded, &o_compiledShader, &errorMessages, &result);
-			if (SUCCEEDED(result))
+			std::string errorMessage;
+			if (!Engine::Platform::LoadBinaryFile(path, o_compiledShader, &errorMessage))
 			{
-				if (errorMessages)
-				{
-					errorMessages->Release();
-				}
-			}
-			else
-			{
-				if (errorMessages)
-				{
-					ASSERTF(false, reinterpret_cast<char*>(errorMessages->GetBufferPointer()));
-					Engine::Logging::OutputError("Direct3D failed to compile the vertex shader from the file %s: %s",
-						sourceCodeFileName, reinterpret_cast<char*>(errorMessages->GetBufferPointer()));
-					errorMessages->Release();
-				}
-				else
-				{
-					ASSERT(false);
-					Engine::Logging::OutputError("Direct3D failed to compile the vertex shader from the file %s",
-						sourceCodeFileName);
-				}
-				return false;
+				wereThereErrors = true;
+				ASSERTF(false, errorMessage.c_str());
+				Engine::Logging::OutputError("Failed to load the shader file \"%s\": %s", path, errorMessage.c_str());
+				goto OnExit;
 			}
 		}
-		// Create the vertex shader object
-		bool wereThereErrors = false;
+		// Create the shader object
 		{
 			ID3D11ClassLinkage* const noInterfaces = NULL;
-			const HRESULT result = s_direct3dDevice->CreateVertexShader(o_compiledShader->GetBufferPointer(), o_compiledShader->GetBufferSize(),
-				noInterfaces, &s_vertexShader);
+			const HRESULT result = s_direct3dDevice->CreateVertexShader(
+				o_compiledShader.data, o_compiledShader.size, noInterfaces, &s_vertexShader);
 			if (FAILED(result))
 			{
-				ASSERT(false);
-				Engine::Logging::OutputError("Direct3D failed to create the vertex shader with HRESULT %#010x", result);
 				wereThereErrors = true;
+				ASSERT(false);
+				Engine::Logging::OutputError("Direct3D failed to create the shader %s with HRESULT %#010x", path, result);
+				goto OnExit;
 			}
 		}
-		return !wereThereErrors;
+
+		OnExit:
+			return !wereThereErrors;
 	}
 }

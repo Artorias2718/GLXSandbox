@@ -162,7 +162,7 @@ void Engine::Graphics::RenderFrame()
 			const GLint indexOfFirstVertexToRender = 0;
 			// As of this comment we are only drawing a single triangle
 			// (you will have to update this code in future assignments!)
-			const unsigned int triangleCount = 1;
+			const unsigned int triangleCount = 2;
 			const unsigned int vertexCountPerTriangle = 3;
 			const unsigned int vertexCountToRender = triangleCount * vertexCountPerTriangle;
 			glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
@@ -688,7 +688,7 @@ namespace
 			// You will have to update this in a future assignment
 			// (one of the most common mistakes in the class is to leave hard-coded values here).
 
-			const unsigned int triangleCount = 1;
+			const unsigned int triangleCount = 2;
 			const unsigned int vertexCountPerTriangle = 3;
 			const unsigned int vertexCount = triangleCount * vertexCountPerTriangle;
 			const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::Structures::sVertex);
@@ -703,6 +703,15 @@ namespace
 
 				vertexData[2].position.x = 0.125f;
 				vertexData[2].position.y = 0.125f;
+
+				vertexData[3].position.x = -0.125f;
+				vertexData[3].position.y = 0.125f;
+
+				vertexData[4].position.x = 0.125f;
+				vertexData[4].position.y = 0.125f;
+
+				vertexData[5].position.x = -0.125f;
+				vertexData[5].position.y = -0.125f;
 			}
 			glBufferData(GL_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(vertexData),
 				// In our class we won't ever read from the buffer
@@ -827,7 +836,7 @@ namespace
 		{
 			// Load the shader source code
 			{
-				const char* path_sourceCode = "data/shaders/fragment.glsl";
+				const char* path_sourceCode = "data/shaders/fragment.shader";
 				std::string errorMessage;
 				if (!Engine::Platform::LoadBinaryFile(path_sourceCode, dataFromFile, &errorMessage))
 				{
@@ -1010,7 +1019,7 @@ namespace
 		{
 			// Load the shader source code
 			{
-				const char* path_sourceCode = "data/shaders/vertex.glsl";
+				const char* path_sourceCode = "data/shaders/vertex.shader";
 				std::string errorMessage;
 				if (!Engine::Platform::LoadBinaryFile(path_sourceCode, dataFromFile, &errorMessage))
 				{
