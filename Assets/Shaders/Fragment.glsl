@@ -36,15 +36,7 @@ void main()
 	// If you are curious you should experiment with changing the values of the first three numbers
 	// to something in the range [0,1] and observing the results
 	// (although when you submit your Assignment 01 the color output must be white).
-    o_color = vec4( 1.0, 1.0, 1.0, 1.0 );
 
-	// TODO: Change the color based on time!
-	// The value g_elapsedSeconds should change every second, and so by doing something like
-	// sin( g_elapsedSeconds ) or cos( g_elapsedSeconds )
-	// you can get a value that will oscillate between [-1,1].
-	// You should change at least one "channel" so that the color animates.
-	// For example, to change red ("r") you would do something kind of like:
-	//		o_color.r = ? sin( g_elapsedSeconds ) ?
-	// You can change .r, .g, and .b (but leave .a as 1.0).
-	// Remember that your final values should be [0,1], so you will have to do some math.
+	o_color = vec4( cos(g_elapsedSeconds), 1.0, sin(g_elapsedSeconds), 1.0 );
+
 }
