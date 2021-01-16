@@ -11,11 +11,23 @@
       <Filter>OGL</Filter>
     </ClInclude>
     <ClInclude Include="Functions.h" />
-    <ClInclude Include="sVertex.h">
+    <ClInclude Include="Assets\cMesh.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sIndexSet.h">
       <Filter>Structures</Filter>
     </ClInclude>
-    <ClInclude Include="sPosition.h">
+    <ClInclude Include="Structures\sVertex.h">
       <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sPosition.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sColor.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D\Interfaces\D3DInterfaces.h">
+      <Filter>D3D\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +39,18 @@
       <Filter>OGL</Filter>
     </ClCompile>
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="Assets\cMesh.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\cMesh.D3D.cpp">
+      <Filter>D3D\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
+      <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -37,6 +61,18 @@
     </Filter>
     <Filter Include="Structures">
       <UniqueIdentifier>{d30d74eb-1797-45df-8ec0-ecdd7a3726b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{7df4abba-5b9b-4f4e-91df-3a6cbab7f1fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Assets">
+      <UniqueIdentifier>{33516d2e-c171-4a0c-bb7b-f2ab04e39887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL\Assets">
+      <UniqueIdentifier>{c20044f9-4583-4dc0-b20f-51193df20a2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Interfaces">
+      <UniqueIdentifier>{689073a8-58cf-4f05-a2a6-b79eb7196e65}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

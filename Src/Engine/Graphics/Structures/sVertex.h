@@ -2,6 +2,7 @@
 #define ENGINE_GRAPHICS_STRUCTURES_SVERTEX_H
 
 #include "sPosition.h"
+#include "sColor.h"
 
 namespace Engine
 {
@@ -16,6 +17,11 @@ namespace Engine
 				// 2 floats == 8 bytes
 				// Offset = 0
 				sPosition position;
+
+				// COLOR 
+				// 4 unsigned 8-bit integers == 4 bytes
+				// Offset = 1
+				sColor8 color;
 			};
 		}
 	}

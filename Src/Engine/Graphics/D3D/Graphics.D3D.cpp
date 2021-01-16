@@ -3,6 +3,9 @@
 
 #include "../Graphics.h"
 #include "../Structures/sVertex.h"
+#include "Includes.h"
+#include "Interfaces/D3DInterfaces.h"
+#include "../Assets/cMesh.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -20,19 +23,6 @@ namespace
 {
 	// This is the main window handle from Windows
 	HWND s_renderingWindow = NULL;
-	// These are D3D interfaces
-	ID3D11Device* s_direct3dDevice = NULL;
-	IDXGISwapChain* s_swapChain = NULL;
-	ID3D11DeviceContext* s_direct3dImmediateContext = NULL;
-	ID3D11RenderTargetView* s_renderTargetView = NULL;
-	ID3D11InputLayout* s_inputLayout = NULL;
-
-	// D3D has an "input layout" object that associates the layout of the struct above
-	// with the input from a vertex shader
-	ID3D11InputLayout* s_vertexLayout = NULL;
-
-	// The vertex buffer holds the data for each vertex
-	ID3D11Buffer* s_vertexBuffer = NULL;
 
 	// The vertex shader is a program that operates on vertices.
 	// Its input comes from a C/C++ "draw call" and is:
@@ -92,7 +82,7 @@ void Engine::Graphics::RenderFrame()
 	{
 		// Black is usually used
 		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		s_direct3dImmediateContext->ClearRenderTargetView(s_renderTargetView, clearColor);
+		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->ClearRenderTargetView(Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView, clearColor);
 	}
 
 	// Update the constant buffer
@@ -108,7 +98,7 @@ void Engine::Graphics::RenderFrame()
 				const unsigned int noSubResources = 0;
 				const D3D11_MAP mapType = D3D11_MAP_WRITE_DISCARD;
 				const unsigned int noFlags = 0;
-				const HRESULT result = s_direct3dImmediateContext->Map(s_constantBuffer, noSubResources, mapType, noFlags, &mappedSubResource);
+				const HRESULT result = Interfaces::D3DInterfaces::s_direct3dImmediateContext->Map(s_constantBuffer, noSubResources, mapType, noFlags, &mappedSubResource);
 				if (SUCCEEDED(result))
 				{
 					memoryToWriteTo = mappedSubResource.pData;
@@ -126,15 +116,15 @@ void Engine::Graphics::RenderFrame()
 			// Let Direct3D know that the memory contains the data
 			// (the pointer will be invalid after this call)
 			const unsigned int noSubResources = 0;
-			s_direct3dImmediateContext->Unmap(s_constantBuffer, noSubResources);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->Unmap(s_constantBuffer, noSubResources);
 			memoryToWriteTo = NULL;
 		}
 		// Bind the constant buffer to the shader
 		{
 			const unsigned int registerAssignedInShader = 0;
 			const unsigned int bufferCount = 1;
-			s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
-			s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
 		}
 	}
 
@@ -144,39 +134,15 @@ void Engine::Graphics::RenderFrame()
 		{
 			ID3D11ClassInstance** const noInterfaces = NULL;
 			const unsigned int interfaceCount = 0;
-			s_direct3dImmediateContext->VSSetShader(s_vertexShader, noInterfaces, interfaceCount);
-			s_direct3dImmediateContext->PSSetShader(s_fragmentShader, noInterfaces, interfaceCount);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->VSSetShader(s_vertexShader, noInterfaces, interfaceCount);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->PSSetShader(s_fragmentShader, noInterfaces, interfaceCount);
 		}
-		// Bind a specific vertex buffer to the device as a data source
+
+		for (std::vector<Engine::Graphics::Assets::cMesh*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
 		{
-			const unsigned int startingSlot = 0;
-			const unsigned int vertexBufferCount = 1;
-			// The "stride" defines how large a single vertex is in the stream of data
-			const unsigned int bufferStride = sizeof(Structures::sVertex);
-			// It's possible to start streaming data in the middle of a vertex buffer
-			const unsigned int bufferOffset = 0;
-			s_direct3dImmediateContext->IASetVertexBuffers(startingSlot, vertexBufferCount, &s_vertexBuffer, &bufferStride, &bufferOffset);
+			(*itor)->Render();
 		}
-		// Specify what kind of data the vertex buffer holds
-		{
-			// Set the layout (which defines how to interpret a single vertex)
-			s_direct3dImmediateContext->IASetInputLayout(s_vertexLayout);
-			// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
-			// we have defined the vertex buffer as a triangle list
-			// (meaning that every primitive is a triangle and will be defined by three vertices)
-			s_direct3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		}
-		// Render triangles from the currently-bound vertex buffer
-		{
-			// As of this comment we are only drawing a single triangle
-			// (you will have to update this code in future assignments!)
-			const unsigned int triangleCount = 2;
-			const unsigned int vertexCountPerTriangle = 6;
-			const unsigned int vertexCountToRender = triangleCount * vertexCountPerTriangle;
-			// It's possible to start rendering primitives in the middle of the stream
-			const unsigned int indexOfFirstVertexToRender = 0;
-			s_direct3dImmediateContext->Draw(vertexCountToRender, indexOfFirstVertexToRender);
-		}
+		meshObjects.clear();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -185,7 +151,7 @@ void Engine::Graphics::RenderFrame()
 	{
 		const unsigned int swapImmediately = 0;
 		const unsigned int presentNextFrame = 0;
-		const HRESULT result = s_swapChain->Present(swapImmediately, presentNextFrame);
+		const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->Present(swapImmediately, presentNextFrame);
 		ASSERT(SUCCEEDED(result));
 	}
 }
@@ -253,17 +219,12 @@ bool Engine::Graphics::CleanUp()
 {
 	bool wereThereErrors = false;
 
-	if (s_direct3dDevice)
+	if (Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice)
 	{
-		if (s_vertexLayout)
+		if (Engine::Graphics::Interfaces::D3DInterfaces::s_inputLayout)
 		{
-			s_vertexLayout->Release();
-			s_vertexLayout = NULL;
-		}
-		if (s_vertexBuffer)
-		{
-			s_vertexBuffer->Release();
-			s_vertexBuffer = NULL;
+			Engine::Graphics::Interfaces::D3DInterfaces::s_inputLayout->Release();
+			Engine::Graphics::Interfaces::D3DInterfaces::s_inputLayout = NULL;
 		}
 
 		if (s_vertexShader)
@@ -283,30 +244,24 @@ bool Engine::Graphics::CleanUp()
 			s_constantBuffer = NULL;
 		}
 
-		if (s_renderTargetView)
+		if (Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView)
 		{
-			s_renderTargetView->Release();
-			s_renderTargetView = NULL;
+			Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView->Release();
+			Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView = NULL;
 		}
 
-		s_direct3dDevice->Release();
-		s_direct3dDevice = NULL;
-
-		if (s_inputLayout)
-		{
-			s_inputLayout->Release();
-			s_inputLayout = NULL;
-		}
+		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->Release();
+		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice = NULL;
 	}
-	if (s_direct3dImmediateContext)
+	if (Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext)
 	{
-		s_direct3dImmediateContext->Release();
-		s_direct3dImmediateContext = NULL;
+		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->Release();
+		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext = NULL;
 	}
-	if (s_swapChain)
+	if (Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain)
 	{
-		s_swapChain->Release();
-		s_swapChain = NULL;
+		Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->Release();
+		Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain = NULL;
 	}
 
 	s_renderingWindow = NULL;
@@ -339,7 +294,7 @@ namespace
 			// (The other data members are ignored for non-texture buffers)
 		}
 
-		const HRESULT result = s_direct3dDevice->CreateBuffer(&bufferDescription, &initialData, &s_constantBuffer);
+		const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateBuffer(&bufferDescription, &initialData, &s_constantBuffer);
 		if (SUCCEEDED(result))
 		{
 			return true;
@@ -399,7 +354,7 @@ namespace
 		D3D_FEATURE_LEVEL highestSupportedFeatureLevel;
 		const HRESULT result = D3D11CreateDeviceAndSwapChain(useDefaultAdapter, useHardwareRendering, dontUseSoftwareRendering,
 			flags, useDefaultFeatureLevels, requestedFeatureLevelCount, sdkVersion, &swapChainDescription,
-			&s_swapChain, &s_direct3dDevice, &highestSupportedFeatureLevel, &s_direct3dImmediateContext);
+			&Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain, &Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice, &highestSupportedFeatureLevel, &Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext);
 		if (SUCCEEDED(result))
 		{
 			return true;
@@ -415,88 +370,27 @@ namespace
 	bool CreateVertexBuffer(Engine::Platform::sDataFromFile& i_compiledShader)
 	{
 		// Create the vertex layout
-		// These elements must match the Structures::sVertex layout struct exactly.
-		// They instruct Direct3D how to match the binary data in the vertex buffer
-		// to the input elements in a vertex shader
-		// (by using so-called "semantic" names so that, for example,
-		// "POSITION" here matches with "POSITION" in shader code).
-		// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-		const unsigned int vertexElementCount = 1;
-		D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = { 0 };
 		{
+			// These elements must match the VertexFormat::sVertex layout struct exactly.
+			// They instruct Direct3D how to match the binary data in the vertex buffer
+			// to the input elements in a vertex shader
+			// (by using so-called "semantic" names so that, for example,
+			// "POSITION" here matches with "POSITION" in shader code).
+			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
+			const unsigned int vertexElementCount = 2;
+			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = { 0 };
+
 			// Initialize the vertex format
 			Engine::Graphics::Functions::CreateVertexFormat(layoutDescription);
 
-			const HRESULT result = s_direct3dDevice->CreateInputLayout(layoutDescription, vertexElementCount,
-				i_compiledShader.data, i_compiledShader.size, &s_inputLayout);
+			const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateInputLayout(layoutDescription, vertexElementCount,
+				i_compiledShader.data, i_compiledShader.size, &Engine::Graphics::Interfaces::D3DInterfaces::s_inputLayout);
 			if (FAILED(result))
 			{
 				ASSERT(false);
 				Engine::Logging::OutputError("Direct3D failed to create a vertex input layout with HRESULT %#010x", result);
 				return false;
 			}
-		}
-		{
-			const HRESULT result = s_direct3dDevice->CreateInputLayout(layoutDescription, vertexElementCount,
-				i_compiledShader.data, i_compiledShader.size, &s_vertexLayout);
-			if (FAILED(result))
-			{
-				ASSERT(false);
-				Engine::Logging::OutputError("Direct3D failed to create a vertex input layout with HRESULT %#010x", result);
-				return false;
-			}
-		}
-
-		// Eventually the vertex data should come from a file but for now it is hard-coded here.
-		// You will have to update this in a future assignment
-		// (one of the most common mistakes in the class is to leave hard-coded values here).
-
-		const unsigned int triangleCount = 2;
-		const unsigned int vertexCountPerTriangle = 6;
-		const unsigned int vertexCount = triangleCount * vertexCountPerTriangle;
-		const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::Structures::sVertex);
-		Engine::Graphics::Structures::sVertex vertexData[vertexCount];
-		{
-			vertexData[0].position.x = -0.125f;
-			vertexData[0].position.y = -0.125f;
-
-			vertexData[1].position.x = 0.125f;
-			vertexData[1].position.y = 0.125f;
-
-			vertexData[2].position.x = 0.125f;
-			vertexData[2].position.y = -0.125f;
-
-			vertexData[3].position.x = -0.125f;
-			vertexData[3].position.y = -0.125f;
-
-			vertexData[4].position.x = -0.125f;
-			vertexData[4].position.y = 0.125f;
-
-			vertexData[5].position.x = 0.125f;
-			vertexData[5].position.y = 0.125f;
-		}
-
-		D3D11_BUFFER_DESC bufferDescription = { 0 };
-		{
-			bufferDescription.ByteWidth = bufferSize;
-			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
-			bufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bufferDescription.CPUAccessFlags = 0;	// No CPU access is necessary
-			bufferDescription.MiscFlags = 0;
-			bufferDescription.StructureByteStride = 0;	// Not used
-		}
-		D3D11_SUBRESOURCE_DATA initialData = { 0 };
-		{
-			initialData.pSysMem = vertexData;
-			// (The other data members are ignored for non-texture buffers)
-		}
-
-		const HRESULT result = s_direct3dDevice->CreateBuffer(&bufferDescription, &initialData, &s_vertexBuffer);
-		if (FAILED(result))
-		{
-			ASSERT(false);
-			Engine::Logging::OutputError("Direct3D failed to create the vertex buffer with HRESULT %#010x", result);
-			return false;
 		}
 
 		return true;
@@ -513,7 +407,7 @@ namespace
 			HRESULT result;
 			{
 				const unsigned int bufferIndex = 0;	// This must be 0 since the swap chain is discarded
-				result = s_swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+				result = Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
 				if (FAILED(result))
 				{
 					ASSERT(false);
@@ -524,14 +418,14 @@ namespace
 			// Create the view
 			{
 				const D3D11_RENDER_TARGET_VIEW_DESC* const accessAllSubResources = NULL;
-				result = s_direct3dDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &s_renderTargetView);
+				result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView);
 			}
 			if (SUCCEEDED(result))
 			{
 				// Bind it
 				const unsigned int renderTargetCount = 1;
 				ID3D11DepthStencilView* const noDepthStencilState = NULL;
-				s_direct3dImmediateContext->OMSetRenderTargets(renderTargetCount, &s_renderTargetView, noDepthStencilState);
+				Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->OMSetRenderTargets(renderTargetCount, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView, noDepthStencilState);
 			}
 			else
 			{
@@ -550,7 +444,7 @@ namespace
 			viewPort.MinDepth = 0.0f;
 			viewPort.MaxDepth = 1.0f;
 			const unsigned int viewPortCount = 1;
-			s_direct3dImmediateContext->RSSetViewports(viewPortCount, &viewPort);
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->RSSetViewports(viewPortCount, &viewPort);
 		}
 
 	OnExit:
@@ -584,7 +478,7 @@ namespace
 		// Create the shader object
 		{
 			ID3D11ClassLinkage* const noInterfaces = NULL;
-			const HRESULT result = s_direct3dDevice->CreatePixelShader(
+			const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreatePixelShader(
 				compiledShader.data, compiledShader.size, noInterfaces, &s_fragmentShader);
 			if (FAILED(result))
 			{
@@ -621,7 +515,7 @@ namespace
 		// Create the shader object
 		{
 			ID3D11ClassLinkage* const noInterfaces = NULL;
-			const HRESULT result = s_direct3dDevice->CreateVertexShader(
+			const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateVertexShader(
 				o_compiledShader.data, o_compiledShader.size, noInterfaces, &s_vertexShader);
 			if (FAILED(result))
 			{
@@ -632,7 +526,7 @@ namespace
 			}
 		}
 
-		OnExit:
-			return !wereThereErrors;
+	OnExit:
+		return !wereThereErrors;
 	}
 }

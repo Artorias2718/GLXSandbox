@@ -118,6 +118,7 @@ namespace Engine
 			//--------------------------
 
 			virtual bool Initialize() = 0;
+			virtual bool Update () = 0;
 			virtual bool CleanUp() = 0;
 
 			// Implementation

@@ -84,6 +84,7 @@ namespace Game
 			//--------------------------
 
 			virtual bool Initialize();
+			virtual bool Update();
 			virtual bool CleanUp();
 
 		};

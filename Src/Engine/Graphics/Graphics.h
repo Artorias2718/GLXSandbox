@@ -14,6 +14,8 @@
 	#include "../Windows/Includes.h"
 #endif
 
+#include <vector>
+
 // Interface
 //==========
 
@@ -21,6 +23,11 @@ namespace Engine
 {
 	namespace Graphics
 	{
+		namespace Assets
+		{
+			class cMesh;
+		}
+
 		// Render
 		//-------
 
@@ -42,7 +49,10 @@ namespace Engine
 		};
 
 		bool Initialize( const sInitializationParameters& i_initializationParameters );
+		bool SubmitGameObject(Assets::cMesh* i_object);
 		bool CleanUp();
+
+		extern std::vector<Assets::cMesh*> meshObjects;
 	}
 }
 
