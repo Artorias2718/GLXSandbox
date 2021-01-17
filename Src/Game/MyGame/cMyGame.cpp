@@ -19,7 +19,9 @@ namespace
 	const float SPEED = 8.0f;
 
 	Engine::Shared::cGameObject* cube;
+	Engine::Shared::cGameObject* icosphere;
 	Engine::Shared::cGameObject* plane;
+	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
@@ -43,11 +45,15 @@ Game::MyGame::cMyGame::~cMyGame()
 bool Game::MyGame::cMyGame::Initialize()
 {
 	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
+	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"));
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"));
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	cube->m_transform.position += 0.25f * Engine::Math::cVector::up;
-	plane->m_transform.scale *= 5.0f;
+	cube->m_transform.position += -5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
+	icosphere->m_transform.position += 5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
+	plane->m_transform.scale *= 10.0f;
+	suzanne->m_transform.position += 1.25f * Engine::Math::cVector::up;
 
 	return true;
 }
@@ -55,10 +61,12 @@ bool Game::MyGame::cMyGame::Initialize()
 bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(cube);
+	Engine::Graphics::SubmitGameObject(icosphere);
 	Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(suzanne);
 
-	Move(cube);
-	Rotate(cube, -50.0f, Engine::Math::cVector::up);
+	Move(suzanne);
+	Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
 
 	Move(camera);
 

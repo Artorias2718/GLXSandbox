@@ -7,7 +7,9 @@ return
     meshes =
     {
         "Meshes/Cube.lua",
-        "Meshes/Plane.lua"
+        "Meshes/Icosphere.lua",
+        "Meshes/Plane.lua",
+        "Meshes/Suzanne.lua"
     },
     shaders =
     {
