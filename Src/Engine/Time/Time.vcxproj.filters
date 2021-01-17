@@ -9,7 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Windows\Time.win.cpp">
+    <ClCompile Include="Windows\Time.WIN.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
   </ItemGroup>

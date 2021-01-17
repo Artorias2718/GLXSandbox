@@ -19,7 +19,7 @@
     </Lib>
     <ClCompile>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLM_ENABLE_EXPERIMENTAL;_MBCS;</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

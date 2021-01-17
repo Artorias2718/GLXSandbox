@@ -22,7 +22,7 @@
     <ClInclude Include="UserOutput.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Windows\UserOutput.win.cpp" />
+    <ClCompile Include="Windows\UserOutput.WIN.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A5095433-A0C7-4205-AD5B-82A5C09DE805}</ProjectGuid>

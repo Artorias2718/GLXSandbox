@@ -1,6 +1,8 @@
 #ifndef ENGINE_GRAPHICS_STRUCTURES_SFRAME_H
 #define ENGINE_GRAPHICS_STRUCTURES_SFRAME_H
 
+#include "../../Math/glm/mat4x4.hpp"
+
 namespace Engine
 {
 	namespace Graphics
@@ -9,10 +11,12 @@ namespace Engine
 		{
 			struct sFrame
 			{
+				glm::mat4 g_worldToCamera;
+				glm::mat4 g_cameraToScreen;
 				union
 				{
 					float g_elapsedSeconds;
-					float register0[4];
+					float register8[4];
 				};
 			};
 		}

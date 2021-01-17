@@ -1,9 +1,13 @@
 return
 {
+    gameobjects =
+    {
+        "GameObjects/FlyCamera.lua"
+    },
     meshes =
     {
-        "Meshes/Square.lua",
-        "Meshes/Triangle.lua"
+        "Meshes/Cube.lua",
+        "Meshes/Plane.lua"
     },
     shaders =
     {

@@ -175,6 +175,25 @@ function AssetTypeInfo.ShouldTargetBeBuilt( i_lastWriteTime_builtAsset )
 	return false
 end
 
+-- GameObject Asset Type
+--------------------
+
+NewAssetTypeInfo( "gameobjects",
+	{
+		-- This function is required for all asset types
+		GetBuilderRelativePath = function()
+			return "GameObjectBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function ( i_sourceRelativePath, i_assetType )
+			sourceAbsolutePath = s_AuthoredAssetDir .. i_sourceRelativePath
+			local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+			local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+			extensionWithPeriod = file:sub(1, file:find(".") - 1) .. ".gameobject";
+			return relativeDirectory .. fileName .. extensionWithPeriod
+		end
+	}
+)
+
 -- Mesh Asset Type
 --------------------
 

@@ -20,11 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cBaseApplication.cpp" />
-    <ClCompile Include="Windows\cBaseApplication.win.cpp" />
+    <ClCompile Include="Windows\cBaseApplication.WIN.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cBaseApplication.h" />
-    <ClInclude Include="Windows\cBaseApplication.win.h" />
+    <ClInclude Include="Windows\cBaseApplication.WIN.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C073AA3C-C800-4495-9F92-C622FF2EA5E1}</ProjectGuid>
@@ -98,12 +98,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Math.lib;Shared.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -114,12 +116,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Math.lib;Shared.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,6 +136,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,7 +145,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Math.lib;Shared.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,6 +158,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,7 +167,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asserts.lib;Graphics.lib;Logging.lib;Math.lib;Shared.lib;Time.lib;UserOutput.lib;UserSettings.lib;Windows.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

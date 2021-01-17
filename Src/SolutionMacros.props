@@ -3,6 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <BuildDir>$(SolutionDir)Build\$(PlatformShortName)\$(Configuration)\</BuildDir>
+    <MathDir>$(SolutionDir)Src\Engine\Math</MathDir>
     <IntermediateDir>$(BuildDir)intermediates\$(ProjectName)\</IntermediateDir>
     <BinDir>$(BuildDir)bin\</BinDir>
     <GameDir>$(BuildDir)game\</GameDir>
