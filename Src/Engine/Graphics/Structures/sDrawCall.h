@@ -1,6 +1,8 @@
 #ifndef ENGINE_GRAPHICS_STRUCTURES_SDRAWCALL_H
 #define ENGINE_GRAPHICS_STRUCTURES_SDRAWCALL_H
 
+#include "../../Math/cMatrix_Transformation.h"
+
 namespace Engine
 {
 	namespace Graphics
@@ -9,11 +11,7 @@ namespace Engine
 		{
 			struct sDrawCall
 			{
-				union
-				{
-					float g_screenPosition[2];
-					float register0[4];
-				};
+				Math::cMatrix_Transformation g_localToWorld;
 			};
 		}
 	}

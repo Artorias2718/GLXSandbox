@@ -58,7 +58,7 @@ namespace
 	bool CreateConstantBuffers();
 	bool CreateDevice(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
 	bool CreateVertexBuffer(Engine::Platform::sDataFromFile& i_compiledShader);
-	bool CreateView(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
+	bool CreateViews(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
 	bool LoadFragmentShader();
 	bool LoadVertexShader(Engine::Platform::sDataFromFile& o_compiledShader);
 }
@@ -80,10 +80,11 @@ void Engine::Graphics::RenderFrame()
 		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->ClearRenderTargetView(Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView, clearColor);
 	}
 
-	// Update the constant buffer
+	// Clear depth buffer
 	{
-		frameData.g_elapsedSeconds = Time::ElapsedSeconds();
-		s_frameBuffer->Update(Engine::Graphics::Interfaces::FRAME, &frameData);
+		const float depthToClear = 1.0f;
+		const uint8_t stencilToClear = 0;
+		Interfaces::D3DInterfaces::s_direct3dImmediateContext->ClearDepthStencilView(Interfaces::D3DInterfaces::s_depthStencilView, D3D11_CLEAR_DEPTH, depthToClear, stencilToClear);
 	}
 
 	// Draw the geometry
@@ -98,8 +99,7 @@ void Engine::Graphics::RenderFrame()
 
 		for (std::vector<Shared::cGameObject*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
 		{
-			Engine::Graphics::drawCallData.g_screenPosition[0] = (*itor)->m_position.x;
-			Engine::Graphics::drawCallData.g_screenPosition[1] = (*itor)->m_position.y;
+			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::cMatrix_Transformation((*itor)->m_transform);
 			s_drawCallBuffer->Update(Engine::Graphics::Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
 
 			(*itor)->m_mesh->Render();
@@ -135,7 +135,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		goto OnExit;
 	}
 	// Initialize the viewport of the device
-	if (!CreateView(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight))
+	if (!CreateViews(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight))
 	{
 		wereThereErrors = true;
 		goto OnExit;
@@ -364,18 +364,22 @@ namespace
 		return true;
 	}
 
-	bool CreateView(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight)
+	bool CreateViews(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight)
 	{
 		bool wereThereErrors = false;
 
-		// Create and bind the render target view
 		ID3D11Texture2D* backBuffer = NULL;
+		ID3D11Texture2D* depthBuffer = NULL;
+
+		// Create a "render target view" of the back buffer
+		// (the back buffer was already created by the call to D3D11CreateDeviceAndSwapChain(),
+		// but we need a "view" of it to use as a "render target",
+		// meaning a texture that the GPU can render to)
 		{
 			// Get the back buffer from the swap chain
-			HRESULT result;
 			{
-				const unsigned int bufferIndex = 0;	// This must be 0 since the swap chain is discarded
-				result = Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+				const unsigned int bufferIndex = 0; // This must be 0 since the swap chain is discarded
+				const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
 				if (FAILED(result))
 				{
 					ASSERT(false);
@@ -386,23 +390,65 @@ namespace
 			// Create the view
 			{
 				const D3D11_RENDER_TARGET_VIEW_DESC* const accessAllSubResources = NULL;
-				result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView);
+				const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView);
+				if (FAILED(result))
+				{
+					ASSERT(false);
+					Engine::Logging::OutputError("Direct3D failed to create the render target view with HRESULT %#010x", result);
+					goto OnExit;
+				}
 			}
-			if (SUCCEEDED(result))
+		}
+		// Create a depth/stencil buffer and a view of it
+		{
+			// Unlike the back buffer no depth/stencil buffer exists until and unless we create it
 			{
-				// Bind it
-				const unsigned int renderTargetCount = 1;
-				ID3D11DepthStencilView* const noDepthStencilState = NULL;
-				Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->OMSetRenderTargets(renderTargetCount, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView, noDepthStencilState);
+				D3D11_TEXTURE2D_DESC textureDescription = { 0 };
+				{
+					textureDescription.Width = i_resolutionWidth;
+					textureDescription.Height = i_resolutionHeight;
+					textureDescription.MipLevels = 1; // A depth buffer has no MIP maps
+					textureDescription.ArraySize = 1;
+					textureDescription.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24 bits for depth and 8 bits for stencil
+					{
+						DXGI_SAMPLE_DESC& sampleDescription = textureDescription.SampleDesc;
+						sampleDescription.Count = 1; // No multisampling
+						sampleDescription.Quality = 0; // Doesn't matter when Count is 1
+					}
+					textureDescription.Usage = D3D11_USAGE_DEFAULT; // Allows the GPU to write to it
+					textureDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+					textureDescription.CPUAccessFlags = 0; // CPU doesn't need access
+					textureDescription.MiscFlags = 0;
+				}
+				// The GPU renders to the depth/stencil buffer and so there is no initial data
+				// (like there would be with a traditional texture loaded from disk)
+				const D3D11_SUBRESOURCE_DATA* const noInitialData = NULL;
+				const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateTexture2D(&textureDescription, noInitialData, &depthBuffer);
+				if (FAILED(result))
+				{
+					ASSERT(false);
+					Engine::Logging::OutputError("Direct3D failed to create the depth buffer resource with HRESULT %#010x", result);
+					goto OnExit;
+				}
 			}
-			else
+			// Create the view
 			{
-				ASSERT(false);
-				Engine::Logging::OutputError("Direct3D failed to create the render target view with HRESULT %#010x", result);
-				goto OnExit;
+				const D3D11_DEPTH_STENCIL_VIEW_DESC* const noSubResources = NULL;
+				const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateDepthStencilView(depthBuffer, noSubResources, &Engine::Graphics::Interfaces::D3DInterfaces::s_depthStencilView);
+				if (FAILED(result))
+				{
+					ASSERT(false);
+					Engine::Logging::OutputError("Direct3D failed to create the depth stencil view with HRESULT %#010x", result);
+					goto OnExit;
+				}
 			}
 		}
 
+		// Bind the views
+		{
+			const unsigned int renderTargetCount = 1;
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->OMSetRenderTargets(renderTargetCount, &Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView, Engine::Graphics::Interfaces::D3DInterfaces::s_depthStencilView);
+		}
 		// Specify that the entire render target should be visible
 		{
 			D3D11_VIEWPORT viewPort = { 0 };
@@ -421,6 +467,11 @@ namespace
 		{
 			backBuffer->Release();
 			backBuffer = NULL;
+		}
+		if (depthBuffer)
+		{
+			depthBuffer->Release();
+			depthBuffer = NULL;
 		}
 
 		return !wereThereErrors;

@@ -19,9 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cMatrix_Transformation.cpp" />
+    <ClCompile Include="cQuaternion.cpp" />
+    <ClCompile Include="cVector.cpp" />
     <ClCompile Include="Functions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cMatrix_Transformation.h" />
+    <ClInclude Include="cQuaternion.h" />
+    <ClInclude Include="cVector.h" />
     <ClInclude Include="Functions.h" />
   </ItemGroup>
   <ItemGroup>

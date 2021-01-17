@@ -19,10 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cGameObject.cpp" />
+    <ClCompile Include="MouseParams.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cCamera.h" />
     <ClInclude Include="cGameObject.h" />
+    <ClInclude Include="eCameraType.h" />
+    <ClInclude Include="MouseParams.h" />
+    <ClInclude Include="sTransform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F76B6020-4CA3-4714-B194-B9DB09C90112}</ProjectGuid>

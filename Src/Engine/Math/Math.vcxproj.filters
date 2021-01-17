@@ -2,9 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="cMatrix_Transformation.cpp" />
+    <ClCompile Include="cQuaternion.cpp" />
+    <ClCompile Include="cVector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="cMatrix_Transformation.h" />
+    <ClInclude Include="cQuaternion.h" />
+    <ClInclude Include="cVector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Functions.inl" />

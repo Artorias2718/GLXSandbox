@@ -22,7 +22,7 @@
     <ClInclude Include="Time.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Windows\Time.win.cpp" />
+    <ClCompile Include="Windows\Time.WIN.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F9C71CA5-AE92-4EF9-A46F-35E3B662F6BC}</ProjectGuid>

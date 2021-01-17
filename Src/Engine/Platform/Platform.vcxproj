@@ -22,7 +22,7 @@
     <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Windows\Platform.win.cpp" />
+    <ClCompile Include="Windows\Platform.WIN.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{48792CEB-F23F-4184-BB44-29A206D8CD05}</ProjectGuid>

@@ -54,7 +54,7 @@ namespace Game
 					" -- "
 #if defined( D3D_API )
 					"D3D"
-#elif defined( GL_API )
+#elif defined( OGL_API )
 					"OGL"
 #endif
 #ifdef _DEBUG
