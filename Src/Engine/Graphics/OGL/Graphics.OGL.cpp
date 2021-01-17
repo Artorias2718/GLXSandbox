@@ -411,6 +411,8 @@ namespace
 					WGL_RED_BITS_ARB, 8,
 					WGL_GREEN_BITS_ARB, 8,
 					WGL_BLUE_BITS_ARB, 8,
+					WGL_DEPTH_BITS_ARB, 24,
+					WGL_STENCIL_BITS_ARB, 8,
 					// NULL terminator
 					NULL
 				};
@@ -448,6 +450,8 @@ namespace
 					pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
 					pixelFormatDescriptor.cColorBits = 24;
 					pixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
+					pixelFormatDescriptor.cDepthBits = 24;
+					pixelFormatDescriptor.cStencilBits = 8;
 				}
 				if (SetPixelFormat(s_deviceContext, pixelFormatId, &pixelFormatDescriptor) == FALSE)
 				{

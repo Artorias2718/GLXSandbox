@@ -46,3 +46,8 @@ Thumbs.db
 #=====
 
 /.mayaSwatches
+
+# Blender
+#====
+
+*.blend1
