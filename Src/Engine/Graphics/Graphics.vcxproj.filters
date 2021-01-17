@@ -29,6 +29,18 @@
     <ClInclude Include="D3D\Interfaces\D3DInterfaces.h">
       <Filter>D3D\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\cConstantBuffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\eConstantBufferType.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sFrame.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sDrawCall.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -50,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
       <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces\cConstantBuffer.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cConstantBuffer.D3D.cpp">
+      <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cConstantBuffer.OGL.cpp">
+      <Filter>OGL\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +94,12 @@
     </Filter>
     <Filter Include="D3D\Interfaces">
       <UniqueIdentifier>{689073a8-58cf-4f05-a2a6-b79eb7196e65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{c20da6ef-3359-48f5-a98a-f08b08122aa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL\Interfaces">
+      <UniqueIdentifier>{649a1481-ebb1-4bbd-967b-1c4caa087cb2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

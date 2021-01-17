@@ -20,6 +20,12 @@
 #include "../../../External/OGLExtensions/OGLExtensions.h"
 #include "../../UserOutput/UserOutput.h"
 
+#include "../Interfaces/cConstantBuffer.h"
+#include "../Structures/sFrame.h"
+#include "../Structures/sDrawCall.h"
+
+#include "../../Shared/cGameObject.h"
+
 // Static Data Initialization
 //===========================
 
@@ -51,17 +57,6 @@ namespace
 	// Its output is:
 	//	* The final color that the pixel should be
 	GLuint s_programId = 0;
-
-	// This struct determines the layout of the constant data that the CPU will send to the GPU
-	struct
-	{
-		union
-		{
-			float g_elapsedSecondCount_total;
-			float register0[4];	// You won't have to worry about why I do this until a later assignment
-		};
-	} s_constantBufferData;
-	GLuint s_constantBufferId = 0;
 }
 
 // Helper Function Declarations
@@ -69,7 +64,7 @@ namespace
 
 namespace
 {
-	bool CreateConstantBuffer();
+	bool CreateConstantBuffers();
 	bool CreateProgram();
 	bool CreateRenderingContext();
 	bool LoadFragmentShader(const GLuint i_programId);
@@ -109,26 +104,8 @@ void Engine::Graphics::RenderFrame()
 
 	// Update the constant buffer
 	{
-		// Update the struct (i.e. the memory that we own)
-		s_constantBufferData.g_elapsedSecondCount_total = Time::ElapsedSeconds();
-		// Make the uniform buffer active
-		{
-			glBindBuffer(GL_UNIFORM_BUFFER, s_constantBufferId);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
-		// Copy the updated memory to the GPU
-		{
-			GLintptr updateAtTheBeginning = 0;
-			GLsizeiptr updateTheEntireBuffer = static_cast<GLsizeiptr>(sizeof(s_constantBufferData));
-			glBufferSubData(GL_UNIFORM_BUFFER, updateAtTheBeginning, updateTheEntireBuffer, &s_constantBufferData);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
-		// Bind the constant buffer to the shader
-		{
-			const GLuint bindingPointAssignedInShader = 0;
-			glBindBufferBase(GL_UNIFORM_BUFFER, bindingPointAssignedInShader, s_constantBufferId);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
+		Engine::Graphics::frameData.g_elapsedSeconds = Time::ElapsedSeconds();
+		s_frameBuffer->Update(Engine::Graphics::Interfaces::FRAME, &frameData);
 	}
 
 	// Draw the geometry
@@ -139,9 +116,13 @@ void Engine::Graphics::RenderFrame()
 			ASSERT(glGetError() == GL_NO_ERROR);
 		}
 
-		for (std::vector<Assets::cMesh*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
+		for (std::vector<Shared::cGameObject*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
 		{
-			(*itor)->Render();
+			Engine::Graphics::drawCallData.g_screenPosition[0] = (*itor)->m_position.x;
+			Engine::Graphics::drawCallData.g_screenPosition[1] = (*itor)->m_position.y;
+			s_drawCallBuffer->Update(Engine::Graphics::Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
+
+			(*itor)->m_mesh->Render();
 		}
 		meshObjects.clear();
 	}
@@ -182,7 +163,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		ASSERT(false);
 		return false;
 	}
-	if (!CreateConstantBuffer())
+	if (!CreateConstantBuffers())
 	{
 		ASSERT(false);
 		return false;
@@ -211,19 +192,28 @@ bool Engine::Graphics::CleanUp()
 			s_programId = 0;
 		}
 
-		if (s_constantBufferId != 0)
+		if (!s_frameBuffer->CleanUp())
 		{
-			const GLsizei bufferCount = 1;
-			glDeleteBuffers(bufferCount, &s_constantBufferId);
 			const GLenum errorCode = glGetError();
 			if (errorCode != GL_NO_ERROR)
 			{
 				wereThereErrors = true;
 				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Logging::OutputError("OpenGL failed to delete the constant buffer: %s",
+				Logging::OutputError("OpenGL failed to delete the frame constant buffer: %s",
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			}
-			s_constantBufferId = 0;
+		}
+
+		if (!s_drawCallBuffer->CleanUp())
+		{
+			const GLenum errorCode = glGetError();
+			if (errorCode != GL_NO_ERROR)
+			{
+				wereThereErrors = true;
+				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Logging::OutputError("OpenGL failed to delete the drawcall constant buffer: %s",
+					reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			}
 		}
 
 		if (wglMakeCurrent(s_deviceContext, NULL) != FALSE)
@@ -263,55 +253,24 @@ bool Engine::Graphics::CleanUp()
 
 namespace
 {
-	bool CreateConstantBuffer()
+	bool CreateConstantBuffers()
 	{
 		bool wereThereErrors = false;
 
-		// Create a uniform buffer object and make it active
-		{
-			const GLsizei bufferCount = 1;
-			glGenBuffers(bufferCount, &s_constantBufferId);
-			const GLenum errorCode = glGetError();
-			if (errorCode == GL_NO_ERROR)
-			{
-				glBindBuffer(GL_UNIFORM_BUFFER, s_constantBufferId);
-				const GLenum errorCode = glGetError();
-				if (errorCode != GL_NO_ERROR)
-				{
-					wereThereErrors = true;
-					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					Engine::Logging::OutputError("OpenGL failed to bind the new uniform buffer %u: %s",
-						s_constantBufferId, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					goto OnExit;
-				}
-			}
-			else
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to get an unused uniform buffer ID: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
-		// Fill in the constant buffer
-		s_constantBufferData.g_elapsedSecondCount_total = Engine::Time::ElapsedSeconds();
-		// Allocate space and copy the constant data into the uniform buffer
-		{
-			const GLenum usage = GL_DYNAMIC_DRAW;	// The buffer will be modified frequently and used to draw
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(s_constantBufferData), reinterpret_cast<const GLvoid*>(&s_constantBufferData), usage);
-			const GLenum errorCode = glGetError();
-			if (errorCode != GL_NO_ERROR)
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to allocate the new uniform buffer %u: %s",
-					s_constantBufferId, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
+		Engine::Graphics::s_frameBuffer = new Engine::Graphics::Interfaces::cConstantBuffer(
+			Engine::Graphics::Interfaces::FRAME,
+			sizeof(Engine::Graphics::Structures::sFrame),
+			&Engine::Graphics::frameData
+		);
 
-	OnExit:
+		Engine::Graphics::s_drawCallBuffer = new Engine::Graphics::Interfaces::cConstantBuffer(
+			Engine::Graphics::Interfaces::DRAWCALL,
+			sizeof(Engine::Graphics::Structures::sDrawCall),
+			new Engine::Graphics::Structures::sDrawCall()
+		);
+
+		Engine::Graphics::s_frameBuffer->Bind(Engine::Graphics::Interfaces::FRAME);
+		Engine::Graphics::s_drawCallBuffer->Bind(Engine::Graphics::Interfaces::DRAWCALL);
 
 		return !wereThereErrors;
 	}

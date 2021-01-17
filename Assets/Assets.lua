@@ -2,7 +2,8 @@ return
 {
     meshes =
     {
-        "Meshes/Square.lua"
+        "Meshes/Square.lua",
+        "Meshes/Triangle.lua"
     },
     shaders =
     {

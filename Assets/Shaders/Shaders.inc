@@ -43,7 +43,12 @@
 
 // Constants
 //==========
-DeclareConstantBuffer( constantBuffer, 0 )
+DeclareConstantBuffer( frameBuffer, 0 )
 {
 	float g_elapsedSeconds;
+};
+
+DeclareConstantBuffer( drawCallBuffer, 1 )
+{
+    float2 g_screenPosition;
 };

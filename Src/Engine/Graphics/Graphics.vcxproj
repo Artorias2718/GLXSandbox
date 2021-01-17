@@ -31,12 +31,16 @@
     </ClInclude>
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Interfaces\cConstantBuffer.h" />
+    <ClInclude Include="Interfaces\eConstantBufferType.h" />
     <ClInclude Include="OGL\Includes.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="Structures\sColor.h" />
+    <ClInclude Include="Structures\sDrawCall.h" />
+    <ClInclude Include="Structures\sFrame.h" />
     <ClInclude Include="Structures\sIndexSet.h" />
     <ClInclude Include="Structures\sPosition.h" />
     <ClInclude Include="Structures\sVertex.h" />
@@ -51,17 +55,26 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cConstantBuffer.D3D.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Interfaces\cConstantBuffer.cpp" />
     <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="OGL\Graphics.OGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cConstantBuffer.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
