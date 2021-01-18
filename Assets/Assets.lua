@@ -9,7 +9,8 @@ return
         "Materials/Ball.lua",
         "Materials/Box.lua",
         "Materials/Floor.lua",
-        "Materials/Monkey.lua"
+        "Materials/Monkey.lua",
+        "Materials/Robot.lua"
     },
     meshes =
     {

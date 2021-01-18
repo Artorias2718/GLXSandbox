@@ -125,6 +125,7 @@ OnExit:
 bool Engine::Graphics::Assets::cEffect::Bind()
 {
 	bool wereThereErrors = false;
+	m_renderStates.Bind();
 	// Set the vertex and fragment shaders
 	{
 		glUseProgram(m_programId);

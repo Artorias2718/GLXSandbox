@@ -7,6 +7,7 @@
 #include "../Logging/Logging.h"
 
 #include "Assets/cMesh.h"
+#include "Interfaces/cSprite.h"
 #include "Assets/cMaterial.h"
 
 #include "Interfaces/cConstantBuffer.h"
@@ -23,9 +24,12 @@
 #include "OGL/Includes.h"
 #endif
 
+#include <sstream>
+
 #include "../Windows/Functions.h"
 
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::meshObjects;
+std::vector<Engine::Shared::cGameObject*> Engine::Graphics::spriteObjects;
 Engine::Graphics::Structures::sFrame Engine::Graphics::frameData;
 Engine::Graphics::Structures::sDrawCall Engine::Graphics::drawCallData;
 
@@ -106,6 +110,7 @@ void Engine::Graphics::RenderFrame()
 
 	// Draw the geometry
 	{
+		// Render 3D Meshes first
 		for (std::vector<Shared::cGameObject*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
 		{
 			Engine::Graphics::drawCallData.g_localToWorld = Math::cMatrix_Transformation((*itor)->m_transform);
@@ -113,7 +118,16 @@ void Engine::Graphics::RenderFrame()
 			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
+
+		// Followed by 2D Sprites
+		for (std::vector<Shared::cGameObject*>::iterator itor = spriteObjects.begin(); itor != spriteObjects.end(); ++itor)
+		{
+			(*itor)->m_material->Bind();
+			(*itor)->m_sprite->Render();
+		}
+
 		meshObjects.clear();
+		spriteObjects.clear();
 	}
 
 #if defined D3D_API
@@ -323,6 +337,11 @@ bool Engine::Graphics::SubmitGameObject(Engine::Shared::cGameObject* i_object)
 		meshObjects.push_back(i_object);
 		return true;
 	}
+	else if (i_object->m_sprite)
+	{
+		spriteObjects.push_back(i_object);
+		return true;
+	}
 	else if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
 	{
 		Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
@@ -336,7 +355,7 @@ bool Engine::Graphics::SubmitGameObject(Engine::Shared::cGameObject* i_object)
 	}
 	else
 	{
-		Engine::Logging::OutputError("Object mesh is uninitialized!");
+		Engine::Logging::OutputError("Object mesh or sprite is uninitialized!");
 		return false;
 	}
 }

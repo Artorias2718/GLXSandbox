@@ -38,11 +38,11 @@ namespace Engine
 				bool Bind();
 				bool CleanUp();
 
+				cTexture* m_texture;
 			private:
 				Structures::sMaterial* m_materialData;
 				Interfaces::cConstantBuffer* m_materialBuffer;
 				cEffect* m_effect;
-				cTexture* m_texture;
 			};
 		}
 			}
