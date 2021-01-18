@@ -5,6 +5,7 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
+#include "../../Engine/Graphics/Assets/cEffect.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
@@ -17,6 +18,8 @@
 namespace
 {
 	const float SPEED = 8.0f;
+
+	Engine::Graphics::Assets::cEffect* solid;
 
 	Engine::Shared::cGameObject* cube;
 	Engine::Shared::cGameObject* icosphere;
@@ -44,10 +47,12 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
-	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"));
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"));
+	solid = new Engine::Graphics::Assets::cEffect("solid");
+
+	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), solid);
+	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), solid);
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), solid);
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), solid);
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	cube->m_transform.position += -5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
