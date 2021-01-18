@@ -5,7 +5,7 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
-#include "../../Engine/Graphics/Assets/cEffect.h"
+#include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
@@ -19,7 +19,10 @@ namespace
 {
 	const float SPEED = 8.0f;
 
-	Engine::Graphics::Assets::cEffect* solid;
+	Engine::Graphics::Assets::cMaterial* red;
+	Engine::Graphics::Assets::cMaterial* green;
+	Engine::Graphics::Assets::cMaterial* blue;
+	Engine::Graphics::Assets::cMaterial* yellow;
 
 	Engine::Shared::cGameObject* cube;
 	Engine::Shared::cGameObject* icosphere;
@@ -47,12 +50,15 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	solid = new Engine::Graphics::Assets::cEffect("solid");
+	red = new Engine::Graphics::Assets::cMaterial("red");
+	green = new Engine::Graphics::Assets::cMaterial("green");
+	blue = new Engine::Graphics::Assets::cMaterial("blue");
+	yellow = new Engine::Graphics::Assets::cMaterial("yellow");
 
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), solid);
-	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), solid);
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), solid);
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), solid);
+	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), red);
+	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), green);
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), blue);
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), yellow);
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	cube->m_transform.position += -5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;

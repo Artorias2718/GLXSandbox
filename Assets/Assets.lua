@@ -4,6 +4,13 @@ return
     {
         "GameObjects/FlyCamera.lua"
     },
+    materials = 
+    {
+        "Materials/Blue.lua",
+        "Materials/Green.lua",
+        "Materials/Red.lua",
+        "Materials/Yellow.lua"
+    },
     meshes =
     {
         "Meshes/Cube.lua",

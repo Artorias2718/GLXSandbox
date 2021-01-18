@@ -44,6 +44,12 @@
     <ClInclude Include="Assets\cEffect.h">
       <Filter>Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Structures\sMaterial.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cMaterial.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -77,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="OGL\Assets\cEffect.OGL.cpp">
       <Filter>OGL\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\cMaterial.cpp">
+      <Filter>Assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

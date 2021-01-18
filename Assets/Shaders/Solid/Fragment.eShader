@@ -48,5 +48,5 @@ void main()
 #endif
 {
 	// For now set the fragment as the interpolated color
-	o_color = i_color;
+	o_color = g_color * i_color;
 }

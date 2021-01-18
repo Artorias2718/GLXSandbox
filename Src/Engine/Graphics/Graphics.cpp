@@ -7,7 +7,7 @@
 #include "../Logging/Logging.h"
 
 #include "Assets/cMesh.h"
-#include "Assets/cEffect.h"
+#include "Assets/cMaterial.h"
 
 #include "Interfaces/cConstantBuffer.h"
 #include "Structures/sFrame.h"
@@ -108,7 +108,7 @@ void Engine::Graphics::RenderFrame()
 		{
 			Engine::Graphics::drawCallData.g_localToWorld = Math::cMatrix_Transformation((*itor)->m_transform);
 			s_drawCallBuffer->Update(Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
-			(*itor)->m_effect->Bind();
+			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
 		meshObjects.clear();

@@ -17,6 +17,7 @@ namespace Engine
 			};
 
 			typedef sColor<uint8_t> sColor8;
+			typedef sColor<float> sColorF;
 		}
 	}
 }
