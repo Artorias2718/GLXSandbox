@@ -19,10 +19,10 @@ namespace
 {
 	const float SPEED = 8.0f;
 
-	Engine::Graphics::Assets::cMaterial* red;
-	Engine::Graphics::Assets::cMaterial* green;
-	Engine::Graphics::Assets::cMaterial* blue;
-	Engine::Graphics::Assets::cMaterial* yellow;
+	Engine::Graphics::Assets::cMaterial* boxMat;
+	Engine::Graphics::Assets::cMaterial* ballMat;
+	Engine::Graphics::Assets::cMaterial* floorMat;
+	Engine::Graphics::Assets::cMaterial* monkeyMat;
 
 	Engine::Shared::cGameObject* cube;
 	Engine::Shared::cGameObject* icosphere;
@@ -50,15 +50,15 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	red = new Engine::Graphics::Assets::cMaterial("red");
-	green = new Engine::Graphics::Assets::cMaterial("green");
-	blue = new Engine::Graphics::Assets::cMaterial("blue");
-	yellow = new Engine::Graphics::Assets::cMaterial("yellow");
+	boxMat = new Engine::Graphics::Assets::cMaterial("box");
+	ballMat = new Engine::Graphics::Assets::cMaterial("ball");
+	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
+	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
 
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), red);
-	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), green);
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), blue);
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), yellow);
+	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), boxMat);
+	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), ballMat);
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	cube->m_transform.position += -5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;

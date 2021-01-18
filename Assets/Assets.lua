@@ -6,10 +6,10 @@ return
     },
     materials = 
     {
-        "Materials/Blue.lua",
-        "Materials/Green.lua",
-        "Materials/Red.lua",
-        "Materials/Yellow.lua"
+        "Materials/Ball.lua",
+        "Materials/Box.lua",
+        "Materials/Floor.lua",
+        "Materials/Monkey.lua"
     },
     meshes =
     {
@@ -18,9 +18,8 @@ return
         "Meshes/Plane.lua",
         "Meshes/Suzanne.lua"
     },
-    shaders =
+    textures =
     {
-        { path = "Shaders/Solid/Vertex.eShader", arguments = { "vertex" } },
-        { path = "Shaders/Solid/Fragment.eShader", arguments = { "fragment" } },
+        "Textures/Default.png"
     }
 }

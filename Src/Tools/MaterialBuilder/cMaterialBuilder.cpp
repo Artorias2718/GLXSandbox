@@ -27,6 +27,7 @@ bool Tools::MaterialBuilder::cMaterialBuilder::Build(const std::vector<std::stri
 	bool wereThereErrors = false;
 	lua_State* luaState = luaL_newstate();
 	std::string effectName;
+	std::string texturePath;
 	std::ofstream binPtr(m_path_target, std::ios::binary);
 
 	if (luaState == NULL)
@@ -43,6 +44,7 @@ bool Tools::MaterialBuilder::cMaterialBuilder::Build(const std::vector<std::stri
 
 	// Initialize constant buffer data with the default (white) color, change it if m_color exists
 	Engine::Graphics::Structures::sMaterial *materialData = new Engine::Graphics::Structures::sMaterial();
+	texturePath = "default.png";
 
 	lua_pushstring(luaState, "g_color");
 	lua_gettable(luaState, -2);
@@ -76,6 +78,14 @@ bool Tools::MaterialBuilder::cMaterialBuilder::Build(const std::vector<std::stri
 	effectName = lua_tostring(luaState, -1);
 	lua_pop(luaState, 1);
 
+	lua_pushstring(luaState, "texture");
+	lua_gettable(luaState, -2);
+	if (!lua_isnil(luaState, -1))
+	{
+		texturePath = lua_tostring(luaState, -1);
+	}
+	lua_pop(luaState, 1);
+
 	if (binPtr.fail())
 	{
 		wereThereErrors = true;
@@ -94,6 +104,20 @@ bool Tools::MaterialBuilder::cMaterialBuilder::Build(const std::vector<std::stri
 		binPtr.put('\0');
 
 		effectName[0] = 0;
+
+		std::string builtTexturePath = "";
+
+		if (!AssetBuildLibrary::UtilityFunctions::ConvertSourceRelativePathToBuiltRelativePath(texturePath.c_str(), "textures", builtTexturePath, errorMessage))
+		{
+			AssetBuildLibrary::UtilityFunctions::OutputErrorMessage(errorMessage->c_str());
+		}
+		else
+		{
+			binPtr.write(builtTexturePath.c_str(), builtTexturePath.length());
+			binPtr.put('\0');
+
+			builtTexturePath[0] = 0;
+		}
 
 		binPtr.close();
 	}

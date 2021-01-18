@@ -4,6 +4,7 @@
 #include "../../Platform/Platform.h"
 
 #include "../Assets/cEffect.h"
+#include "../Assets/cTexture/cTexture.h"
 #include "../Interfaces/cConstantBuffer.h"
 
 #include "../Structures/sMaterial.h"
@@ -35,8 +36,15 @@ Engine::Graphics::Assets::cMaterial::cMaterial(const std::string& i_materialFile
 
 		std::string effectName = dataPtr;
 		fileOffset += effectName.length() + 1;
+		dataPtr = reinterpret_cast<char*>(reinterpret_cast<char*>(binaryFileData.data) + fileOffset);
+
+		std::string texturePath = dataPtr;
+
+		dataPtr += texturePath.length() + 1;
+		dataPtr = reinterpret_cast<char*>(reinterpret_cast<char*>(binaryFileData.data) + fileOffset);
 
 		m_effect = new Assets::cEffect(effectName);
+		m_texture = new Assets::cTexture("data/textures/" + texturePath);
 	}
 
 #if defined D3D_API 
@@ -62,6 +70,7 @@ bool Engine::Graphics::Assets::cMaterial::Bind()
 		Logging::OutputError("Failed to bind the effect data!");
 		goto OnExit;
 	}
+	m_texture->Bind();
 OnExit:
 	return !wereThereErrors;
 
