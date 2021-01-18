@@ -103,7 +103,7 @@ bool Engine::Graphics::Assets::cMesh::Render()
 		{
 			ASSERT(m_indexBufferId != NULL);
 			// Every index is a 16 bit (or 32-bit) unsigned integer
-			const DXGI_FORMAT format = DXGI_FORMAT_R16_UINT;
+			const DXGI_FORMAT format = m_isShort ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 			// The indices start at the beginning of the buffer
 			const unsigned int bufferOffset = 0;
 			Interfaces::D3DInterfaces::s_direct3dImmediateContext->IASetIndexBuffer(m_indexBufferId, format, bufferOffset);
