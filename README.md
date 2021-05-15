@@ -25,6 +25,8 @@ Once you have done all of the DirectX setup (I know it's tedious but this versio
 * Type in $(GameDir) for the "Working Directory" value
 * If everything's setup, you should see a small white triangle in the center of a 512 x 512 window. This should look the same on both Debug/Release configurations of x86 (OpenGL) and x64 (DirectX)
 
+**Delete from public project**
+**Note:** Assignment 6 and 7 commits had to be edited since I missed bringing back some OpenGL code after checking out the Assignment 5 Graphics.OGL.cpp for the wglDescriptor, namely Stencil Buffer and Depth Buffer Bit allocation.
 
 ## Authors
 
