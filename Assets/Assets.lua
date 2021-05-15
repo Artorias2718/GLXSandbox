@@ -4,6 +4,14 @@ return
     {
         "GameObjects/FlyCamera.lua"
     },
+    materials = 
+    {
+        "Materials/Ball.lua",
+        "Materials/Box.lua",
+        "Materials/Floor.lua",
+        "Materials/Monkey.lua",
+        "Materials/Robot.lua"
+    },
     meshes =
     {
         "Meshes/Cube.lua",
@@ -11,9 +19,8 @@ return
         "Meshes/Plane.lua",
         "Meshes/Suzanne.lua"
     },
-    shaders =
+    textures =
     {
-        { path = "Shaders/Vertex.eShader", arguments = { "vertex" } },
-        { path = "Shaders/Fragment.eShader", arguments = { "fragment" } },
+        "Textures/Default.png"
     }
 }

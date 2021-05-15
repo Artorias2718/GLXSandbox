@@ -16,6 +16,7 @@ namespace Engine
 			};
 
 			typedef struct sIndexSet<uint16_t> sIndexSet16;
+			typedef struct sIndexSet<uint16_t> sIndexSet32;
 		}
 	}
 }

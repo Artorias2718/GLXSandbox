@@ -17,6 +17,9 @@ Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferTy
 		case DRAWCALL:
 			ASSERTF(false, "There was a problem initializing the drawCall constant buffer!");
 			break;
+		case MATERIAL:
+			ASSERTF(false, "There was a problem initializing the material constant buffer!");
+			break;
 		}
 	}
 }
@@ -58,6 +61,7 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Initialize(eConstantBufferTy
 			switch (i_bufferType)
 			{
 			case FRAME:
+			case MATERIAL:
 				glBufferData(GL_UNIFORM_BUFFER, i_bufferSize, i_constantBufferData, usage);
 				break;
 			case DRAWCALL:

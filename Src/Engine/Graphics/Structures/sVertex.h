@@ -1,6 +1,7 @@
 #ifndef ENGINE_GRAPHICS_STRUCTURES_SVERTEX_H
 #define ENGINE_GRAPHICS_STRUCTURES_SVERTEX_H
 
+#include "sTexture.h"
 #include "sPosition.h"
 #include "sColor.h"
 
@@ -13,6 +14,12 @@ namespace Engine
 			// This struct determines the layout of the geometric data that the CPU will send to the GPU
 			struct sVertex
 			{
+				// TEXTURE
+				// 2 floats == 8 bytes
+				// Offset = 2
+				sTexture texture;
+
+
 				// POSITION
 				// 2 floats == 8 bytes
 				// Offset = 0

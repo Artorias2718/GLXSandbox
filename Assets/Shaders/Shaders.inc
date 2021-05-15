@@ -12,11 +12,15 @@
 	#define mat3 float3x3
 	#define mat4 float4x4
 
-    // Declare Constants
+    // Declare Constants/Sampler
     //==========
 
     #define DeclareConstantBuffer( i_name, i_id ) cbuffer i_name : register( b##i_id )
+    #define DeclareSampler( i_name, i_id) Texture2D i_name : register ( t##i_id )
+    #define DeclareSamplerState( i_name, i_id) SamplerState i_name : register ( s##i_id )
 
+	DeclareSampler( textureSampler, 0 );
+    DeclareSamplerState( samplingState, 0 );
 #elif defined OGL_API 
 
 	// Version Information
@@ -35,10 +39,13 @@
 	#define float3x3 mat3
 	#define float4x4 mat4
 
-    // Declare Constants
+    // Declare Constants/Sampler
     //==========
     
     #define DeclareConstantBuffer( i_name, i_id ) layout( std140, binding = i_id ) uniform i_name
+    #define DeclareSampler( i_name, i_id ) layout( binding = i_id ) uniform sampler2D i_name
+    
+    DeclareSampler( textureSampler, 0 );
     
     // Multiply 4x4 Matrix by 4x1 Vector
     //==================================
@@ -59,4 +66,9 @@ DeclareConstantBuffer( frameBuffer, 0 )
 DeclareConstantBuffer( drawCallBuffer, 1 )
 {
     float4x4 g_localToWorld;
+};
+
+DeclareConstantBuffer( materialBuffer, 2 )
+{
+    float4 g_color;
 };

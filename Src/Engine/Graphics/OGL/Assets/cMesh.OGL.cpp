@@ -213,7 +213,7 @@ bool Engine::Graphics::Assets::cMesh::Render()
 		// (meaning that every primitive is a triangle and will be defined by three vertices)
 		const GLenum mode = GL_TRIANGLES;
 		// Every index is a 16-bit (or 32-bit) unsigned integer
-		const GLenum indexType = GL_UNSIGNED_SHORT;
+		const GLenum indexType = m_isShort ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 		// It's possible to start rendering primitives in the middle of the stream
 		const GLint indexOfFirstVertexToRender = 0;
 		const GLvoid* const offset = 0;
