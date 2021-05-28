@@ -6,18 +6,11 @@ return
     },
     materials = 
     {
-        "Materials/Ball.lua",
-        "Materials/Box.lua",
-        "Materials/Floor.lua",
-        "Materials/Monkey.lua",
-        "Materials/Robot.lua"
+        "Materials/Boxes.lua",
     },
     meshes =
     {
-        "Meshes/Cube.lua",
-        "Meshes/Icosphere.lua",
-        "Meshes/Plane.lua",
-        "Meshes/Suzanne.lua"
+        "Meshes/Boxes.lua",
     },
     textures =
     {

@@ -20,13 +20,13 @@ namespace
 {
 	const float SPEED = 8.0f;
 
-	Engine::Graphics::Assets::cMaterial* boxMat;
+	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* ballMat;
 	Engine::Graphics::Assets::cMaterial* floorMat;
 	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
 
-	Engine::Shared::cGameObject* cube;
+	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* icosphere;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cGameObject* suzanne;
@@ -55,13 +55,13 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	boxMat = new Engine::Graphics::Assets::cMaterial("box");
+	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	ballMat = new Engine::Graphics::Assets::cMaterial("ball");
 	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
 	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
 	robotMat = new Engine::Graphics::Assets::cMaterial("robot");
 
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), boxMat);
+	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), ballMat);
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
 	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
@@ -70,7 +70,6 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	cube->m_transform.position += -5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
 	icosphere->m_transform.position += 5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
 	plane->m_transform.scale *= 10.0f;
 	suzanne->m_transform.position += 1.25f * Engine::Math::cVector::up;
@@ -80,15 +79,15 @@ bool Game::MyGame::cMyGame::Initialize()
 
 bool Game::MyGame::cMyGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(cube);
-	Engine::Graphics::SubmitGameObject(icosphere);
-	Engine::Graphics::SubmitGameObject(plane);
-	Engine::Graphics::SubmitGameObject(suzanne);
-	Engine::Graphics::SubmitGameObject(robot1);
-	Engine::Graphics::SubmitGameObject(robot2);
+	Engine::Graphics::SubmitGameObject(boxes);
+	//Engine::Graphics::SubmitGameObject(icosphere);
+	//Engine::Graphics::SubmitGameObject(plane);
+	//Engine::Graphics::SubmitGameObject(suzanne);
+	//Engine::Graphics::SubmitGameObject(robot1);
+	//Engine::Graphics::SubmitGameObject(robot2);
 
-	Move(suzanne);
-	Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
+	//Move(suzanne);
+	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
 
 	Move(camera);
 
