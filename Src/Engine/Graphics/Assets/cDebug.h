@@ -4,7 +4,7 @@
 #if defined D3D_API
 struct ID3D11Buffer;
 #elif defined OGL_API 
-#include "OpenGL/Includes.h"
+#include "../OGL/Includes.h"
 #endif
 
 #include "../Structures/sIndexSet.h"
@@ -24,10 +24,10 @@ namespace Engine
 			class cDebug
 			{
 			public:
-				virtual bool Initialize() = 0;
-				virtual bool CleanUp() = 0;
+				virtual bool Initialize();
+				virtual bool CleanUp();
 
-				virtual bool Render() = 0;
+				virtual bool Render();
 
 #if defined D3D_API
 				ID3D11Buffer* m_vertexBufferId;
@@ -38,6 +38,7 @@ namespace Engine
 				GLuint m_indexBufferId;
 #endif
 				Structures::sVertex* m_vertices;
+				uint16_t* m_indices16;
 				Structures::sIndexSet16* m_indexSet16;
 
 				uint16_t m_vertexCount;

@@ -6,7 +6,7 @@
 #include "../../Structures/sVertex.h"
 #include "../../Structures/sColor.h"
 
-Engine::Graphics::Assets::Debug::cLine::cLine(const Engine::Math::cVector &i_startPosition, const Engine::Math::cVector &i_endPosition, const Engine::Graphics::Structures::sColor8& i_color) //: cLine(i_startPosition, i_endPosition, i_color)
+Engine::Graphics::Assets::Debug::cLine::cLine(const Engine::Math::cVector &i_startPosition, const Engine::Math::cVector &i_endPosition, const Engine::Graphics::Structures::sColor8& i_color)
 {
 	const int verticesPerLine = 2;
 	m_vertices = new Structures::sVertex[verticesPerLine];
@@ -41,8 +41,8 @@ bool Engine::Graphics::Assets::Debug::cLine::SetPosition(int i_idx, const Math::
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 	ASSERT(glGetError() == GL_NO_ERROR);
 
-	const unsigned int bufferSize = m_vertexCount * sizeof(sVertex);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(bufferSize), &m_vertexData.front());
+	const unsigned int bufferSize = m_vertexCount * sizeof(Structures::sVertex);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(bufferSize), &m_vertices[0]);
 	ASSERT(glGetError() == GL_NO_ERROR);
 #endif
 
@@ -62,8 +62,8 @@ bool Engine::Graphics::Assets::Debug::cLine::SetColor(int i_idx, const Structure
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 	ASSERT(glGetError() == GL_NO_ERROR);
 
-	const unsigned int bufferSize = m_vertexCount * sizeof(sVertex);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(bufferSize), &m_vertexData.front());
+	const unsigned int bufferSize = m_vertexCount * sizeof(Structures::sVertex);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(bufferSize), &m_vertices[0]);
 	ASSERT(glGetError() == GL_NO_ERROR);
 #endif
 

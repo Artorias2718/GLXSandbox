@@ -65,7 +65,6 @@ namespace
 #elif defined OGL_API
 	bool CreateConstantBuffers();
 	bool CreateRenderingContext();
-	bool EnableDepthTesting();
 #endif
 }
 
@@ -120,7 +119,7 @@ void Engine::Graphics::RenderFrame()
 			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
-
+#if defined _DEBUG
 		// Followed by 3D Debug Meshes
 		for (std::vector<Shared::cGameObject*>::iterator itor = debugObjects.begin(); itor != debugObjects.end(); ++itor)
 		{
@@ -129,6 +128,7 @@ void Engine::Graphics::RenderFrame()
 			(*itor)->m_material->Bind();
 			(*itor)->m_debug->Render();
 		}
+#endif
 
 		// Finally, 2D Sprites
 		for (std::vector<Shared::cGameObject*>::iterator itor = spriteObjects.begin(); itor != spriteObjects.end(); ++itor)
@@ -138,6 +138,7 @@ void Engine::Graphics::RenderFrame()
 		}
 
 		meshObjects.clear();
+		debugObjects.clear();
 		spriteObjects.clear();
 	}
 
@@ -198,11 +199,6 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 	}
 	// Create an OpenGL rendering context
 	if (!CreateRenderingContext())
-	{
-		ASSERT(false);
-		return false;
-	}
-	if (!EnableDepthTesting())
 	{
 		ASSERT(false);
 		return false;
@@ -832,16 +828,6 @@ namespace
 				return false;
 			}
 		}
-
-		return true;
-	}
-
-	bool EnableDepthTesting()
-	{
-		glEnable(GL_CULL_FACE);
-		// Depth Testing
-		glDepthFunc(GL_LESS);
-		glEnable(GL_DEPTH_TEST);
 
 		return true;
 	}

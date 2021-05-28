@@ -7,7 +7,8 @@
 #include "../../../Functions.h"
 #include "../../../Structures/sVertex.h"
 
-bool Engine::Graphics::Assets::Debug::cLine::Initialize()
+
+bool Engine::Graphics::Assets::cDebug::Initialize()
 {
 	bool wereThereErrors = false;
 
@@ -92,6 +93,51 @@ bool Engine::Graphics::Assets::Debug::cLine::Initialize()
 	// Initialize the vertex format
 	Functions::CreateVertexFormat();
 
+	// Create a index buffer object and make it active
+	{
+		const GLsizei bufferCount = 1;
+		glGenBuffers(bufferCount, &m_indexBufferId);
+		const GLenum errorCode = glGetError();
+		if (errorCode == GL_NO_ERROR)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId);
+			const GLenum errorCode = glGetError();
+			if (errorCode != GL_NO_ERROR)
+			{
+				wereThereErrors = true;
+				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Engine::Logging::OutputError("OpenGL failed to bind the index buffer: %s",
+					reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				goto OnExit;
+			}
+		}
+		else
+		{
+			wereThereErrors = true;
+			ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			Engine::Logging::OutputError("OpenGL failed to get an unused index buffer ID: %s",
+				reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			goto OnExit;
+		}
+	}
+	// Assign the data to the buffer
+	{
+		const unsigned int bufferSize = m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16);
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(m_indexSet16),
+			// In our class we won't ever read from the buffer
+			GL_STATIC_DRAW);
+		const GLenum errorCode = glGetError();
+		if (errorCode != GL_NO_ERROR)
+		{
+			wereThereErrors = true;
+			ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			Engine::Logging::OutputError("OpenGL failed to allocate the index buffer: %s",
+				reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			goto OnExit;
+		}
+	}
+
 OnExit:
 
 	if (m_vertexArrayId != 0)
@@ -99,38 +145,87 @@ OnExit:
 		// Unbind the vertex array
 		// (this must be done before deleting the vertex buffer)
 		glBindVertexArray(0);
+		const GLenum errorCode = glGetError();
+		if (errorCode == GL_NO_ERROR)
+		{
+			// The vertex and index buffer objects can be freed
+			// (the vertex array object will still hold references to them,
+			// and so they won't actually goes away until it gets freed).
+			// Unfortunately debuggers don't work well when these are freed
+			// (gDEBugger just doesn't show anything and RenderDoc crashes),
+			// and so don't free them if debug info is enabled.
+			if (m_vertexBufferId != 0)
+			{
+#ifndef GRAPHICS_ISDEVICEDEBUGINFOENABLED
+				const GLsizei bufferCount = 1;
+				glDeleteBuffers(bufferCount, &m_vertexBufferId);
+				const GLenum errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					wereThereErrors = true;
+					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Engine::Logging::OutputError("OpenGL failed to vertex buffer: %s",
+						reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					goto OnExit;
+				}
+#else
+				m_vertexBufferId = 0;
+#endif
+			}
+
+
+			if (m_indexBufferId != 0)
+			{
+#ifndef GRAPHICS_ISDEVICEDEBUGINFOENABLED
+				const GLsizei bufferCount = 1;
+				glDeleteBuffers(bufferCount, &m_indexBufferId);
+				const GLenum errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					wereThereErrors = true;
+					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Engine::Logging::OutputError("OpenGL failed to unbind the index buffer: %s",
+						reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					goto OnExit;
+				}
+#else
+				m_indexBufferId = 0;
+#endif
+			}
+		}
 	}
 
 	return !wereThereErrors;
 }
 
-bool Engine::Graphics::Assets::Debug::cLine::Render()
+bool Engine::Graphics::Assets::cDebug::Render()
 {
-	// Draw the geometry
+	// Bind a specific vertex buffer to the device as a data source
 	{
-		// Bind a specific vertex buffer to the device as a data source
-		{
-			glBindVertexArray(m_vertexArrayId);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
-		// Render lines from the currently-bound vertex buffer
-		{
-			// The mode defines how to interpret multiple vertices as a single "primitive";
-			// we define a line list
-			// (meaning that every primitive is a line and will be defined by two vertices)
-			const GLenum mode = GL_LINES;
-			const unsigned int indexOfFirstVertexToRender = 0;
-			const unsigned int vertexCountToRender = 2;
-			// It's possible to start rendering primitives in the middle of the stream
-
-			glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
+		glBindVertexArray(m_vertexArrayId);
+		ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	// Render triangles from the currently-bound vertex buffer
+	{
+		// The mode defines how to interpret multiple vertices as a single "primitive";
+		// we define a triangle list
+		// (meaning that every primitive is a triangle and will be defined by three vertices)
+		const GLenum mode = GL_TRIANGLES;
+		// Every index is a 16-bit (or 32-bit) unsigned integer
+		const GLenum indexType = GL_UNSIGNED_SHORT;
+		// It's possible to start rendering primitives in the middle of the stream
+		const GLint indexOfFirstVertexToRender = 0;
+		const GLvoid* const offset = 0;
+		// There are three indices per triangle
+		const unsigned int indicesPerTriangle = 3;
+		glDrawElements(mode, indicesPerTriangle * m_indexSetCount, indexType, offset);
+		ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	return true;
 }
 
-bool Engine::Graphics::Assets::Debug::cLine::CleanUp()
+
+bool Engine::Graphics::Assets::cDebug::CleanUp()
 {
 	bool wereThereErrors = false;
 	if (m_vertexArrayId != 0)
@@ -156,7 +251,7 @@ bool Engine::Graphics::Assets::Debug::cLine::CleanUp()
 			if (errorCode != GL_NO_ERROR)
 			{
 				wereThereErrors = true;
-				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
 				Logging::OutputError("OpenGL failed to delete the vertex buffer: %s",
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			}
@@ -174,7 +269,7 @@ bool Engine::Graphics::Assets::Debug::cLine::CleanUp()
 		if (errorCode != GL_NO_ERROR)
 		{
 			wereThereErrors = true;
-			EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			Logging::OutputError("OpenGL failed to delete the vertex buffer: %s",
 				reinterpret_cast<const char*>(gluErrorString(errorCode)));
 		}

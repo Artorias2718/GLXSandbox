@@ -1,5 +1,5 @@
-#ifndef ENGINE_GRAPHICS_ASSETS_DEBUG_CLINE_H
-#define ENGINE_GRAPHICS_ASSETS_DEBUG_CLINE_H
+#ifndef ENGINE_GRAPHICS_ASSETS_DEBUG_CBOX_H
+#define ENGINE_GRAPHICS_ASSETS_DEBUG_CBOX_H
 
 #if defined D3D_API
 struct ID3D11Buffer;
@@ -20,19 +20,16 @@ namespace Engine
 		{
 			namespace Debug
 			{
-				class cLine : public Engine::Graphics::Assets::cDebug
+				class cBox : public Engine::Graphics::Assets::cDebug
 				{
 				public:
-					cLine(const Math::cVector& i_startPosition = Math::cVector::zero, const Math::cVector& i_endPosition = Math::cVector::zero, const Structures::sColor8& i_color = { 255, 255, 255, 255 });
-					~cLine();
+					cBox(const Structures::sColor8& i_color = { 255, 255, 255, 255 });
+					~cBox();
 
 					bool Initialize();
 					bool CleanUp();
 
 					bool Render();
-
-					bool SetPosition(int i_index, const Math::cVector& i_position);
-					bool SetColor(int i_index, const Structures::sColor8& i_color);
 
 #if defined D3D_API
 					ID3D11Buffer* m_vertexBufferId;
@@ -46,5 +43,4 @@ namespace Engine
 	}
 }
 
-#endif // !ENGINE_GRAPHICS_ASSETS_DEBUG_CLINE_H
-
+#endif // !ENGINE_GRAPHICS_ASSETS_DEBUG_CBOX_H

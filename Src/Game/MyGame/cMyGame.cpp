@@ -6,6 +6,7 @@
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
 #include "../../Engine/Graphics/Assets/Debug/cLine.h"
+#include "../../Engine/Graphics/Assets/Debug/cBox.h"
 #include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -22,18 +23,20 @@ namespace
 	const float SPEED = 8.0f;
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
-	Engine::Graphics::Assets::cMaterial* cementMat;
+	//Engine::Graphics::Assets::cMaterial* cementMat;
 	Engine::Graphics::Assets::cMaterial* floorMat;
 	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
 	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Shared::cGameObject* boxes;
-	Engine::Shared::cGameObject* cement;
+	//Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* debugLine1;
 	Engine::Shared::cGameObject* debugLine2;
+	Engine::Shared::cGameObject* debugBox1;
+	Engine::Shared::cGameObject* debugBox2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -58,13 +61,13 @@ Game::MyGame::cMyGame::~cMyGame()
 bool Game::MyGame::cMyGame::Initialize()
 {
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
-	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
+	//cementMat = new Engine::Graphics::Assets::cMaterial("cement");
 	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
 	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
 	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
-	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
+	//cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
 	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
 
@@ -72,6 +75,20 @@ bool Game::MyGame::cMyGame::Initialize()
 	{
 		debugLine1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(-10, -20, 40), Engine::Math::cVector(10, 20, -40), { 255, 0, 0, 255 }), debugMat);
 		debugLine2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(40, -20, 10), Engine::Math::cVector(-40, 20, 10), { 0, 0, 255, 255 }), debugMat);
+	}
+	// Boxes 
+	{
+		debugBox1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 255, 0, 255 }), debugMat);
+		debugBox2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 0, 255, 255 }), debugMat);
+
+		debugBox1->m_transform.position = Engine::Math::cVector(-20, 0, 0);
+		debugBox2->m_transform.position = Engine::Math::cVector(20, 0, 0);
+
+		debugBox1->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(90.0f), -Engine::Math::cVector::forward);
+		debugBox2->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(90.0f), Engine::Math::cVector::forward);
+
+		debugBox1->m_transform.scale = Engine::Math::cVector(20, 15, 10);
+		debugBox2->m_transform.scale = Engine::Math::cVector(20, 15, 10);
 	}
 
 	camera = new Engine::Shared::cCamera("flycamera");
@@ -85,11 +102,13 @@ bool Game::MyGame::cMyGame::Initialize()
 bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(boxes);
-	Engine::Graphics::SubmitGameObject(cement);
+	//Engine::Graphics::SubmitGameObject(cement);
 	//Engine::Graphics::SubmitGameObject(plane);
 	//Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(debugLine1);
 	Engine::Graphics::SubmitGameObject(debugLine2);
+	Engine::Graphics::SubmitGameObject(debugBox1);
+	Engine::Graphics::SubmitGameObject(debugBox2);
 
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);

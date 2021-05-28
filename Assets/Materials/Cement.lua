@@ -1,5 +1,5 @@
 return
 {
     effectName = "solid",
-    texture = "Mesh/Cement.png"
+    texture = "Mesh/Cement.png",
 }
