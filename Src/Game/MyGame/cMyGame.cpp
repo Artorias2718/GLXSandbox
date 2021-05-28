@@ -5,6 +5,7 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
+#include "../../Engine/Graphics/Assets/Debug/cLine.h"
 #include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -21,17 +22,18 @@ namespace
 	const float SPEED = 8.0f;
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
-	Engine::Graphics::Assets::cMaterial* ballMat;
+	Engine::Graphics::Assets::cMaterial* cementMat;
 	Engine::Graphics::Assets::cMaterial* floorMat;
 	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
+	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Shared::cGameObject* boxes;
-	Engine::Shared::cGameObject* icosphere;
+	Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cGameObject* suzanne;
-	Engine::Shared::cGameObject* robot1;
-	Engine::Shared::cGameObject* robot2;
+	Engine::Shared::cGameObject* debugLine1;
+	Engine::Shared::cGameObject* debugLine2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -56,21 +58,24 @@ Game::MyGame::cMyGame::~cMyGame()
 bool Game::MyGame::cMyGame::Initialize()
 {
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
-	ballMat = new Engine::Graphics::Assets::cMaterial("ball");
+	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
 	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
 	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
-	robotMat = new Engine::Graphics::Assets::cMaterial("robot");
+	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
-	icosphere = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("icosphere"), ballMat);
+	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
 	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
-	robot1 = new Engine::Shared::cGameObject(robotMat, -1023.0f * Engine::Math::cVector::right, 0.25f * (Engine::Math::cVector::right + Engine::Math::cVector::up));
-	robot2 = new Engine::Shared::cGameObject(robotMat, 1023.0f * Engine::Math::cVector::right, 0.25f * (-Engine::Math::cVector::right + Engine::Math::cVector::up));
+
+	// Lines
+	{
+		debugLine1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(-10, -20, 40), Engine::Math::cVector(10, 20, -40), { 255, 0, 0, 255 }), debugMat);
+		debugLine2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(40, -20, 10), Engine::Math::cVector(-40, 20, 10), { 0, 0, 255, 255 }), debugMat);
+	}
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	icosphere->m_transform.position += 5.0f * Engine::Math::cVector::right + 1.05f * Engine::Math::cVector::up;
 	plane->m_transform.scale *= 10.0f;
 	suzanne->m_transform.position += 1.25f * Engine::Math::cVector::up;
 
@@ -80,11 +85,11 @@ bool Game::MyGame::cMyGame::Initialize()
 bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(boxes);
-	//Engine::Graphics::SubmitGameObject(icosphere);
+	Engine::Graphics::SubmitGameObject(cement);
 	//Engine::Graphics::SubmitGameObject(plane);
 	//Engine::Graphics::SubmitGameObject(suzanne);
-	//Engine::Graphics::SubmitGameObject(robot1);
-	//Engine::Graphics::SubmitGameObject(robot2);
+	Engine::Graphics::SubmitGameObject(debugLine1);
+	Engine::Graphics::SubmitGameObject(debugLine2);
 
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);

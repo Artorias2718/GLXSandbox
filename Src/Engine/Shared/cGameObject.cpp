@@ -32,6 +32,20 @@ Engine::Shared::cGameObject::cGameObject(Graphics::Assets::cMesh* i_mesh, Graphi
 	}
 }
 
+Engine::Shared::cGameObject::cGameObject(Graphics::Assets::cDebug* i_debug, Graphics::Assets::cMaterial* i_material)
+{
+	if (i_debug)
+	{
+		m_debug = i_debug;
+	}
+
+	if (i_material)
+	{
+		m_material = i_material;
+	}
+}
+
+
 Engine::Shared::cGameObject::cGameObject(Engine::Graphics::Assets::cMaterial* i_material,
 	const Engine::Math::cVector& i_position, const Math::cVector& i_scale)
 {

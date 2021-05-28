@@ -68,6 +68,12 @@
     <ClInclude Include="Interfaces\cSprite.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\cDebug.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Debug\cLine.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -132,6 +138,15 @@
     <ClCompile Include="OGL\Interfaces\cSprite.OGL.cpp">
       <Filter>OGL\Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\Debug\cLine.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cLine.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cLine.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -166,6 +181,15 @@
     </Filter>
     <Filter Include="Interfaces\cRenderState">
       <UniqueIdentifier>{6fb709dd-d13c-448f-837b-d154df3ed5ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Debug">
+      <UniqueIdentifier>{82494a45-bff1-46a0-ac8e-085ee1d604bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Assets\Debug">
+      <UniqueIdentifier>{6fd1817f-e797-483c-bdec-9d94e3644e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL\Assets\Debug">
+      <UniqueIdentifier>{a5d6dfd5-a6b3-406c-974e-d09a3f9c3f64}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

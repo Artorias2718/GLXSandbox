@@ -7,6 +7,7 @@
 #include "../Logging/Logging.h"
 
 #include "Assets/cMesh.h"
+#include "Assets/cDebug.h"
 #include "Interfaces/cSprite.h"
 #include "Assets/cMaterial.h"
 
@@ -29,6 +30,7 @@
 #include "../Windows/Functions.h"
 
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::meshObjects;
+std::vector<Engine::Shared::cGameObject*> Engine::Graphics::debugObjects;
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::spriteObjects;
 Engine::Graphics::Structures::sFrame Engine::Graphics::frameData;
 Engine::Graphics::Structures::sDrawCall Engine::Graphics::drawCallData;
@@ -119,7 +121,16 @@ void Engine::Graphics::RenderFrame()
 			(*itor)->m_mesh->Render();
 		}
 
-		// Followed by 2D Sprites
+		// Followed by 3D Debug Meshes
+		for (std::vector<Shared::cGameObject*>::iterator itor = debugObjects.begin(); itor != debugObjects.end(); ++itor)
+		{
+			Engine::Graphics::drawCallData.g_localToWorld = Math::cMatrix_Transformation((*itor)->m_transform);
+			s_drawCallBuffer->Update(Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
+			(*itor)->m_material->Bind();
+			(*itor)->m_debug->Render();
+		}
+
+		// Finally, 2D Sprites
 		for (std::vector<Shared::cGameObject*>::iterator itor = spriteObjects.begin(); itor != spriteObjects.end(); ++itor)
 		{
 			(*itor)->m_material->Bind();
@@ -335,6 +346,11 @@ bool Engine::Graphics::SubmitGameObject(Engine::Shared::cGameObject* i_object)
 	if (i_object->m_mesh)
 	{
 		meshObjects.push_back(i_object);
+		return true;
+	}
+	else if (i_object->m_debug)
+	{
+		debugObjects.push_back(i_object);
 		return true;
 	}
 	else if (i_object->m_sprite)
