@@ -23,14 +23,14 @@ namespace
 	const float SPEED = 8.0f;
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
-	//Engine::Graphics::Assets::cMaterial* cementMat;
+	Engine::Graphics::Assets::cMaterial* cementMat;
 	Engine::Graphics::Assets::cMaterial* floorMat;
 	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
 	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Shared::cGameObject* boxes;
-	//Engine::Shared::cGameObject* cement;
+	Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* debugLine1;
@@ -61,13 +61,13 @@ Game::MyGame::cMyGame::~cMyGame()
 bool Game::MyGame::cMyGame::Initialize()
 {
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
-	//cementMat = new Engine::Graphics::Assets::cMaterial("cement");
+	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
 	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
 	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
 	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
-	//cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
+	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
 	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
 
@@ -102,7 +102,7 @@ bool Game::MyGame::cMyGame::Initialize()
 bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(boxes);
-	//Engine::Graphics::SubmitGameObject(cement);
+	Engine::Graphics::SubmitGameObject(cement);
 	//Engine::Graphics::SubmitGameObject(plane);
 	//Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(debugLine1);
