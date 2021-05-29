@@ -27,6 +27,7 @@
     <ClInclude Include="Assets\cTexture\Internal.h" />
     <ClInclude Include="Assets\Debug\cBox.h" />
     <ClInclude Include="Assets\Debug\cLine.h" />
+    <ClInclude Include="Assets\Debug\cSphere.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="D3D\Includes.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -64,6 +65,7 @@
     <ClCompile Include="Assets\cTexture\cTexture.cpp" />
     <ClCompile Include="Assets\Debug\cBox.cpp" />
     <ClCompile Include="Assets\Debug\cLine.cpp" />
+    <ClCompile Include="Assets\Debug\cSphere.cpp" />
     <ClCompile Include="D3D\Assets\cEffect.D3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -85,6 +87,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="D3D\Assets\Debug\cLine.D3D.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cSphere.D3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -130,6 +136,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="OGL\Assets\Debug\cLine.OGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cSphere.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>

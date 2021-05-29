@@ -124,7 +124,7 @@ bool Engine::Graphics::Assets::cDebug::Initialize()
 	{
 		const unsigned int bufferSize = m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16);
 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(m_indexSet16),
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(&m_indexSet16.front()),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const GLenum errorCode = glGetError();

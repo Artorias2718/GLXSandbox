@@ -77,6 +77,9 @@
     <ClInclude Include="Assets\Debug\cBox.h">
       <Filter>Assets\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\Debug\cSphere.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -163,6 +166,15 @@
       <Filter>D3D\Assets\Debug</Filter>
     </ClCompile>
     <ClCompile Include="OGL\Assets\Debug\cBox.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\Debug\cSphere.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cSphere.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cSphere.OGL.cpp">
       <Filter>OGL\Assets\Debug</Filter>
     </ClCompile>
   </ItemGroup>

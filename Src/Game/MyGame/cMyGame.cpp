@@ -7,6 +7,7 @@
 #include "../../Engine/Graphics/Assets/cMesh.h"
 #include "../../Engine/Graphics/Assets/Debug/cLine.h"
 #include "../../Engine/Graphics/Assets/Debug/cBox.h"
+#include "../../Engine/Graphics/Assets/Debug/cSphere.h"
 #include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -37,6 +38,8 @@ namespace
 	Engine::Shared::cGameObject* debugLine2;
 	Engine::Shared::cGameObject* debugBox1;
 	Engine::Shared::cGameObject* debugBox2;
+	Engine::Shared::cGameObject* debugSphere1;
+	Engine::Shared::cGameObject* debugSphere2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -76,7 +79,7 @@ bool Game::MyGame::cMyGame::Initialize()
 		debugLine1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(-10, -20, 40), Engine::Math::cVector(10, 20, -40), { 255, 0, 0, 255 }), debugMat);
 		debugLine2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(40, -20, 10), Engine::Math::cVector(-40, 20, 10), { 0, 0, 255, 255 }), debugMat);
 	}
-	// Boxes 
+	// Boxes
 	{
 		debugBox1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 255, 0, 255 }), debugMat);
 		debugBox2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 0, 255, 255 }), debugMat);
@@ -89,6 +92,17 @@ bool Game::MyGame::cMyGame::Initialize()
 
 		debugBox1->m_transform.scale = Engine::Math::cVector(20, 15, 10);
 		debugBox2->m_transform.scale = Engine::Math::cVector(20, 15, 10);
+	}
+	// Spheres 
+	{
+		debugSphere1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 250, 95, 0, 255 }), debugMat);
+		debugSphere2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 0, 255, 0, 255 }), debugMat);
+
+		debugSphere1->m_transform.position = Engine::Math::cVector(0, -15, 0);
+		debugSphere2->m_transform.position = Engine::Math::cVector(0, 15, 0);
+
+		debugSphere1->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
+		debugSphere2->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
 	}
 
 	camera = new Engine::Shared::cCamera("flycamera");
@@ -109,6 +123,8 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(debugLine2);
 	Engine::Graphics::SubmitGameObject(debugBox1);
 	Engine::Graphics::SubmitGameObject(debugBox2);
+	Engine::Graphics::SubmitGameObject(debugSphere1);
+	Engine::Graphics::SubmitGameObject(debugSphere2);
 
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);

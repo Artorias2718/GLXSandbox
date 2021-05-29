@@ -11,10 +11,9 @@ Engine::Graphics::Assets::Debug::cBox::cBox(const Engine::Graphics::Structures::
 	const int verticesPerBox = 8;
 	const int indicesPerBox = 48;
 
-	m_vertices = new Structures::sVertex[verticesPerBox];
 	for (int i = 0; i < verticesPerBox; ++i)
 	{
-		m_vertices[i] = Structures::sVertex();
+		m_vertices.push_back(Structures::sVertex());
 		m_vertices[i].color.r = i_color.r;
 		m_vertices[i].color.g = i_color.g;
 		m_vertices[i].color.b = i_color.b;
@@ -22,10 +21,9 @@ Engine::Graphics::Assets::Debug::cBox::cBox(const Engine::Graphics::Structures::
 		m_vertexCount++;
 	}
 
-	m_indices16 = new uint16_t[indicesPerBox];
 	for (int i = 0; i < indicesPerBox; ++i)
 	{
-		m_indices16[i] = 0;
+		m_indices16.push_back(0);
 		m_indexSetCount++;
 	}
 

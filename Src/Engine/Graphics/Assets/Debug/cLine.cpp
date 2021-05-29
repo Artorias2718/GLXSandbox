@@ -9,10 +9,9 @@
 Engine::Graphics::Assets::Debug::cLine::cLine(const Engine::Math::cVector &i_startPosition, const Engine::Math::cVector &i_endPosition, const Engine::Graphics::Structures::sColor8& i_color)
 {
 	const int verticesPerLine = 2;
-	m_vertices = new Structures::sVertex[verticesPerLine];
 	for (int i = 0; i < verticesPerLine; ++i)
 	{
-		m_vertices[i] = Structures::sVertex();
+		m_vertices.push_back(Structures::sVertex());
 		m_vertexCount++;
 	}
 #if defined OGL_API 

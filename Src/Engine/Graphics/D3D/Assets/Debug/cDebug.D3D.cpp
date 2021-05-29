@@ -52,7 +52,7 @@ bool Engine::Graphics::Assets::cDebug::Initialize()
 		}
 		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			initialData.pSysMem = m_indexSet16;
+			initialData.pSysMem = &m_indexSet16[0];
 			// (The other data members are ignored for non-texture buffers)
 		}
 

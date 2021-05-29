@@ -26,7 +26,7 @@ bool Engine::Graphics::Assets::Debug::cBox::Initialize()
 		}
 		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			initialData.pSysMem = m_vertices;
+			initialData.pSysMem = &m_vertices.front();
 			// (The other data members are ignored for non-texture buffers)
 		}
 
@@ -53,7 +53,7 @@ bool Engine::Graphics::Assets::Debug::cBox::Initialize()
 		}
 		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			initialData.pSysMem = m_indices16;
+			initialData.pSysMem = &m_indices16.front();
 			// (The other data members are ignored for non-texture buffers)
 		}
 

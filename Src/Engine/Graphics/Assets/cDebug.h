@@ -37,9 +37,9 @@ namespace Engine
 				GLuint m_vertexBufferId;
 				GLuint m_indexBufferId;
 #endif
-				Structures::sVertex* m_vertices;
-				uint16_t* m_indices16;
-				Structures::sIndexSet16* m_indexSet16;
+				std::vector<Structures::sVertex> m_vertices;
+				std::vector<uint16_t> m_indices16;
+				std::vector<Structures::sIndexSet16> m_indexSet16;
 
 				uint16_t m_vertexCount;
 				uint16_t m_indexSetCount;
