@@ -25,14 +25,14 @@ namespace
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* cementMat;
-	Engine::Graphics::Assets::cMaterial* floorMat;
+	Engine::Graphics::Assets::cMaterial* groundMat;
 	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
 	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
-	Engine::Shared::cGameObject* plane;
+	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* debugLine1;
 	Engine::Shared::cGameObject* debugLine2;
@@ -65,13 +65,13 @@ bool Game::MyGame::cMyGame::Initialize()
 {
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
-	floorMat = new Engine::Graphics::Assets::cMaterial("floor");
+	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
 	monkeyMat = new Engine::Graphics::Assets::cMaterial("monkey");
 	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), floorMat);
+	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
 
 	// Lines
@@ -107,7 +107,7 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	plane->m_transform.scale *= 10.0f;
+	ground->m_transform.scale *= 10.0f;
 	suzanne->m_transform.position += 1.25f * Engine::Math::cVector::up;
 
 	return true;
@@ -117,7 +117,7 @@ bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
-	//Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(ground);
 	//Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(debugLine1);
 	Engine::Graphics::SubmitGameObject(debugLine2);
