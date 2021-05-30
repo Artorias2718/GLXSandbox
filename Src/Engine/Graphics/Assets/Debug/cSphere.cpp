@@ -80,6 +80,34 @@ Engine::Graphics::Assets::Debug::cSphere::cSphere(const Structures::sColor8& i_c
 	Initialize();
 }
 
+Engine::Graphics::Assets::Debug::cSphere::cSphere(float i_radius, const Math::cVector& i_position, const Structures::sColor8& i_color) : cSphere()
+{
+	for (uint16_t i = 0; i < m_vertexCount; ++i)
+	{
+		m_vertices[i].position.x *= i_radius;
+		m_vertices[i].position.y *= i_radius;
+		m_vertices[i].position.z *= i_radius;
+	}
+
+	for (uint16_t i = 0; i < m_vertexCount; ++i)
+	{
+		m_vertices[i].position.x += i_position.x;
+		m_vertices[i].position.y += i_position.y;
+		m_vertices[i].position.z += i_position.z;
+	}
+
+	for (uint16_t i = 0; i < m_vertexCount; ++i)
+	{
+		m_vertices[i].color.r = i_color.r;
+		m_vertices[i].color.g = i_color.g;
+		m_vertices[i].color.b = i_color.b;
+		m_vertices[i].color.a = i_color.a;
+	}
+
+	Initialize();
+}
+
+
 uint16_t Engine::Graphics::Assets::Debug::cSphere::AddVertex(Math::cVector& i_position)
 {
 	Math::cVector unitPosition = i_position.CreateNormalized();

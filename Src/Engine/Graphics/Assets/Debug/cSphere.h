@@ -28,6 +28,7 @@ namespace Engine
 				public:
 					cSphere();
 					cSphere(const Structures::sColor8& i_color);
+					cSphere(float i_radius, const Math::cVector& i_position, const Structures::sColor8& i_color);
 					virtual bool Render();
 
 				private:

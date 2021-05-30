@@ -76,7 +76,7 @@ bool Engine::Graphics::Assets::cDebug::Initialize()
 
 		const unsigned int bufferSize = m_vertexCount * sizeof(Structures::sVertex);
 
-		glBufferData(GL_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(&m_vertices[0]),
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(&m_vertices.front()),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const GLenum errorCode = glGetError();

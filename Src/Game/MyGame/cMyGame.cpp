@@ -8,6 +8,7 @@
 #include "../../Engine/Graphics/Assets/Debug/cLine.h"
 #include "../../Engine/Graphics/Assets/Debug/cBox.h"
 #include "../../Engine/Graphics/Assets/Debug/cSphere.h"
+#include "../../Engine/Graphics/Assets/Debug/cCapsule.h"
 #include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -40,6 +41,8 @@ namespace
 	Engine::Shared::cGameObject* debugBox2;
 	Engine::Shared::cGameObject* debugSphere1;
 	Engine::Shared::cGameObject* debugSphere2;
+	Engine::Shared::cGameObject* debugCapsule1;
+	Engine::Shared::cGameObject* debugCapsule2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -104,6 +107,17 @@ bool Game::MyGame::cMyGame::Initialize()
 		debugSphere1->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
 		debugSphere2->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
 	}
+	// Capsules 
+	{
+		debugCapsule1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 255, 128, 0, 255 }), debugMat);
+		debugCapsule2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 128, 0, 255, 255 }), debugMat);
+
+		debugCapsule1->m_transform.position = Engine::Math::cVector(-10, 20, 0);
+		debugCapsule2->m_transform.position = Engine::Math::cVector(10, 5, 0);
+
+		debugCapsule1->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(45.0f), Engine::Math::cVector::forward);
+		debugCapsule2->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(45.0f), -Engine::Math::cVector::forward);
+	}
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
@@ -125,6 +139,8 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(debugBox2);
 	Engine::Graphics::SubmitGameObject(debugSphere1);
 	Engine::Graphics::SubmitGameObject(debugSphere2);
+	Engine::Graphics::SubmitGameObject(debugCapsule1);
+	Engine::Graphics::SubmitGameObject(debugCapsule2);
 
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
