@@ -16,6 +16,7 @@
 #include "../../Engine/Math/Functions.h"
 #include "../../Engine/Shared/MouseParams.h"
 #include "../../Engine/Graphics/Interfaces/cRenderState/cRenderState.h"
+#include "../../Engine/Shared/cDebugMenu.h"
 
 // Interface
 //==========
@@ -35,14 +36,6 @@ namespace
 	Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* railing;
-	Engine::Shared::cGameObject* debugLine1;
-	Engine::Shared::cGameObject* debugLine2;
-	Engine::Shared::cGameObject* debugBox1;
-	Engine::Shared::cGameObject* debugBox2;
-	Engine::Shared::cGameObject* debugSphere1;
-	Engine::Shared::cGameObject* debugSphere2;
-	Engine::Shared::cGameObject* debugCapsule1;
-	Engine::Shared::cGameObject* debugCapsule2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -77,48 +70,6 @@ bool Game::MyGame::cMyGame::Initialize()
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
 
-	// Lines
-	{
-		debugLine1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(-10, -20, 40), Engine::Math::cVector(10, 20, -40), { 255, 0, 0, 255 }), debugMat);
-		debugLine2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(Engine::Math::cVector(40, -20, 10), Engine::Math::cVector(-40, 20, 10), { 0, 0, 255, 255 }), debugMat);
-	}
-	// Boxes
-	{
-		debugBox1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 255, 0, 255 }), debugMat);
-		debugBox2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 0, 255, 255 }), debugMat);
-
-		debugBox1->m_transform.position = Engine::Math::cVector(-20, 0, 0);
-		debugBox2->m_transform.position = Engine::Math::cVector(20, 0, 0);
-
-		debugBox1->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(90.0f), -Engine::Math::cVector::forward);
-		debugBox2->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(90.0f), Engine::Math::cVector::forward);
-
-		debugBox1->m_transform.scale = Engine::Math::cVector(20, 15, 10);
-		debugBox2->m_transform.scale = Engine::Math::cVector(20, 15, 10);
-	}
-	// Spheres 
-	{
-		debugSphere1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 250, 95, 0, 255 }), debugMat);
-		debugSphere2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 0, 255, 0, 255 }), debugMat);
-
-		debugSphere1->m_transform.position = Engine::Math::cVector(0, -15, 0);
-		debugSphere2->m_transform.position = Engine::Math::cVector(0, 15, 0);
-
-		debugSphere1->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
-		debugSphere2->m_transform.scale = 5 * Engine::Math::cVector(1, 1, 1);
-	}
-	// Capsules 
-	{
-		debugCapsule1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 255, 128, 0, 255 }), debugMat);
-		debugCapsule2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 128, 0, 255, 255 }), debugMat);
-
-		debugCapsule1->m_transform.position = Engine::Math::cVector(-10, 20, 0);
-		debugCapsule2->m_transform.position = Engine::Math::cVector(10, 5, 0);
-
-		debugCapsule1->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(45.0f), Engine::Math::cVector::forward);
-		debugCapsule2->m_transform.orientation = Engine::Math::cQuaternion(Engine::Math::ConvertDegreesToRadians(45.0f), -Engine::Math::cVector::forward);
-	}
-
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	return true;
@@ -130,24 +81,19 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(cement);
 	Engine::Graphics::SubmitGameObject(ground);
 	Engine::Graphics::SubmitGameObject(railing);
-	Engine::Graphics::SubmitGameObject(debugLine1);
-	Engine::Graphics::SubmitGameObject(debugLine2);
-	Engine::Graphics::SubmitGameObject(debugBox1);
-	Engine::Graphics::SubmitGameObject(debugBox2);
-	Engine::Graphics::SubmitGameObject(debugSphere1);
-	Engine::Graphics::SubmitGameObject(debugSphere2);
-	Engine::Graphics::SubmitGameObject(debugCapsule1);
-	Engine::Graphics::SubmitGameObject(debugCapsule2);
-
+	
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
 
-	Move(camera);
-
-	if (Engine::Shared::MouseParams::mouseMoved)
+	if (!Engine::Shared::cDebugMenu::Instance().m_active)
 	{
-		Engine::Shared::MouseParams::mouseMoved = false;
-		Rotate(camera, 0, Engine::Math::cVector::zero);
+		Move(camera);
+
+		if (Engine::Shared::MouseParams::mouseMoved)
+		{
+			Engine::Shared::MouseParams::mouseMoved = false;
+			Rotate(camera, 0, Engine::Math::cVector::zero);
+		}
 	}
 	Engine::Graphics::SubmitGameObject(camera);
 	return true;
