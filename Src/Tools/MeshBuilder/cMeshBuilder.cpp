@@ -69,7 +69,7 @@ bool Tools::MeshBuilder::cMeshBuilder::Build(const std::vector<std::string>&)
 			vertexCount = luaL_len(luaState, -1);
 			vertices = (Engine::Graphics::Structures::sVertex*)malloc(vertexCount * sizeof(Engine::Graphics::Structures::sVertex));
 
-			for (uint16_t i = 1; i <= vertexCount; ++i)
+			for (uint32_t i = 1; i <= vertexCount; ++i)
 			{
 				lua_pushinteger(luaState, i);
 				lua_gettable(luaState, -2);

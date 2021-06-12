@@ -28,6 +28,7 @@ namespace
 	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* cementMat;
 	Engine::Graphics::Assets::cMaterial* groundMat;
+	Engine::Graphics::Assets::cMaterial* metalMat;
 	Engine::Graphics::Assets::cMaterial* railingMat;
 	Engine::Graphics::Assets::cMaterial* robotMat;
 	Engine::Graphics::Assets::cMaterial* debugMat;
@@ -35,6 +36,7 @@ namespace
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* ground;
+	Engine::Shared::cGameObject* metal;
 	Engine::Shared::cGameObject* railing;
 
 	Engine::Shared::cCamera* camera;
@@ -62,12 +64,14 @@ bool Game::MyGame::cMyGame::Initialize()
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
 	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
+	metalMat = new Engine::Graphics::Assets::cMaterial("metal");
 	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
 	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
+	metal = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("metal"), metalMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
 
 	camera = new Engine::Shared::cCamera("flycamera");
@@ -80,6 +84,7 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
 	Engine::Graphics::SubmitGameObject(ground);
+	Engine::Graphics::SubmitGameObject(metal);
 	Engine::Graphics::SubmitGameObject(railing);
 	
 	//Move(suzanne);

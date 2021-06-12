@@ -42,8 +42,8 @@ namespace Engine
 				Structures::sIndexSet16* m_indexSet16;
 				Structures::sIndexSet32* m_indexSet32;
 
-				uint16_t m_vertexCount;
-				uint16_t m_indexSetCount;
+				uint32_t m_vertexCount;
+				uint32_t m_indexSetCount;
 				bool m_isShort;
 			};
 		}
