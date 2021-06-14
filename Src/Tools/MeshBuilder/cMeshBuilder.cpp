@@ -27,7 +27,7 @@ bool Tools::MeshBuilder::cMeshBuilder::Build(const std::vector<std::string>&)
 {
 	bool wereThereErrors = false;
 
-	bool isShort;
+	bool isShort = false;
 	uint32_t vertexCount;
 	uint32_t indexSetCount;
 

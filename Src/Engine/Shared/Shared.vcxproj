@@ -23,13 +23,18 @@
     <ClCompile Include="cDebugMenu.cpp" />
     <ClCompile Include="cGameObject.cpp" />
     <ClCompile Include="MouseParams.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cDebugMenu.h" />
     <ClInclude Include="cGameObject.h" />
+    <ClInclude Include="sGameObjectController.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="sRigidBody.h" />
     <ClInclude Include="eCameraType.h" />
     <ClInclude Include="MouseParams.h" />
+    <ClInclude Include="sCollisionTriangle.h" />
     <ClInclude Include="sTransform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

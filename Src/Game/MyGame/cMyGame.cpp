@@ -17,6 +17,11 @@
 #include "../../Engine/Shared/MouseParams.h"
 #include "../../Engine/Graphics/Interfaces/cRenderState/cRenderState.h"
 #include "../../Engine/Shared/cDebugMenu.h"
+#include "../../Engine/Graphics/Structures/sVertex.h"
+#include "../../Engine/Graphics/Structures/sIndexSet.h"
+#include "../../Engine/Shared/sCollisionTriangle.h"
+#include "GameObjects/sPlayer.h"
+#include "GameObjects/sPlayerController.h"
 
 // Interface
 //==========
@@ -27,17 +32,21 @@ namespace
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* cementMat;
+	Engine::Graphics::Assets::cMaterial* collisionMat;
 	Engine::Graphics::Assets::cMaterial* groundMat;
 	Engine::Graphics::Assets::cMaterial* metalMat;
 	Engine::Graphics::Assets::cMaterial* railingMat;
-	Engine::Graphics::Assets::cMaterial* robotMat;
 	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
+	Engine::Shared::cGameObject* collision;
 	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* metal;
 	Engine::Shared::cGameObject* railing;
+
+	Game::MyGame::sPlayer* player;
+	Game::MyGame::sPlayerController* playerController;
 
 	Engine::Shared::cCamera* camera;
 
@@ -63,6 +72,7 @@ bool Game::MyGame::cMyGame::Initialize()
 {
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
+	collisionMat = new Engine::Graphics::Assets::cMaterial("collision");
 	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
 	metalMat = new Engine::Graphics::Assets::cMaterial("metal");
 	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
@@ -70,9 +80,43 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
+	collision = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("collision"), collisionMat);
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	metal = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("metal"), metalMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
+
+	player = new sPlayer("player");
+	playerController = new sPlayerController(player);
+
+	for (uint32_t triIdx = 0; triIdx < collision->m_mesh->m_indexSetCount; ++triIdx)
+	{
+		Engine::Math::cVector a = Engine::Math::cVector(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.z
+		);
+
+		Engine::Math::cVector b = Engine::Math::cVector(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.z
+		);
+
+		Engine::Math::cVector c = Engine::Math::cVector(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.z
+		);
+
+#if defined D3D_API 
+		Engine::Shared::sCollisionTriangle* collisionTriangle = new Engine::Shared::sCollisionTriangle(a, c, b);
+#elif defined OGL_API 
+		Engine::Shared::sCollisionTriangle* collisionTriangle = new Engine::Shared::sCollisionTriangle(a, b, c);
+#endif
+		collisionTriangle->ComputeNormal();
+		player->m_rigidbody.m_collisionData.push_back(collisionTriangle);
+	}
+
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
@@ -83,6 +127,9 @@ bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
+#if defined _DEBUG
+	Engine::Graphics::SubmitGameObject(collision);
+#endif
 	Engine::Graphics::SubmitGameObject(ground);
 	Engine::Graphics::SubmitGameObject(metal);
 	Engine::Graphics::SubmitGameObject(railing);
@@ -90,17 +137,31 @@ bool Game::MyGame::cMyGame::Update()
 	//Move(suzanne);
 	//Rotate(suzanne, -50.0f, Engine::Math::cVector::up);
 
-	if (!Engine::Shared::cDebugMenu::Instance().m_active)
+	if (Engine::UserInput::IsKeyPressed('F'))
 	{
-		Move(camera);
+		camera->m_active = !camera->m_active;
+		player->m_active = !player->m_active;
+	}
 
+	if (camera->m_active)
+	{
+		Engine::Graphics::SubmitGameObject(camera);
+		Move(camera);
+		
 		if (Engine::Shared::MouseParams::mouseMoved)
 		{
 			Engine::Shared::MouseParams::mouseMoved = false;
-			Rotate(camera, 0, Engine::Math::cVector::zero);
+			Rotate(camera, 1.0f, Engine::Math::cVector(0.0f, 1.0f, 0.0f));
 		}
+		player->Render();
 	}
-	Engine::Graphics::SubmitGameObject(camera);
+	else if(player->m_active)
+	{
+		camera->m_transform.position = player->m_camera->m_transform.position;
+		camera->m_transform.orientation = player->m_camera->m_transform.orientation;
+		Engine::Graphics::SubmitGameObject(player->m_camera);
+		playerController->Move();
+	}
 	return true;
 }
 

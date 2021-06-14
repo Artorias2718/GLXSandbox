@@ -5,6 +5,7 @@
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="MouseParams.cpp" />
     <ClCompile Include="cDebugMenu.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cGameObject.h" />
@@ -13,5 +14,9 @@
     <ClInclude Include="MouseParams.h" />
     <ClInclude Include="sTransform.h" />
     <ClInclude Include="cDebugMenu.h" />
+    <ClInclude Include="sCollisionTriangle.h" />
+    <ClInclude Include="sRigidBody.h" />
+    <ClInclude Include="sGameObjectController.h" />
+    <ClInclude Include="Physics.h" />
   </ItemGroup>
 </Project>

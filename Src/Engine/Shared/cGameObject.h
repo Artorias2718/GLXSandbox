@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../Shared/sTransform.h"
+#include "../Shared/sRigidBody.h"
 
 namespace Engine
 {
@@ -36,6 +37,7 @@ namespace Engine
 			Graphics::Interfaces::cSprite* m_sprite;
 			Graphics::Assets::cMaterial* m_material;
 			Shared::sTransform m_transform;
+			Shared::sRigidBody m_rigidbody;
 
 			bool m_active;
 		};
