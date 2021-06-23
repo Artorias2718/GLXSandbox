@@ -26,7 +26,7 @@ bool Game::MyGame::sPlayerController::Move()
 
 	if (Engine::UserInput::IsKeyPressed('W'))
 	{
-		m_player->m_rigidbody.velocity = m_player->m_camera->m_transform.forward;
+		m_player->m_rigidbody.velocity = m_player->m_rigidbody.m_maxSpeed * m_player->m_camera->m_transform.forward;
 
 		m_player->CheckHorizontalCollisions();
 		m_player->CheckInclinedCollisions();
@@ -37,7 +37,7 @@ bool Game::MyGame::sPlayerController::Move()
 
 	if (Engine::UserInput::IsKeyPressed('S'))
 	{
-		m_player->m_rigidbody.velocity = -m_player->m_camera->m_transform.forward;
+		m_player->m_rigidbody.velocity = -m_player->m_rigidbody.m_maxSpeed * m_player->m_camera->m_transform.forward;
 
 		m_player->CheckHorizontalCollisions();
 		m_player->CheckInclinedCollisions();
@@ -48,7 +48,7 @@ bool Game::MyGame::sPlayerController::Move()
 
 	if (Engine::UserInput::IsKeyPressed('A'))
 	{
-		m_player->m_rigidbody.velocity = -m_player->m_camera->m_transform.right;
+		m_player->m_rigidbody.velocity = -m_player->m_rigidbody.m_maxSpeed * m_player->m_camera->m_transform.right;
 
 		m_player->CheckHorizontalCollisions();
 		m_player->CheckInclinedCollisions();
@@ -59,7 +59,7 @@ bool Game::MyGame::sPlayerController::Move()
 
 	if (Engine::UserInput::IsKeyPressed('D'))
 	{
-		m_player->m_rigidbody.velocity = m_player->m_camera->m_transform.right;
+		m_player->m_rigidbody.velocity = m_player->m_rigidbody.m_maxSpeed * m_player->m_camera->m_transform.right;
 
 		m_player->CheckHorizontalCollisions();
 		m_player->CheckInclinedCollisions();
@@ -70,7 +70,7 @@ bool Game::MyGame::sPlayerController::Move()
 
 	if (Engine::UserInput::IsKeyPressed(VK_SPACE))
 	{
-		m_player->m_rigidbody.velocity = 1.0f * m_player->m_camera->m_transform.up;
+		m_player->m_rigidbody.velocity = m_player->m_rigidbody.m_maxSpeed * m_player->m_camera->m_transform.up;
 		Engine::Shared::Physics::ApplyLinearForce(m_player, m_player->m_rigidbody.velocity, dt);
 		m_player->Update();
 	}

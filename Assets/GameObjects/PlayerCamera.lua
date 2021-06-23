@@ -1,10 +1,10 @@
 return
 {
     cameraType = 1,
-    fieldOfView = 90,
+    fieldOfView = 60,
     nearPlane = 0.01,
     farPlane = 1000,
-    movementSpeed = 1000,
+    movementSpeed = 2,
     rotationSpeed = 1,
     transform =
     {

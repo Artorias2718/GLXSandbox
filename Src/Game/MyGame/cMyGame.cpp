@@ -90,23 +90,48 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	for (uint32_t triIdx = 0; triIdx < collision->m_mesh->m_indexSetCount; ++triIdx)
 	{
-		Engine::Math::cVector a = Engine::Math::cVector(
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.x,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.y,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.z
-		);
+		Engine::Math::cVector a, b, c;
+		if (collision->m_mesh->m_isShort)
+		{
+			a = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.z
+			);
 
-		Engine::Math::cVector b = Engine::Math::cVector(
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.x,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.y,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.z
-		);
+			b = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.z
+			);
 
-		Engine::Math::cVector c = Engine::Math::cVector(
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.x,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.y,
-			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.z
-		);
+			c = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.z
+			);
+		}
+		else
+		{
+			a = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].a].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].a].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].a].position.z
+			);
+
+			b = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].b].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].b].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].b].position.z
+			);
+
+			c = Engine::Math::cVector(
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].c].position.x,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].c].position.y,
+				collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet32[triIdx].c].position.z
+			);
+		}
+
 
 #if defined D3D_API 
 		Engine::Shared::sCollisionTriangle* collisionTriangle = new Engine::Shared::sCollisionTriangle(a, c, b);
@@ -116,7 +141,6 @@ bool Game::MyGame::cMyGame::Initialize()
 		collisionTriangle->ComputeNormal();
 		player->m_rigidbody.m_collisionData.push_back(collisionTriangle);
 	}
-
 
 	camera = new Engine::Shared::cCamera("flycamera");
 

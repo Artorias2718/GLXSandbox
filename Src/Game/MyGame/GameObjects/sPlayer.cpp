@@ -44,11 +44,11 @@ Game::MyGame::sPlayer::sPlayer() : Engine::Shared::cGameObject()
 	m_headSphere = new Engine::Shared::cGameObject(m_headSphereMesh, debugMat);
 	m_bodySphere = new Engine::Shared::cGameObject(m_bodySphereMesh, debugMat);
 
-	m_headSphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -35.0f, 0);
-	m_bodySphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -40.0f, 0);
+	//m_headSphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -35.0f, 0);
+	//m_bodySphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -40.0f, 0);
 
-	m_headSphere->m_transform.scale *= 2.5f;
-	m_bodySphere->m_transform.scale *= 5.0f;
+	//m_headSphere->m_transform.scale *= 2.5f;
+	//m_bodySphere->m_transform.scale *= 5.0f;
 }
 
 Game::MyGame::sPlayer::sPlayer(const std::string& path) : sPlayer()
@@ -113,6 +113,8 @@ Game::MyGame::sPlayer::sPlayer(const std::string& path) : sPlayer()
 			lua_pop(io_luaState, 1);
 
 			m_transform.position = position;
+			m_headSphere->m_transform.position += Engine::Math::cVector(0, 0.45f, 0);
+			m_bodySphere->m_transform.position -= Engine::Math::cVector(0, 0.45f, 0);
 		}
 		// Orientation
 		{
@@ -174,6 +176,9 @@ Game::MyGame::sPlayer::sPlayer(const std::string& path) : sPlayer()
 			lua_pop(io_luaState, 1);
 
 			m_transform.scale = scale;
+
+			m_headSphere->m_transform.scale = scale;
+			m_bodySphere->m_transform.scale = 2.0 * scale;
 		}
 	}
 
@@ -314,8 +319,12 @@ bool Game::MyGame::sPlayer::Update()
 	m_camera->m_active = m_active;
 
 	m_transform.position += m_rigidbody.velocity;
-	m_headSphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -35.0f, 0);
-	m_bodySphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -40.0f, 0);
+	m_headSphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, 0.5f, 0);
+	m_bodySphere->m_transform.position = m_transform.position - Engine::Math::cVector(0, 0.5f, 0);
+	//m_bodySphere->m_transform.position = Engine::Math::cVector(0, 0.45f, 0);
+	
+	//m_headSphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -35.0f, 0);
+	//m_bodySphere->m_transform.position = m_transform.position + Engine::Math::cVector(0, -40.0f, 0);
 	m_camera->m_transform.position = m_headSphere->m_transform.position + Engine::Math::cVector(0, 0.0625f, 0);
 
 	m_hAxisMesh->SetPosition(0, m_camera->m_transform.position);
