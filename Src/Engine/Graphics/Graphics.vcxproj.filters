@@ -41,15 +41,12 @@
     <ClInclude Include="Structures\sDrawCall.h">
       <Filter>Structures</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\cEffect.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="D3D\Graphics.D3D.cpp">
-      <Filter>D3D</Filter>
-    </ClCompile>
-    <ClCompile Include="OGL\Graphics.OGL.cpp">
-      <Filter>OGL</Filter>
-    </ClCompile>
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Assets\cMesh.cpp">
       <Filter>Assets</Filter>
@@ -71,6 +68,15 @@
     </ClCompile>
     <ClCompile Include="OGL\Interfaces\cConstantBuffer.OGL.cpp">
       <Filter>OGL\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\cEffect.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\cEffect.D3D.cpp">
+      <Filter>D3D\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cEffect.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
     This is an example of a vertex shader
 */
 
-#include "Shaders.inc"
+#include "../Shaders.inc"
 
 // Entry Point
 //============

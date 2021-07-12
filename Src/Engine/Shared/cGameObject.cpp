@@ -10,11 +10,15 @@ namespace
 
 Engine::Shared::cGameObject::cGameObject() {}
 
-Engine::Shared::cGameObject::cGameObject(Engine::Graphics::Assets::cMesh *i_mesh)
+Engine::Shared::cGameObject::cGameObject(Graphics::Assets::cMesh *i_mesh, Graphics::Assets::cEffect *i_effect)
 {
 	if (i_mesh)
 	{
 		m_mesh = i_mesh;
+	}
+	if (i_effect)
+	{
+		m_effect = i_effect;
 	}
 }
 

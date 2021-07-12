@@ -2,7 +2,7 @@
     This is an example of a fragment shader
 */
 
-#include "Shaders.inc"
+#include "../Shaders.inc"
 
 // Entry Point
 //============

@@ -5,6 +5,7 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
+#include "../../Engine/Graphics/Assets/cEffect.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
@@ -18,8 +19,13 @@ namespace
 {
 	const float SPEED = 8.0f;
 
+	Engine::Graphics::Assets::cEffect* solid;
+
 	Engine::Shared::cGameObject* caboose;
 	Engine::Shared::cGameObject* sarge;
+
+	Engine::Shared::cGameObject* boxes;
+
 	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
@@ -42,8 +48,13 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"));
-	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"));
+	solid = new Engine::Graphics::Assets::cEffect("solid");
+
+	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"), solid);
+	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"), solid);
+
+	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), solid);
+
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	return true;
@@ -53,6 +64,8 @@ bool Game::MyGame::cMyGame::Update()
 {
 	Engine::Graphics::SubmitGameObject(caboose);
 	Engine::Graphics::SubmitGameObject(sarge);
+
+	Engine::Graphics::SubmitGameObject(boxes);
 
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);
