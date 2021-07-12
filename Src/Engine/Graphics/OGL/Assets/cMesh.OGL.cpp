@@ -115,9 +115,15 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 	}
 	// Assign the data to the buffer
 	{
-		const unsigned int bufferSize = m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16);
+		const unsigned int bufferSize = m_isShort
+			? m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16)
+			: m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet32);
 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(m_indexSet16),
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize,
+			reinterpret_cast<GLvoid*>(
+			m_isShort
+			? reinterpret_cast<Engine::Graphics::Structures::sIndexSet32*>(m_indexSet16)
+			: m_indexSet32),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const GLenum errorCode = glGetError();
@@ -213,7 +219,7 @@ bool Engine::Graphics::Assets::cMesh::Render()
 		// (meaning that every primitive is a triangle and will be defined by three vertices)
 		const GLenum mode = GL_TRIANGLES;
 		// Every index is a 16-bit (or 32-bit) unsigned integer
-		const GLenum indexType = GL_UNSIGNED_SHORT;
+		const GLenum indexType = m_isShort ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 		// It's possible to start rendering primitives in the middle of the stream
 		const GLint indexOfFirstVertexToRender = 0;
 		const GLvoid* const offset = 0;

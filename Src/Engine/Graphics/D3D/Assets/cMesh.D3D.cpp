@@ -43,7 +43,9 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 
 	// Intialize the index buffer
 	{
-		const unsigned int bufferSize = m_indexSetCount * sizeof(Structures::sIndexSet16);
+		const unsigned int bufferSize = m_isShort
+									  ? m_indexSetCount * sizeof(Structures::sIndexSet16)
+									  : m_indexSetCount * sizeof(Structures::sIndexSet32);
 		D3D11_BUFFER_DESC bufferDescription = { 0 };
 		{
 			bufferDescription.ByteWidth = bufferSize;
@@ -55,7 +57,7 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 		}
 		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			initialData.pSysMem = m_indexSet16;
+			initialData.pSysMem = m_isShort ? reinterpret_cast<Structures::sIndexSet32*>(m_indexSet16) : m_indexSet32;
 			// (The other data members are ignored for non-texture buffers)
 		}
 
@@ -103,7 +105,9 @@ bool Engine::Graphics::Assets::cMesh::Render()
 		{
 			ASSERT(m_indexBufferId != NULL);
 			// Every index is a 16 bit (or 32-bit) unsigned integer
-			const DXGI_FORMAT format = DXGI_FORMAT_R16_UINT;
+			const DXGI_FORMAT format = m_isShort
+									 ? DXGI_FORMAT_R16_UINT
+									 : DXGI_FORMAT_R32_UINT;
 			// The indices start at the beginning of the buffer
 			const unsigned int bufferOffset = 0;
 			Interfaces::D3DInterfaces::s_direct3dImmediateContext->IASetIndexBuffer(m_indexBufferId, format, bufferOffset);
