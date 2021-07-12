@@ -6,8 +6,8 @@ return
     },
     meshes =
     {
-        "Meshes/Cube.lua",
-        "Meshes/Plane.lua"
+        "Meshes/Caboose.lua",
+        "Meshes/Sarge.lua"
     },
     shaders =
     {

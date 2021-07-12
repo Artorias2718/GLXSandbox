@@ -18,8 +18,8 @@ namespace
 {
 	const float SPEED = 8.0f;
 
-	Engine::Shared::cGameObject* cube;
-	Engine::Shared::cGameObject* plane;
+	Engine::Shared::cGameObject* caboose;
+	Engine::Shared::cGameObject* sarge;
 	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
@@ -42,23 +42,20 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
+	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"));
+	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"));
 	camera = new Engine::Shared::cCamera("flycamera");
-
-	cube->m_transform.position += 0.25f * Engine::Math::up;
-	plane->m_transform.scale *= 5.0f;
 
 	return true;
 }
 
 bool Game::MyGame::cMyGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(cube);
-	Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(caboose);
+	Engine::Graphics::SubmitGameObject(sarge);
 
-	Move(cube);
-	Rotate(cube, -50.0f, Engine::Math::up);
+	Move(caboose);
+	Rotate(sarge, -50.0f, Engine::Math::up);
 
 	Move(camera);
 
