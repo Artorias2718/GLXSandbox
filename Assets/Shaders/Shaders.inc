@@ -60,3 +60,8 @@ DeclareConstantBuffer( drawCallBuffer, 1 )
 {
     float4x4 g_localToWorld;
 };
+
+DeclareConstantBuffer( materialBuffer, 2 )
+{
+    float4 g_color;
+};

@@ -5,7 +5,7 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
-#include "../../Engine/Graphics/Assets/cEffect.h"
+#include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
@@ -19,12 +19,17 @@ namespace
 {
 	const float SPEED = 8.0f;
 
-	Engine::Graphics::Assets::cEffect* solid;
+	Engine::Graphics::Assets::cMaterial* cabooseMat;
+	Engine::Graphics::Assets::cMaterial* sargeMat;
+
+	Engine::Graphics::Assets::cMaterial* boxesMat;
+	Engine::Graphics::Assets::cMaterial* cementMat;
 
 	Engine::Shared::cGameObject* caboose;
 	Engine::Shared::cGameObject* sarge;
 
 	Engine::Shared::cGameObject* boxes;
+	Engine::Shared::cGameObject* cement;
 
 	Engine::Shared::cCamera* camera;
 
@@ -48,12 +53,17 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
-	solid = new Engine::Graphics::Assets::cEffect("solid");
+	cabooseMat = new Engine::Graphics::Assets::cMaterial("caboose");
+	sargeMat = new Engine::Graphics::Assets::cMaterial("sarge");
 
-	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"), solid);
-	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"), solid);
+	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
+	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
 
-	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), solid);
+	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"), cabooseMat);
+	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"), sargeMat);
+
+	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
+	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
@@ -66,6 +76,7 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(sarge);
 
 	Engine::Graphics::SubmitGameObject(boxes);
+	Engine::Graphics::SubmitGameObject(cement);
 
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);

@@ -2,12 +2,13 @@
 //=============
 
 #include "Graphics.h"
+#include <sstream>
 
 #include "../Asserts/Asserts.h"
 #include "../Logging/Logging.h"
 
 #include "Assets/cMesh.h"
-#include "Assets/cEffect.h"
+#include "Assets/cMaterial.h"
 
 #include "Interfaces/cConstantBuffer.h"
 #include "Structures/sFrame.h"
@@ -109,7 +110,7 @@ void Engine::Graphics::RenderFrame()
 		{
 			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::UpdateTransform((*itor)->m_transform);
 			s_drawCallBuffer->Update(Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
-			(*itor)->m_effect->Bind();
+			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
 		meshObjects.clear();
@@ -585,6 +586,8 @@ namespace
 					WGL_RED_BITS_ARB, 8,
 					WGL_GREEN_BITS_ARB, 8,
 					WGL_BLUE_BITS_ARB, 8,
+					WGL_DEPTH_BITS_ARB, 24,
+					WGL_STENCIL_BITS_ARB, 8,
 					// NULL terminator
 					NULL
 				};
@@ -622,6 +625,8 @@ namespace
 					pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
 					pixelFormatDescriptor.cColorBits = 24;
 					pixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
+					pixelFormatDescriptor.cDepthBits = 24;
+					pixelFormatDescriptor.cStencilBits = 8;
 				}
 				if (SetPixelFormat(s_deviceContext, pixelFormatId, &pixelFormatDescriptor) == FALSE)
 				{

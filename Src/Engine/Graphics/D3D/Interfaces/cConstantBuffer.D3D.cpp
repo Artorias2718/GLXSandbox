@@ -9,6 +9,7 @@
 
 #include "../../Structures/sFrame.h"
 #include "../../Structures/sDrawCall.h"
+#include "../../Structures/sMaterial.h"
 
 Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(Interfaces::eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
 	UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData)
@@ -22,6 +23,9 @@ Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(Interfaces::eCons
 			break;
 		case DRAWCALL:
 			ASSERTF(false, "There was a problem initializing the drawcall constant buffer!");
+			break;
+		case MATERIAL:
+			ASSERTF(false, "There was a problem initializing the material constant buffer!");
 			break;
 		}
 	}
@@ -49,6 +53,9 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Initialize(Interfaces::eCons
 			break;
 		case DRAWCALL:
 			i_subResourceData.pSysMem = reinterpret_cast<Structures::sDrawCall*>(i_constantBufferData);
+			break;
+		case MATERIAL:
+			i_subResourceData.pSysMem = reinterpret_cast<Structures::sMaterial*>(i_constantBufferData);
 			break;
 		}
 	}
@@ -81,6 +88,12 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Bind(eConstantBufferType i_b
 		{
 			const unsigned int registerAssignedInShader = 1;
 			D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			break;
+		}
+		case MATERIAL:
+		{
+			const unsigned int registerAssignedInShader = 2;
+			D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
 			break;
 		}
 		}
