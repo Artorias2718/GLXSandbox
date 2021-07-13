@@ -1,5 +1,5 @@
 return
 {
-    g_color = { r = .0, g = 0.0, b = 1.0, a = 1.0 },
-    effect = "solid"
+    effect = "solid",
+    texture = "Mesh/Caboose.png"
 }

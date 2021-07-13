@@ -207,14 +207,24 @@ NewAssetTypeInfo( "materials",
       if DoesFileExist( sourceAbsolutePath ) then
         local material = dofile( sourceAbsolutePath )
 
-		local effect = material.effect
+		local effect  = material.effect
 
 		-- Get the shader paths from the effect table
 		local vertexShader =   "Shaders/" .. effect .. "/vertex.eShader"
 		local fragmentShader = "Shaders/" .. effect .. "/fragment.eShader"
 
+		-- Get the texture path from the material table
+		local texture = "Textures/"
+
+		if(material.texture == nil) then
+			texture = texture .. "Default.png"
+		else
+			texture = texture .. material.texture
+		end
+
 		RegisterAssetToBeBuilt( vertexShader,   "shaders", { "vertex" } )
 		RegisterAssetToBeBuilt( fragmentShader, "shaders", { "fragment" } )
+		RegisterAssetToBeBuilt( texture, "textures" )
       end
     end,
 	ConvertSourceRelativePathToBuiltRelativePath = function ( i_sourceRelativePath, i_assetType )
@@ -264,6 +274,33 @@ NewAssetTypeInfo( "shaders",
 		end
 	}
 )
+
+-- Texture Asset Type
+--------------------
+
+NewAssetTypeInfo("textures",
+	{
+		GetBuilderRelativePath = function()
+			return "TextureBuilder.exe"
+		end,
+		RegisterReferencedAssets = function( i_sourceRelativePath )
+			local sourceAbsolutePath = s_AuthoredAssetDir			
+				RegisterAssetToBeBuilt( i_sourceRelativePath, "textures" )
+			end,
+		ConvertSourceRelativePathToBuiltRelativePath = function ( i_sourceRelativePath, i_assetType )
+			if( i_sourceRelativePath == nil ) then
+				i_sourceRelativePath = "default.png"
+			end
+			sourceAbsolutePath = s_AuthoredAssetDir .. i_sourceRelativePath
+
+			local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+			local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+			extensionWithPeriod = file:sub(1, file:find(".") - 1) .. ".dds";
+			return relativeDirectory .. fileName .. extensionWithPeriod
+		end,
+	}
+)
+
 
 -- Function Definitions
 --=====================

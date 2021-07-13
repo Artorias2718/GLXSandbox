@@ -16,6 +16,7 @@ void main(
 	// The GPU provides us with position
 	in float4 i_position : SV_POSITION,
 	in float4 i_color : COLOR,
+    in float2 i_texture : TEXTURE,
     
 	// Output
 	//=======
@@ -32,7 +33,8 @@ void main(
 
 // Whatever arbitrary data (i.e. everything excluding position) was output from the vertex shader
 // will be interpolated across the triangle and given as input to the fragment shader
-layout( location = 0 ) in vec4 i_color;
+layout( location = 0 ) in vec2 i_texture;
+layout( location = 1 ) in vec4 i_color;
 
 // Output
 //=======
@@ -47,6 +49,12 @@ out vec4 o_color;
 void main()
 #endif
 {
-	// For now set the fragment as the interpolated color
-	o_color = g_color * i_color;
+	float4 t_color =
+#if defined D3D_API 
+	textureSampler.Sample( samplingState, i_texture );
+#elif defined OGL_API 
+	texture2D( textureSampler, i_texture );
+#endif
+
+	o_color = g_color * i_color * t_color;
 }

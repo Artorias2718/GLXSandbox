@@ -18,9 +18,8 @@ return
         "Meshes/Cement.lua",
         "Meshes/Sarge.lua"
     },
-    shaders =
+    textures =
     {
-        { path = "Shaders/Solid/Vertex.eShader", arguments = { "vertex" } },
-        { path = "Shaders/Solid/Fragment.eShader", arguments = { "fragment" } },
+        "Textures/Default.png"
     }
 }
