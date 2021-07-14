@@ -7,6 +7,7 @@
 #include "../Logging/Logging.h"
 
 #include "Assets/cMesh.h"
+#include "Interfaces/cSprite.h"
 #include "Assets/cMaterial.h"
 
 #include "Interfaces/cConstantBuffer.h"
@@ -27,6 +28,7 @@
 #include "../Math/Functions.h"
 
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::meshObjects;
+std::vector<Engine::Shared::cGameObject*> Engine::Graphics::spriteObjects;
 Engine::Graphics::Structures::sFrame Engine::Graphics::frameData;
 Engine::Graphics::Structures::sDrawCall Engine::Graphics::drawCallData;
 
@@ -60,7 +62,6 @@ namespace
 #elif defined OGL_API
 	bool CreateConstantBuffers();
 	bool CreateRenderingContext();
-	bool EnableDepthTesting();
 #endif
 }
 
@@ -107,6 +108,7 @@ void Engine::Graphics::RenderFrame()
 
 	// Draw the geometry
 	{
+		// Render 3D meshes first
 		for (std::vector<Shared::cGameObject*>::iterator itor = meshObjects.begin(); itor != meshObjects.end(); ++itor)
 		{
 			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::UpdateTransform((*itor)->m_transform);
@@ -114,7 +116,16 @@ void Engine::Graphics::RenderFrame()
 			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
+
+		// Followed by 2D sprites
+		for (std::vector<Shared::cGameObject*>::iterator itor = spriteObjects.begin(); itor != spriteObjects.end(); ++itor)
+		{
+			(*itor)->m_material->Bind();
+			(*itor)->m_sprite->Render();
+		}
+
 		meshObjects.clear();
+		spriteObjects.clear();
 	}
 
 #if defined D3D_API
@@ -174,11 +185,6 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 	}
 	// Create an OpenGL rendering context
 	if (!CreateRenderingContext())
-	{
-		ASSERT(false);
-		return false;
-	}
-	if (!EnableDepthTesting())
 	{
 		ASSERT(false);
 		return false;
@@ -324,6 +330,11 @@ bool Engine::Graphics::SubmitGameObject(Engine::Shared::cGameObject* i_object)
 		meshObjects.push_back(i_object);
 		return true;
 	}
+	else if (i_object->m_sprite)
+	{
+		spriteObjects.push_back(i_object);
+		return true;
+	}
 	else if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
 	{
 		Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
@@ -337,7 +348,7 @@ bool Engine::Graphics::SubmitGameObject(Engine::Shared::cGameObject* i_object)
 	}
 	else
 	{
-		Engine::Logging::OutputError("Object mesh is uninitialized!");
+		Engine::Logging::OutputError("Object mesh or sprite is uninitialized!");
 		return false;
 	}
 }
@@ -802,16 +813,6 @@ namespace
 				return false;
 			}
 		}
-
-		return true;
-	}
-
-	bool EnableDepthTesting()
-	{
-		glEnable(GL_CULL_FACE);
-		// Depth Testing
-		glDepthFunc(GL_LESS);
-		glEnable(GL_DEPTH_TEST);
 
 		return true;
 	}

@@ -5,6 +5,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UserSettings.h" />
-    <ClInclude Include="Settings.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Settings.ini" />
   </ItemGroup>
 </Project>

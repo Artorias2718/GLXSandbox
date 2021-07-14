@@ -29,6 +29,10 @@ Engine::Graphics::Assets::cMaterial::cMaterial(const std::string& i_materialFile
 		char* dataPtr = reinterpret_cast<char*> (binaryFileData.data);
 		size_t fileOffset = 0;
 
+		uint8_t renderStateBits = *reinterpret_cast<uint8_t*>(dataPtr);
+		fileOffset += sizeof(uint8_t);
+		dataPtr = reinterpret_cast<char*>(reinterpret_cast<char*>(binaryFileData.data) + fileOffset);
+
 		m_materialData = reinterpret_cast<Structures::sMaterial*>(dataPtr);
 		fileOffset += sizeof(Structures::sMaterial);
 		dataPtr = reinterpret_cast<char*>(reinterpret_cast<char*>(binaryFileData.data) + fileOffset);
@@ -43,6 +47,7 @@ Engine::Graphics::Assets::cMaterial::cMaterial(const std::string& i_materialFile
 		dataPtr = reinterpret_cast<char*>(reinterpret_cast<char*>(binaryFileData.data) + fileOffset);
 
 		m_effect = new Assets::cEffect(effectName);
+		m_effect->m_renderStates.Initialize(renderStateBits);
 		m_texture = new Assets::cTexture("data/textures/" + texturePath);
 	}
 

@@ -59,6 +59,18 @@
     <ClInclude Include="Assets\cTexture\Internal.h">
       <Filter>Assets\cTexture</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\cRenderState\cRenderState.h">
+      <Filter>Interfaces\cRenderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\cRenderState\eRenderState.h">
+      <Filter>Interfaces\cRenderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\cSprite.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sRectangle.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -105,6 +117,24 @@
     <ClCompile Include="OGL\Assets\cTexture.OGL.cpp">
       <Filter>OGL\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Interfaces\cRenderState\cRenderState.cpp">
+      <Filter>Interfaces\cRenderState</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces\cSprite.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cRenderState.D3D.cpp">
+      <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cSprite.D3D.cpp">
+      <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cRenderState.OGL.cpp">
+      <Filter>OGL\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cSprite.OGL.cpp">
+      <Filter>OGL\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -136,6 +166,9 @@
     </Filter>
     <Filter Include="Assets\cTexture">
       <UniqueIdentifier>{6ed616d8-6297-491d-b965-30612f1d1751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\cRenderState">
+      <UniqueIdentifier>{0ca0a151-b9ae-40cc-8840-29fdd5aae5e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -24,12 +24,21 @@ namespace
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* cementMat;
+	Engine::Graphics::Assets::cMaterial* groundMat;
+	Engine::Graphics::Assets::cMaterial* railingMat;
+
+	Engine::Graphics::Assets::cMaterial* kaibaMat;
 
 	Engine::Shared::cGameObject* caboose;
 	Engine::Shared::cGameObject* sarge;
 
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
+	Engine::Shared::cGameObject* ground;
+	Engine::Shared::cGameObject* railing;
+
+	Engine::Shared::cGameObject* kaiba1;
+	Engine::Shared::cGameObject* kaiba2;
 
 	Engine::Shared::cCamera* camera;
 
@@ -58,12 +67,21 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
+	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
+	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
+
+	kaibaMat = new Engine::Graphics::Assets::cMaterial("kaiba");
 
 	caboose = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("caboose"), cabooseMat);
 	sarge = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("sarge"), sargeMat);
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
+	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
+	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
+
+	kaiba1 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(-675.0f, -675.0f), glm::vec2(-0.5f, 0.5f));
+	kaiba2 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(675.0f, -675.0f), glm::vec2(0.5f, 0.5f));
 
 	camera = new Engine::Shared::cCamera("flycamera");
 
@@ -77,6 +95,11 @@ bool Game::MyGame::cMyGame::Update()
 
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
+	Engine::Graphics::SubmitGameObject(ground);
+	Engine::Graphics::SubmitGameObject(railing);
+
+	Engine::Graphics::SubmitGameObject(kaiba1);
+	Engine::Graphics::SubmitGameObject(kaiba2);
 
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);
@@ -180,9 +203,9 @@ namespace
 			i_camera->m_transform.orientation = i_camera->m_transform.orientation * rotation;
 			i_camera->m_transform.orientation = glm::normalize(i_camera->m_transform.orientation);
 
-			i_camera->m_transform.right = rotation * i_camera->m_transform.right;
-			i_camera->m_transform.up = rotation * i_camera->m_transform.up;
-			i_camera->m_transform.forward = rotation * i_camera->m_transform.forward;
+			i_camera->m_transform.right = i_camera->m_transform.right * rotation;
+			i_camera->m_transform.up = i_camera->m_transform.up * rotation;
+			i_camera->m_transform.forward = i_camera->m_transform.forward * rotation;
 		}
 		else
 		{

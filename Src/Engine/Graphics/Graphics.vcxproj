@@ -36,6 +36,9 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Interfaces\cConstantBuffer.h" />
+    <ClInclude Include="Interfaces\cRenderState\cRenderState.h" />
+    <ClInclude Include="Interfaces\cRenderState\eRenderState.h" />
+    <ClInclude Include="Interfaces\cSprite.h" />
     <ClInclude Include="Interfaces\eConstantBufferType.h" />
     <ClInclude Include="OGL\Includes.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -48,6 +51,7 @@
     <ClInclude Include="Structures\sIndexSet.h" />
     <ClInclude Include="Structures\sMaterial.h" />
     <ClInclude Include="Structures\sPosition.h" />
+    <ClInclude Include="Structures\sRectangle.h" />
     <ClInclude Include="Structures\sTexture.h" />
     <ClInclude Include="Structures\sVertex.h" />
   </ItemGroup>
@@ -72,6 +76,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cRenderState.D3D.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\cSprite.D3D.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -79,6 +91,8 @@
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Interfaces\cConstantBuffer.cpp" />
+    <ClCompile Include="Interfaces\cRenderState\cRenderState.cpp" />
+    <ClCompile Include="Interfaces\cSprite.cpp" />
     <ClCompile Include="OGL\Assets\cEffect.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -92,6 +106,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="OGL\Interfaces\cConstantBuffer.OGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cRenderState.OGL.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="OGL\Interfaces\cSprite.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -193,7 +215,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;d3dx11d.lib;Platform.lib;%(AdditionalDependencies)Platform.lib;</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9d.lib;d3d11.lib;d3dx11d.lib;Platform.lib;%(AdditionalDependencies)Platform.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

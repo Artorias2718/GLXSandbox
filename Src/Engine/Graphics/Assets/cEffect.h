@@ -8,6 +8,7 @@ struct ID3D11PixelShader;
 #include "../OGL/Includes.h"
 #endif
 
+#include "../Interfaces/cRenderState/cRenderState.h"
 #include <string>
 
 namespace Engine
@@ -30,6 +31,7 @@ namespace Engine
 				bool CleanUp();
 
 				std::string m_effectName;
+				Interfaces::cRenderState m_renderStates;
 			private:
 				bool LoadShaders();
 				bool LoadVertexShader();

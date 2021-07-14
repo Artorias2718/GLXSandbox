@@ -34,6 +34,7 @@ OnExit:
 
 bool Engine::Graphics::Assets::cEffect::Bind()
 {
+	m_renderStates.Bind();
 	// Set the vertex and fragment shaders
 	{
 		ID3D11ClassInstance** const noInterfaces = nullptr;
