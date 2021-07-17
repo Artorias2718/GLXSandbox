@@ -24,6 +24,7 @@ namespace
 
 	Engine::Graphics::Assets::cMaterial* boxesMat;
 	Engine::Graphics::Assets::cMaterial* cementMat;
+	Engine::Graphics::Assets::cMaterial* checkpointBasesMat;
 	Engine::Graphics::Assets::cMaterial* groundMat;
 	Engine::Graphics::Assets::cMaterial* railingMat;
 
@@ -34,6 +35,7 @@ namespace
 
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
+	Engine::Shared::cGameObject* checkpointBases;
 	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* railing;
 
@@ -67,6 +69,7 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	boxesMat = new Engine::Graphics::Assets::cMaterial("boxes");
 	cementMat = new Engine::Graphics::Assets::cMaterial("cement");
+	checkpointBasesMat = new Engine::Graphics::Assets::cMaterial("checkpointbases");
 	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
 	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
 
@@ -77,6 +80,7 @@ bool Game::MyGame::cMyGame::Initialize()
 
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
+	checkpointBases = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("checkpointbases"), checkpointBasesMat);
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
 
@@ -95,11 +99,9 @@ bool Game::MyGame::cMyGame::Update()
 
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
+	Engine::Graphics::SubmitGameObject(checkpointBases);
 	Engine::Graphics::SubmitGameObject(ground);
 	Engine::Graphics::SubmitGameObject(railing);
-
-	Engine::Graphics::SubmitGameObject(kaiba1);
-	Engine::Graphics::SubmitGameObject(kaiba2);
 
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);
