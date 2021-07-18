@@ -71,6 +71,21 @@
     <ClInclude Include="Structures\sRectangle.h">
       <Filter>Structures</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\Debug\cBox.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Debug\cCapsule.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Debug\cLine.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Debug\cSphere.h">
+      <Filter>Assets\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cDebug.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -135,6 +150,48 @@
     <ClCompile Include="OGL\Interfaces\cSprite.OGL.cpp">
       <Filter>OGL\Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\Debug\cBox.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\Debug\cCapusle.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\Debug\cLine.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\Debug\cSphere.cpp">
+      <Filter>Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cBox.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cCapusle.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cDebug.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cLine.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\Debug\cSphere.D3D.cpp">
+      <Filter>D3D\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cBox.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cCapsule.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cDebug.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cLine.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\Debug\cSphere.OGL.cpp">
+      <Filter>OGL\Assets\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -169,6 +226,15 @@
     </Filter>
     <Filter Include="Interfaces\cRenderState">
       <UniqueIdentifier>{0ca0a151-b9ae-40cc-8840-29fdd5aae5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Debug">
+      <UniqueIdentifier>{d49e7a03-a3dc-4353-8bb1-2b26a1d5dac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Assets\Debug">
+      <UniqueIdentifier>{1ccebee7-04de-4533-95c6-c44be850f1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL\Assets\Debug">
+      <UniqueIdentifier>{1f3191e1-85e0-40eb-b249-1e38c30138dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -69,6 +69,7 @@ namespace Engine
 		bool CleanUp();
 
 		extern std::vector<Shared::cGameObject*> meshObjects;
+		extern std::vector<Shared::cGameObject*> debugObjects;
 		extern std::vector<Shared::cGameObject*> spriteObjects;
 		extern Graphics::Interfaces::cConstantBuffer* s_frameBuffer;
 		extern Graphics::Interfaces::cConstantBuffer* s_drawCallBuffer;
