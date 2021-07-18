@@ -14,7 +14,7 @@
 // The extension headers come from https://www.opengl.org/registry/
 #include "33061/glext.h"
 #if defined(  WINDOWS_API )
-	#include "32686/wglext.h"
+#include "32686/wglext.h"
 #endif
 
 #include <string>
@@ -32,25 +32,30 @@ extern PFNGLBINDBUFFERBASEPROC glBindBufferBase;
 extern PFNGLBINDSAMPLERPROC glBindSampler;
 extern PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
 extern PFNGLBLENDEQUATIONPROC glBlendEquation;
+extern PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate;
+extern PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate;
 extern PFNGLBUFFERDATAPROC glBufferData;
 extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 extern PFNGLCREATEPROGRAMPROC glCreateProgram;
 extern PFNGLCREATESHADERPROC glCreateShader;
+extern PFNGLDRAWELEMENTSBASEVERTEXPROC glDrawElementsBaseVertex;
 extern PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 extern PFNGLDELETEPROGRAMPROC glDeleteProgram;
-extern PFNGLDELETESAMPLERSPROC glDeleteSamplers;
 extern PFNGLDELETESHADERPROC glDeleteShader;
+extern PFNGLDETACHSHADERPROC glDetachShader;
 extern PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
 extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArray;
 extern PFNGLGENBUFFERSPROC glGenBuffers;
 extern PFNGLGENSAMPLERSPROC glGenSamplers;
 extern PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
+extern PFNGLGETATTRIBLOCATIONPROC glGetAttribLocation;
 extern PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
 extern PFNGLGETPROGRAMIVPROC glGetProgramiv;
 extern PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
 extern PFNGLGETSHADERIVPROC glGetShaderiv;
+extern PFNGLGETSTRINGIPROC glGetStringi;
 extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 extern PFNGLINVALIDATEBUFFERDATAPROC glInvalidateBufferData;
 extern PFNGLLINKPROGRAMPROC glLinkProgram;
@@ -77,7 +82,7 @@ namespace External
 {
 	namespace OGLExtensions
 	{
-		bool Load( std::string* o_errorMessage = NULL );
+		bool Load(std::string* o_errorMessage = NULL);
 	}
 }
 

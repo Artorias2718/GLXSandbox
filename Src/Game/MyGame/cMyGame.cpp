@@ -15,6 +15,7 @@
 #include "../../Engine/UserInput/UserInput.h"
 #include "../../Engine/Math/Functions.h"
 #include "../../Engine/Shared/MouseParams.h"
+#include "../../Engine/Shared/cDebugMenu.h"
 
 // Interface
 //==========
@@ -32,7 +33,6 @@ namespace
 	Engine::Graphics::Assets::cMaterial* groundMat;
 	Engine::Graphics::Assets::cMaterial* metalMat;
 	Engine::Graphics::Assets::cMaterial* railingMat;
-	Engine::Graphics::Assets::cMaterial* debugMat;
 
 	Engine::Graphics::Assets::cMaterial* kaibaMat;
 
@@ -45,15 +45,6 @@ namespace
 	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* metal;
 	Engine::Shared::cGameObject* railing;
-
-	Engine::Shared::cGameObject* debugLine1;
-	Engine::Shared::cGameObject* debugLine2;
-	Engine::Shared::cGameObject* debugBox1;
-	Engine::Shared::cGameObject* debugBox2;
-	Engine::Shared::cGameObject* debugSphere1;
-	Engine::Shared::cGameObject* debugSphere2;
-	Engine::Shared::cGameObject* debugCapsule1;
-	Engine::Shared::cGameObject* debugCapsule2;
 
 	Engine::Shared::cGameObject* kaiba1;
 	Engine::Shared::cGameObject* kaiba2;
@@ -89,7 +80,6 @@ bool Game::MyGame::cMyGame::Initialize()
 	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
 	metalMat = new Engine::Graphics::Assets::cMaterial("metal");
 	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
-	debugMat = new Engine::Graphics::Assets::cMaterial("debug");
 
 	kaibaMat = new Engine::Graphics::Assets::cMaterial("kaiba");
 
@@ -102,51 +92,6 @@ bool Game::MyGame::cMyGame::Initialize()
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	metal = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("metal"), metalMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
-
-	// Debug
-	{
-		// Lines
-		{
-			debugLine1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(glm::vec3(-10, -20, 40), glm::vec3(10, 20, -40), { 255, 0, 0, 255 }), debugMat);
-			debugLine2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cLine(glm::vec3(40, -20, 10), glm::vec3(-40, 20, 10), { 0, 0, 255, 255 }), debugMat);
-		}
-		// Boxes
-		{
-			debugBox1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 255, 0, 255 }), debugMat);
-			debugBox2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cBox({ 255, 0, 255, 255 }), debugMat);
-		
-			debugBox1->m_transform.position = glm::vec3(-20, 0, 0);
-			debugBox2->m_transform.position = glm::vec3(20, 0, 0);
-		
-			debugBox1->m_transform.orientation = debugBox1->m_transform.orientation * glm::angleAxis(glm::radians(90.0f), -Engine::Math::forward);
-			debugBox2->m_transform.orientation = debugBox2->m_transform.orientation * glm::angleAxis(glm::radians(90.0f), Engine::Math::forward);
-		
-			debugBox1->m_transform.scale = glm::vec3(20, 15, 10);
-			debugBox2->m_transform.scale = glm::vec3(20, 15, 10);
-		}
-		// Spheres 
-		{
-			debugSphere1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 250, 95, 0, 255 }), debugMat);
-			debugSphere2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cSphere({ 0, 255, 0, 255 }), debugMat);
-		
-			debugSphere1->m_transform.position = glm::vec3(0, -15, 0);
-			debugSphere2->m_transform.position = glm::vec3(0, 15, 0);
-		
-			debugSphere1->m_transform.scale = 5.0f * glm::one<glm::vec3>();
-			debugSphere2->m_transform.scale = 5.0f * glm::one<glm::vec3>();
-		}
-		// Capsules 
-		{
-			debugCapsule1 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 255, 128, 0, 255 }), debugMat);
-			debugCapsule2 = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::Debug::cCapsule(5, { 128, 0, 255, 255 }), debugMat);
-		
-			debugCapsule1->m_transform.position = glm::vec3(-10, 20, 0);
-			debugCapsule2->m_transform.position = glm::vec3(10, 5, 0);
-		
-			debugCapsule1->m_transform.orientation = glm::angleAxis(glm::radians(45.0f), Engine::Math::forward);
-			debugCapsule2->m_transform.orientation = glm::angleAxis(glm::radians(45.0f), -Engine::Math::forward);
-		}
-	}
 
 	kaiba1 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(-675.0f, -675.0f), glm::vec2(-0.5f, 0.5f));
 	kaiba2 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(675.0f, -675.0f), glm::vec2(0.5f, 0.5f));
@@ -168,25 +113,23 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(metal);
 	Engine::Graphics::SubmitGameObject(railing);
 
-	Engine::Graphics::SubmitGameObject(debugLine1);
-	Engine::Graphics::SubmitGameObject(debugLine2);
-	Engine::Graphics::SubmitGameObject(debugBox1);
-	Engine::Graphics::SubmitGameObject(debugBox2);
-	Engine::Graphics::SubmitGameObject(debugSphere1);
-	Engine::Graphics::SubmitGameObject(debugSphere2);
-	Engine::Graphics::SubmitGameObject(debugCapsule1);
-	Engine::Graphics::SubmitGameObject(debugCapsule2);
-
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);
 
 	Move(camera);
-
 	if (Engine::Shared::MouseParams::mouseMoved)
 	{
 		Engine::Shared::MouseParams::mouseMoved = false;
 		Rotate(camera, 0, Engine::Shared::MouseParams::verticalAxis);
 	}
+
+#if defined _DEBUG
+	if (Engine::Shared::cDebugMenu::Instance().m_active)
+	{
+		Engine::Shared::cDebugMenu::Instance().DebugSphere()->m_transform.position = camera->m_transform.position + 3.0f * camera->m_transform.forward;
+	}
+#endif
+
 	Engine::Graphics::SubmitGameObject(camera);
 	return true;
 }

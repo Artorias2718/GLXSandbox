@@ -4,6 +4,7 @@
     <ClCompile Include="cGameObject.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="MouseParams.cpp" />
+    <ClCompile Include="cDebugMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cGameObject.h" />
@@ -11,5 +12,6 @@
     <ClInclude Include="eCameraType.h" />
     <ClInclude Include="MouseParams.h" />
     <ClInclude Include="sTransform.h" />
+    <ClInclude Include="cDebugMenu.h" />
   </ItemGroup>
 </Project>

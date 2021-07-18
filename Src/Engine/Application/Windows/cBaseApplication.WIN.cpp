@@ -12,6 +12,7 @@
 #include "../../Windows/Functions.h"
 #include "../../Math/glm/vec3.hpp"
 #include "../../Shared/MouseParams.h"
+#include "../../Graphics/imGUI/imgui_impl_win32.h"
 
 // Helper Function Declarations
 //=============================
@@ -30,6 +31,8 @@ namespace
 	bool FreeMainWindow( HWND& io_window );
 	bool FreeMainWindowClass( const HINSTANCE i_thisInstanceOfTheApplication, ATOM& io_mainWindowClass );
 }
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Interface
 //==========
@@ -275,7 +278,9 @@ LRESULT CALLBACK Engine::Application::cBaseApplication::OnMessageReceivedFromWin
 
 	// Pass any messages that weren't handled on to Windows
 	// so that our window will behave like any standard window
-	return DefWindowProc( i_window, i_message, i_wParam, i_lParam );
+	// Append this function so ImGUI can send messages to Windows 
+	return DefWindowProc( i_window, i_message, i_wParam, i_lParam )
+		 | ImGui_ImplWin32_WndProcHandler(i_window, i_message, i_wParam, i_lParam);
 }
 
 // Initialization / Clean Up

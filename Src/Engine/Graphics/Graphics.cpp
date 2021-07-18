@@ -18,15 +18,23 @@
 #include "../Shared/cCamera.h"
 #include "../Time/Time.h"
 
+#include <sstream>
+
 #if defined D3D_API
 #include "D3D/Includes.h"
 #include "D3D/Interfaces/D3DInterfaces.h"
+#include "imGUI/imgui_impl_dx11.h"
 #elif defined OGL_API
 #include "OGL/Includes.h"
+#include "imGUI/imgui_impl_opengl3.h"
 #endif
+
+#include "imGUI/imgui.h"
+#include "imGUI/imgui_impl_win32.h"
 
 #include "../Windows/Functions.h"
 #include "../Math/Functions.h"
+#include "../Shared/cDebugMenu.h"
 
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::meshObjects;
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::debugObjects;
@@ -50,6 +58,11 @@ namespace
 	GLuint s_samplerStateId = 0;
 #endif
 }
+
+// imGUI seems to require its dependencies in one place. That is, I can't seem to get it working from within the main Game Class;
+// I even tried declaring "virtual bool UpdateGUI() = 0" in cBaseApplication.WIN.h, then making Update() a virtual function which calls UpdateGUI(), and calling
+// the SuperClass Update function from within cMyGame.h and the menu wouldn't render (I had no errors, but the menu won't display). So, unless I can figure this out at all,
+// I'm being forced to manage most of imGUI from here.
 
 // Helper Function Declarations
 //=============================
@@ -140,6 +153,14 @@ void Engine::Graphics::RenderFrame()
 		meshObjects.clear();
 		debugObjects.clear();
 		spriteObjects.clear();
+
+#if defined _DEBUG
+		Engine::Shared::cDebugMenu::Instance().Update();
+		if (Engine::Shared::cDebugMenu::Instance().m_active)
+		{
+			Engine::Shared::cDebugMenu::Instance().Render();
+		}
+#endif
 	}
 
 #if defined D3D_API
@@ -172,6 +193,18 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 
 	s_renderingWindow = i_initializationParameters.mainWindow;
 
+	// Setup imGUI Context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	// SEtup imGUI Style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+#if defined WINDOWS_API
+	ImGui_ImplWin32_Init(s_renderingWindow);
+#endif
+
 #if defined D3D_API
 	// Create an interface to a Direct3D device
 	if (!CreateDevice(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight))
@@ -185,6 +218,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		wereThereErrors = true;
 		goto OnExit;
 	}
+	ImGui_ImplDX11_Init(Interfaces::D3DInterfaces::s_direct3dDevice, Interfaces::D3DInterfaces::s_direct3dImmediateContext);
 #elif defined OGL_API
 	std::string errorMessage;
 
@@ -203,6 +237,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		ASSERT(false);
 		return false;
 	}
+	ImGui_ImplOpenGL3_Init("#version 420");
 #endif
 
 	// Initialize the graphics objects
@@ -219,6 +254,8 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		goto OnExit;
 	}
 
+	ImGui::CaptureKeyboardFromApp(true);
+	ImGui::CaptureMouseFromApp(true);
 OnExit:
 
 	return !wereThereErrors;
@@ -230,6 +267,10 @@ OnExit:
 bool Engine::Graphics::CleanUp()
 {
 	bool wereThereErrors = false;
+
+#if defined WINDOWS_API
+	ImGui_ImplWin32_Shutdown();
+#endif
 
 #if defined D3D_API
 	if (Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice)
@@ -277,6 +318,7 @@ bool Engine::Graphics::CleanUp()
 		Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain->Release();
 		Engine::Graphics::Interfaces::D3DInterfaces::s_swapChain = NULL;
 	}
+	ImGui_ImplDX11_Shutdown();
 #elif defined OGL_API
 	if (s_openGlRenderingContext != NULL)
 	{
@@ -330,10 +372,12 @@ bool Engine::Graphics::CleanUp()
 		ReleaseDC(s_renderingWindow, s_deviceContext);
 		s_deviceContext = NULL;
 	}
+	ImGui_ImplOpenGL3_Shutdown();
 #endif
 
 	s_renderingWindow = NULL;
 
+	ImGui::DestroyContext();
 	return !wereThereErrors;
 }
 
