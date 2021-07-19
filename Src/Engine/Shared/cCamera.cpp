@@ -33,6 +33,11 @@ Engine::Shared::cCamera::cCamera(const std::string& i_fileName)
 
 		// Read in file contents
 
+		lua_pushstring(luaState, "name");
+		lua_gettable(luaState, -2);
+		m_name = lua_tostring(luaState, -1);
+		lua_pop(luaState, 1);
+
 		lua_pushstring(luaState, "active");
 		lua_gettable(luaState, -2);
 		m_active = (lua_toboolean(luaState, -1)) ? true : false;
@@ -209,13 +214,13 @@ bool Engine::Shared::cCamera::Move()
 
 bool Engine::Shared::cCamera::Rotate()
 {
-	glm::quat rotation(glm::radians<float>(m_rotationSpeed), Shared::MouseParams::verticalAxis);
+	glm::quat rotation(glm::angleAxis(glm::radians(m_rotationSpeed), Engine::Shared::MouseParams::verticalAxis));
 	m_transform.orientation = m_transform.orientation * rotation;
 	m_transform.orientation = glm::normalize(m_transform.orientation);
 
-	m_transform.right = rotation * m_transform.right;
-	m_transform.up = rotation * m_transform.up;
-	m_transform.forward = rotation * m_transform.forward;
+	m_transform.right = m_transform.right * rotation;
+	m_transform.up = m_transform.up * rotation;
+	m_transform.forward = m_transform.forward * rotation;
 
 	return true;
 }

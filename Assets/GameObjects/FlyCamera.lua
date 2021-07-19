@@ -1,9 +1,10 @@
 return
 {
+    name = "FlyCam",
     active = true,
-    fieldOfView = 60,
+    fieldOfView = 90,
     nearPlane = 0.1,
-    farPlane = 100,
+    farPlane = 1000,
     movementSpeed = 8,
     rotationSpeed = 1,
     transform =

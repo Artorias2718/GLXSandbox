@@ -22,15 +22,24 @@
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cDebugMenu.cpp" />
     <ClCompile Include="cGameObject.cpp" />
+    <ClCompile Include="cWorldUI.cpp" />
     <ClCompile Include="MouseParams.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="WorldUIParams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cDebugMenu.h" />
     <ClInclude Include="cGameObject.h" />
+    <ClInclude Include="cGameObjectController.h" />
+    <ClInclude Include="cWorldUI.h" />
     <ClInclude Include="eCameraType.h" />
     <ClInclude Include="MouseParams.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="sCollisionTriangle.h" />
+    <ClInclude Include="sRigidBody.h" />
     <ClInclude Include="sTransform.h" />
+    <ClInclude Include="WorldUIParams.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F76B6020-4CA3-4714-B194-B9DB09C90112}</ProjectGuid>

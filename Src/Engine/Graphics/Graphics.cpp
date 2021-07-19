@@ -35,6 +35,7 @@
 #include "../Windows/Functions.h"
 #include "../Math/Functions.h"
 #include "../Shared/cDebugMenu.h"
+#include "../Shared/cWorldUI.h"
 
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::meshObjects;
 std::vector<Engine::Shared::cGameObject*> Engine::Graphics::debugObjects;
@@ -159,6 +160,11 @@ void Engine::Graphics::RenderFrame()
 		if (Engine::Shared::cDebugMenu::Instance().m_active)
 		{
 			Engine::Shared::cDebugMenu::Instance().Render();
+		}
+		else
+		{
+			Engine::Shared::cWorldUI::Instance().Update(Engine::Shared::WorldUIParams::activeCamera);
+			Engine::Shared::cWorldUI::Instance().Render();
 		}
 #endif
 	}

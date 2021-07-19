@@ -10,12 +10,19 @@
 #include "../../Engine/Graphics/Assets/Debug/cSphere.h"
 #include "../../Engine/Graphics/Assets/Debug/cCapsule.h"
 #include "../../Engine/Graphics/Assets/cMaterial.h"
+#include "../../Engine/Graphics/Structures/sVertex.h"
+#include "../../Engine/Graphics/Structures/sIndexSet.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
 #include "../../Engine/Math/Functions.h"
 #include "../../Engine/Shared/MouseParams.h"
 #include "../../Engine/Shared/cDebugMenu.h"
+#include "../../Engine/Shared/WorldUIParams.h"
+#include "../../Engine/Shared/sCollisionTriangle.h"
+#include "GameObjects/cPlayer.h"
+#include "GameObjects/cPlayerController.h"
+#include <vector>
 
 // Interface
 //==========
@@ -23,6 +30,8 @@
 namespace
 {
 	const float SPEED = 8.0f;
+
+	Engine::Graphics::Assets::cMaterial* collisionMat;
 
 	Engine::Graphics::Assets::cMaterial* cabooseMat;
 	Engine::Graphics::Assets::cMaterial* sargeMat;
@@ -33,6 +42,7 @@ namespace
 	Engine::Graphics::Assets::cMaterial* groundMat;
 	Engine::Graphics::Assets::cMaterial* metalMat;
 	Engine::Graphics::Assets::cMaterial* railingMat;
+	Engine::Graphics::Assets::cMaterial* wallMat;
 
 	Engine::Graphics::Assets::cMaterial* kaibaMat;
 
@@ -42,14 +52,19 @@ namespace
 	Engine::Shared::cGameObject* boxes;
 	Engine::Shared::cGameObject* cement;
 	Engine::Shared::cGameObject* checkpointBases;
+	Engine::Shared::cGameObject* collision;
 	Engine::Shared::cGameObject* ground;
 	Engine::Shared::cGameObject* metal;
 	Engine::Shared::cGameObject* railing;
+	Engine::Shared::cGameObject* wall;
 
 	Engine::Shared::cGameObject* kaiba1;
 	Engine::Shared::cGameObject* kaiba2;
 
 	Engine::Shared::cCamera* camera;
+
+	Game::MyGame::cPlayer* player;
+	Game::MyGame::cPlayerController* playerController;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
 	bool Rotate(Engine::Shared::cGameObject* i_object, float i_angle, const glm::vec3& i_axis);
@@ -71,6 +86,8 @@ Game::MyGame::cMyGame::~cMyGame()
 
 bool Game::MyGame::cMyGame::Initialize()
 {
+	collisionMat = new Engine::Graphics::Assets::cMaterial("collision");
+
 	cabooseMat = new Engine::Graphics::Assets::cMaterial("caboose");
 	sargeMat = new Engine::Graphics::Assets::cMaterial("sarge");
 
@@ -80,6 +97,7 @@ bool Game::MyGame::cMyGame::Initialize()
 	groundMat = new Engine::Graphics::Assets::cMaterial("ground");
 	metalMat = new Engine::Graphics::Assets::cMaterial("metal");
 	railingMat = new Engine::Graphics::Assets::cMaterial("railing");
+	wallMat = new Engine::Graphics::Assets::cMaterial("wall");
 
 	kaibaMat = new Engine::Graphics::Assets::cMaterial("kaiba");
 
@@ -89,15 +107,62 @@ bool Game::MyGame::cMyGame::Initialize()
 	boxes = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("boxes"), boxesMat);
 	cement = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cement"), cementMat);
 	checkpointBases = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("checkpointbases"), checkpointBasesMat);
+	collision = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("collision"), collisionMat);
 	ground = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("ground"), groundMat);
 	metal = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("metal"), metalMat);
 	railing = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("railing"), railingMat);
+	wall = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("wall"), wallMat);
 
 	kaiba1 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(-675.0f, -675.0f), glm::vec2(-0.5f, 0.5f));
 	kaiba2 = new Engine::Shared::cGameObject(kaibaMat, glm::vec2(675.0f, -675.0f), glm::vec2(0.5f, 0.5f));
 
 	camera = new Engine::Shared::cCamera("flycamera");
+	Engine::Shared::WorldUIParams::activeCamera = camera;
 
+	player = new cPlayer("player");
+	playerController = new cPlayerController(player);
+
+	for (uint32_t triIdx = 0; triIdx < collision->m_mesh->m_indexSetCount; ++triIdx)
+	{
+		glm::vec3 a(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].a].position.z
+		);
+
+#if defined D3D_API 
+		glm::vec3 b(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.z
+		);
+
+		glm::vec3 c(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.z
+		);
+#elif defined OGL_API
+		glm::vec3 b(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].b].position.z
+		);
+
+		glm::vec3 c(
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.x,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.y,
+			collision->m_mesh->m_vertices[collision->m_mesh->m_indexSet16[triIdx].c].position.z
+		);
+
+#endif
+
+		Engine::Shared::sCollisionTriangle* collisionTriangle = new Engine::Shared::sCollisionTriangle(a, b, c);
+		collisionTriangle->ComputeNormal();
+		player->m_rigidbody.m_collisionData.push_back(collisionTriangle);
+	}
+
+	player->Update();
 	return true;
 }
 
@@ -109,18 +174,48 @@ bool Game::MyGame::cMyGame::Update()
 	Engine::Graphics::SubmitGameObject(boxes);
 	Engine::Graphics::SubmitGameObject(cement);
 	Engine::Graphics::SubmitGameObject(checkpointBases);
+#if defined _DEBUG
+	Engine::Graphics::SubmitGameObject(collision);
+#endif
 	Engine::Graphics::SubmitGameObject(ground);
 	Engine::Graphics::SubmitGameObject(metal);
 	Engine::Graphics::SubmitGameObject(railing);
+	Engine::Graphics::SubmitGameObject(wall);
 
 	Move(caboose);
 	Rotate(sarge, -50.0f, Engine::Math::up);
 
-	Move(camera);
-	if (Engine::Shared::MouseParams::mouseMoved)
+	if (Engine::UserInput::IsKeyPressed('F'))
 	{
-		Engine::Shared::MouseParams::mouseMoved = false;
-		Rotate(camera, 0, Engine::Shared::MouseParams::verticalAxis);
+		camera->m_active = !camera->m_active;
+		player->m_active = !player->m_active;
+	}
+
+	if (camera->m_active)
+	{
+		player->Render();
+		Engine::Shared::WorldUIParams::activeCamera = camera;
+		Engine::Graphics::SubmitGameObject(camera);
+		Move(camera);
+
+		if (Engine::Shared::MouseParams::mouseMoved)
+		{
+			Engine::Shared::MouseParams::mouseMoved = false;
+			Rotate(camera, 0, Engine::Shared::MouseParams::verticalAxis);
+		}
+	}
+	else if (player->m_active)
+	{
+		Engine::Shared::WorldUIParams::activeCamera = player->m_camera;
+		camera->m_transform.position = player->m_camera->m_transform.position;
+		camera->m_transform.orientation = player->m_camera->m_transform.orientation;
+
+		camera->m_transform.right = camera->m_transform.right * camera->m_transform.orientation;
+		camera->m_transform.up = camera->m_transform.up * camera->m_transform.orientation;
+		camera->m_transform.forward = camera->m_transform.forward * camera->m_transform.orientation;
+
+		Engine::Graphics::SubmitGameObject(player->m_camera);
+		playerController->Move();
 	}
 
 #if defined _DEBUG
@@ -130,7 +225,6 @@ bool Game::MyGame::cMyGame::Update()
 	}
 #endif
 
-	Engine::Graphics::SubmitGameObject(camera);
 	return true;
 }
 
@@ -219,8 +313,7 @@ namespace
 			Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
 
 			glm::quat rotation(glm::angleAxis(glm::radians(i_camera->m_rotationSpeed), Engine::Shared::MouseParams::verticalAxis));
-			i_camera->m_transform.orientation = i_camera->m_transform.orientation * rotation;
-			i_camera->m_transform.orientation = glm::normalize(i_camera->m_transform.orientation);
+			i_camera->m_transform.orientation = glm::normalize(i_camera->m_transform.orientation * rotation);
 
 			i_camera->m_transform.right = i_camera->m_transform.right * rotation;
 			i_camera->m_transform.up = i_camera->m_transform.up * rotation;

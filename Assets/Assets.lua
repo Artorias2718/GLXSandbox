@@ -2,7 +2,9 @@ return
 {
     gameobjects =
     {
-        "GameObjects/FlyCamera.lua"
+        "GameObjects/FlyCamera.lua",
+        "GameObjects/Player.lua",
+        "GameObjects/PlayerCamera.lua"
     },
     materials =
     {
@@ -10,12 +12,14 @@ return
         "Materials/Caboose.lua",
         "Materials/Cement.lua",
         "Materials/CheckpointBases.lua",
+        "Materials/Collision.lua",
         "Materials/Debug.lua",
         "Materials/Ground.lua",
         "Materials/Kaiba.lua",
         "Materials/Metal.lua",
         "Materials/Railing.lua",
-        "Materials/Sarge.lua"
+        "Materials/Sarge.lua",
+        "Materials/Wall.lua",
     },
     meshes =
     {
@@ -23,10 +27,12 @@ return
         "Meshes/Caboose.lua",
         "Meshes/Cement.lua",
         "Meshes/CheckpointBases.lua",
+        "Meshes/Collision.lua",
         "Meshes/Ground.lua",
         "Meshes/Metal.lua",
         "Meshes/Railing.lua",
-        "Meshes/Sarge.lua"
+        "Meshes/Sarge.lua",
+        "Meshes/Wall.lua"
     },
     textures =
     {

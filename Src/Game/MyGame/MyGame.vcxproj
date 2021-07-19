@@ -23,11 +23,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cMyGame.h" />
+    <ClInclude Include="GameObjects\cPlayer.h" />
+    <ClInclude Include="GameObjects\cPlayerController.h" />
     <ClInclude Include="Resource Files\Resource.h" />
     <ClInclude Include="Resource Files\targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cMyGame.cpp" />
+    <ClCompile Include="GameObjects\cPlayer.cpp" />
+    <ClCompile Include="GameObjects\cPlayerController.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,9 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{260ffa17-76f9-4215-b0cd-eeb2612c01e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObjects">
+      <UniqueIdentifier>{91a365cd-6326-4d99-ab3e-b1949e1bdb67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource Files\MyGame.rc">
@@ -18,10 +21,22 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="cMyGame.h" />
+    <ClInclude Include="GameObjects\cPlayer.h">
+      <Filter>GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjects\cPlayerController.h">
+      <Filter>GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="cMyGame.cpp" />
+    <ClCompile Include="GameObjects\cPlayer.cpp">
+      <Filter>GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjects\cPlayerController.cpp">
+      <Filter>GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource Files\CTF.ico">

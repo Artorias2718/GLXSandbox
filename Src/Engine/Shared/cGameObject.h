@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../Shared/sTransform.h"
+#include "../Shared/sRigidBody.h"
 
 namespace Engine 
 {
@@ -32,11 +33,13 @@ namespace Engine
 				const glm::vec2& i_position = glm::zero<glm::vec2>(), const glm::vec2& i_scale = glm::one<glm::vec2>());
 			virtual ~cGameObject();
 
+			std::string m_name;
 			Graphics::Assets::cMesh *m_mesh;
 			Graphics::Assets::cDebug *m_debug;
 			Graphics::Interfaces::cSprite *m_sprite;
 			Graphics::Assets::cMaterial *m_material;
 			Shared::sTransform m_transform;
+			Shared::sRigidBody m_rigidbody;
 
 			bool m_active;
 		};
