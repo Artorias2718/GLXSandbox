@@ -46,4 +46,5 @@ void main(
 	//		o_color.r = ? sin( g_elapsedSeconds ) ?
 	// You can change .r, .g, and .b (but leave .a as 1.0).
 	// Remember that your final values should be [0,1], so you will have to do some math.
+	o_color = float4( cos(g_elapsedSeconds), 1.0, sin(g_elapsedSeconds), 1.0 );
 }

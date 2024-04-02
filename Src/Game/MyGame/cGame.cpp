@@ -9,7 +9,7 @@
 // Initialization / Clean Up
 //--------------------------
 
-Engine::cGame::~cGame()
+Game::MyGame::cGame::~cGame()
 {
 
 }
@@ -20,12 +20,12 @@ Engine::cGame::~cGame()
 // Initialization / Clean Up
 //--------------------------
 
-bool Engine::cGame::Initialize()
+bool Game::MyGame::cGame::Initialize()
 {
 	return true;
 }
 
-bool Engine::cGame::CleanUp()
+bool Game::MyGame::cGame::CleanUp()
 {
 	return true;
 }

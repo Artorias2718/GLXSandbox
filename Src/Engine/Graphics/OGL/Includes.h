@@ -2,8 +2,8 @@
 	This file can be included by a project that wants to use OpenGL
 */
 
-#ifndef ENGINE_GRAPHICS_OPENGL_INCLUDES_H
-#define ENGINE_GRAPHICS_OPENGL_INCLUDES_H
+#ifndef ENGINE_GRAPHICS_OGL_INCLUDES_H
+#define ENGINE_GRAPHICS_OGL_INCLUDES_H
 
 #if defined( WINDOWS_API )
 	// windows.h _must_ be #included before GL.h
@@ -16,6 +16,6 @@
 #endif
 
 // Modern OpenGL requires extensions
-#include "../../../External/GLExtensions/GLExtensions.h"
+#include "../../../External/OGLExtensions/OGLExtensions.h"
 
-#endif	// ENGINE_GRAPHICS_OPENGL_INCLUDES_H
+#endif	// ENGINE_GRAPHICS_OGL_INCLUDES_H

@@ -1,7 +1,7 @@
 // Header Files
 //=============
 
-#include "GL.h"
+#include "OGL.h"
 
 #include "Functions.h"
 #include <sstream>
@@ -12,13 +12,13 @@
 
 namespace
 {
-	const char* const s_hiddenWindowClass_name = "EAE6320 Hidden OpenGL Context Window Class";
+	const char* const s_hiddenWindowClass_name = "Engine Hidden OpenGL Context Window Class";
 }
 
 // Interface
 //==========
 
-bool Engine::Windows::OpenGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, sHiddenWindowInfo& o_info, std::string* const o_errorMessage )
+bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, sHiddenWindowInfo& o_info, std::string* const o_errorMessage )
 {
 	bool wereThereErrors = false;
 
@@ -195,7 +195,7 @@ OnExit:
 	return !wereThereErrors;
 }
 
-bool Engine::Windows::OpenGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHiddenWindowInfo& io_info, std::string* const o_errorMessage )
+bool Engine::Windows::OGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHiddenWindowInfo& io_info, std::string* const o_errorMessage )
 {
 	bool wereThereErrors = false;
 

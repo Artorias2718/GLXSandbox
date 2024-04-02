@@ -2,14 +2,14 @@
 	This file can be used by any project that needs to use OpenGL extensions
 */
 
-#ifndef GLEXTENSIONS_FUNCTIONS_H
-#define GLEXTENSIONS_FUNCTIONS_H
+#ifndef OGLExtensions_FUNCTIONS_H
+#define OGLExtensions_FUNCTIONS_H
 
 // Header Files
 //=============
 
 // The extension headers rely on GL.h
-#include "../../Engine/Graphics/OpenGL/Includes.h"
+#include "../../Engine/Graphics/OGL/Includes.h"
 
 // The extension headers come from https://www.opengl.org/registry/
 #include "33061/glext.h"
@@ -69,10 +69,10 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 namespace External
 {
-	namespace GLExtensions
+	namespace OGLExtensions
 	{
 		bool Load( std::string* o_errorMessage = NULL );
 	}
 }
 
-#endif	// GLEXTENSIONS_FUNCTIONS_H
+#endif	// OGLExtensions_FUNCTIONS_H

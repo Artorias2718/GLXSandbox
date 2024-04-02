@@ -2,8 +2,8 @@
 	This file can be included by a project that wants to use OpenGL
 */
 
-#ifndef ENGINE_GRAPHICS_DIRECT3D_INCLUDES_H
-#define ENGINE_GRAPHICS_DIRECT3D_INCLUDES_H
+#ifndef ENGINE_GRAPHICS_D3D_INCLUDES_H
+#define ENGINE_GRAPHICS_D3D_INCLUDES_H
 
 #if defined( WINDOWS_API )
 #include <D3D11.h>
@@ -12,4 +12,4 @@
 #include <DXGI.h>
 #endif
 
-#endif	// ENGINE_GRAPHICS_DIRECT3D_INCLUDES_H
+#endif	// ENGINE_GRAPHICS_D3D_INCLUDES_H
