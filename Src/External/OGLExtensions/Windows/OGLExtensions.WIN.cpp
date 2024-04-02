@@ -1,12 +1,12 @@
 // Header Files
 //=============
 
-#include "../GLExtensions.h"
+#include "../OGLExtensions.h"
 
 #include <sstream>
 #include "../../../Engine/Asserts/Asserts.h"
 #include "../../../Engine/Windows/Functions.h"
-#include "../../../Engine/Windows/GL.h"
+#include "../../../Engine/Windows/OGL.h"
 
 // Helper Function Declarations
 //=============================
@@ -62,7 +62,7 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
 // Initialization
 //---------------
 
-bool External::GLExtensions::Load( std::string* o_errorMessage )
+bool External::OGLExtensions::Load( std::string* o_errorMessage )
 {
 	bool wereThereErrors = false;
 
@@ -73,8 +73,8 @@ bool External::GLExtensions::Load( std::string* o_errorMessage )
 	// and then destroy it afterwards,
 	// all before doing anything with the main window)
 	HINSTANCE hInstance = NULL;
-	Engine::Windows::OpenGL::sHiddenWindowInfo hiddenWindowInfo;
-	if ( Engine::Windows::OpenGL::CreateHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
+	Engine::Windows::OGL::sHiddenWindowInfo hiddenWindowInfo;
+	if ( Engine::Windows::OGL::CreateHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
 	{
 		ASSERTF( wglGetCurrentContext() != NULL, "OpenGL extensions can't be loaded without a current OpenGL context" );
 	}
@@ -86,53 +86,53 @@ bool External::GLExtensions::Load( std::string* o_errorMessage )
 	}
 
 	// Load each extension
-#define GLEXTENSIONS_LOADFUNCTION( i_functionName, i_functionType )														\
+#define OGLExtensions_LOADFUNCTION( i_functionName, i_functionType )														\
 		i_functionName = reinterpret_cast<i_functionType>( GetGLFunctionAddress( #i_functionName, o_errorMessage ) );	\
 		if ( !i_functionName )																							\
 			goto OnExit;
 
-	GLEXTENSIONS_LOADFUNCTION( glActiveTexture, PFNGLACTIVETEXTUREPROC );
-	GLEXTENSIONS_LOADFUNCTION( glAttachShader, PFNGLATTACHSHADERPROC );
-	GLEXTENSIONS_LOADFUNCTION( glBindBuffer, PFNGLBINDBUFFERPROC );
-	GLEXTENSIONS_LOADFUNCTION( glBindBufferBase, PFNGLBINDBUFFERBASEPROC );
-	GLEXTENSIONS_LOADFUNCTION( glBindVertexArray, PFNGLBINDVERTEXARRAYPROC );
-	GLEXTENSIONS_LOADFUNCTION( glBufferData, PFNGLBUFFERDATAPROC );
-	GLEXTENSIONS_LOADFUNCTION( glBufferSubData, PFNGLBUFFERSUBDATAPROC );
-	GLEXTENSIONS_LOADFUNCTION( glCompileShader, PFNGLCOMPILESHADERPROC );
-	GLEXTENSIONS_LOADFUNCTION( glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC );
-	GLEXTENSIONS_LOADFUNCTION( glCreateProgram, PFNGLCREATEPROGRAMPROC );
-	GLEXTENSIONS_LOADFUNCTION( glCreateShader, PFNGLCREATESHADERPROC );
-	GLEXTENSIONS_LOADFUNCTION( glDeleteBuffers, PFNGLDELETEBUFFERSPROC );
-	GLEXTENSIONS_LOADFUNCTION( glDeleteProgram, PFNGLDELETEPROGRAMPROC );
-	GLEXTENSIONS_LOADFUNCTION( glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC );
-	GLEXTENSIONS_LOADFUNCTION( glDeleteShader, PFNGLDELETESHADERPROC );
-	GLEXTENSIONS_LOADFUNCTION( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGenBuffers, PFNGLGENBUFFERSPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGetProgramiv, PFNGLGETPROGRAMIVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGetShaderiv, PFNGLGETSHADERIVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC );
-	GLEXTENSIONS_LOADFUNCTION( glLinkProgram, PFNGLLINKPROGRAMPROC );
-	GLEXTENSIONS_LOADFUNCTION( glShaderSource, PFNGLSHADERSOURCEPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniform1fv, PFNGLUNIFORM1FVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniform1i, PFNGLUNIFORM1IPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniform2fv, PFNGLUNIFORM2FVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniform3fv, PFNGLUNIFORM3FVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniform4fv, PFNGLUNIFORM4FVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC );
-	GLEXTENSIONS_LOADFUNCTION( glUseProgram, PFNGLUSEPROGRAMPROC );
-	GLEXTENSIONS_LOADFUNCTION( glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC );
-	GLEXTENSIONS_LOADFUNCTION( wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC );
-	GLEXTENSIONS_LOADFUNCTION( wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC );
+	OGLExtensions_LOADFUNCTION( glActiveTexture, PFNGLACTIVETEXTUREPROC );
+	OGLExtensions_LOADFUNCTION( glAttachShader, PFNGLATTACHSHADERPROC );
+	OGLExtensions_LOADFUNCTION( glBindBuffer, PFNGLBINDBUFFERPROC );
+	OGLExtensions_LOADFUNCTION( glBindBufferBase, PFNGLBINDBUFFERBASEPROC );
+	OGLExtensions_LOADFUNCTION( glBindVertexArray, PFNGLBINDVERTEXARRAYPROC );
+	OGLExtensions_LOADFUNCTION( glBufferData, PFNGLBUFFERDATAPROC );
+	OGLExtensions_LOADFUNCTION( glBufferSubData, PFNGLBUFFERSUBDATAPROC );
+	OGLExtensions_LOADFUNCTION( glCompileShader, PFNGLCOMPILESHADERPROC );
+	OGLExtensions_LOADFUNCTION( glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC );
+	OGLExtensions_LOADFUNCTION( glCreateProgram, PFNGLCREATEPROGRAMPROC );
+	OGLExtensions_LOADFUNCTION( glCreateShader, PFNGLCREATESHADERPROC );
+	OGLExtensions_LOADFUNCTION( glDeleteBuffers, PFNGLDELETEBUFFERSPROC );
+	OGLExtensions_LOADFUNCTION( glDeleteProgram, PFNGLDELETEPROGRAMPROC );
+	OGLExtensions_LOADFUNCTION( glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC );
+	OGLExtensions_LOADFUNCTION( glDeleteShader, PFNGLDELETESHADERPROC );
+	OGLExtensions_LOADFUNCTION( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC );
+	OGLExtensions_LOADFUNCTION( glGenBuffers, PFNGLGENBUFFERSPROC );
+	OGLExtensions_LOADFUNCTION( glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC );
+	OGLExtensions_LOADFUNCTION( glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC );
+	OGLExtensions_LOADFUNCTION( glGetProgramiv, PFNGLGETPROGRAMIVPROC );
+	OGLExtensions_LOADFUNCTION( glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC );
+	OGLExtensions_LOADFUNCTION( glGetShaderiv, PFNGLGETSHADERIVPROC );
+	OGLExtensions_LOADFUNCTION( glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC );
+	OGLExtensions_LOADFUNCTION( glLinkProgram, PFNGLLINKPROGRAMPROC );
+	OGLExtensions_LOADFUNCTION( glShaderSource, PFNGLSHADERSOURCEPROC );
+	OGLExtensions_LOADFUNCTION( glUniform1fv, PFNGLUNIFORM1FVPROC );
+	OGLExtensions_LOADFUNCTION( glUniform1i, PFNGLUNIFORM1IPROC );
+	OGLExtensions_LOADFUNCTION( glUniform2fv, PFNGLUNIFORM2FVPROC );
+	OGLExtensions_LOADFUNCTION( glUniform3fv, PFNGLUNIFORM3FVPROC );
+	OGLExtensions_LOADFUNCTION( glUniform4fv, PFNGLUNIFORM4FVPROC );
+	OGLExtensions_LOADFUNCTION( glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC );
+	OGLExtensions_LOADFUNCTION( glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC );
+	OGLExtensions_LOADFUNCTION( glUseProgram, PFNGLUSEPROGRAMPROC );
+	OGLExtensions_LOADFUNCTION( glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC );
+	OGLExtensions_LOADFUNCTION( wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC );
+	OGLExtensions_LOADFUNCTION( wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC );
 
-#undef GLEXTENSIONS_LOADFUNCTION
+#undef OGLExtensions_LOADFUNCTION
 
 OnExit:
 
-	if ( !Engine::Windows::OpenGL::FreeHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
+	if ( !Engine::Windows::OGL::FreeHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
 	{
 		wereThereErrors = true;
 		ASSERTF( false, o_errorMessage->c_str() );

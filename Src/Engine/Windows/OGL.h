@@ -19,7 +19,7 @@ namespace Engine
 {
 	namespace Windows
 	{
-		namespace OpenGL
+		namespace OGL
 		{
 			// Initializing OpenGL in Windows requires a device context,
 			// and so a hidden window must be created and a device context created

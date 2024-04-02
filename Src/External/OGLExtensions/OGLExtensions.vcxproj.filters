@@ -7,7 +7,7 @@
     <ClInclude Include="33061\glext.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="GLExtensions.h" />
+    <ClInclude Include="OGLExtensions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Windows\GLExtensions.WIN.cpp">
+    <ClCompile Include="Windows\OGLExtensions.WIN.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
   </ItemGroup>

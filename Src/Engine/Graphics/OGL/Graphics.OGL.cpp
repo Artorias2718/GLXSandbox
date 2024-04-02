@@ -15,8 +15,8 @@
 #include "../../Platform/Platform.h"
 #include "../../Time/Time.h"
 #include "../../Windows/Functions.h"
-#include "../../Windows/GL.h"
-#include "../../../External/GLExtensions/GLExtensions.h"
+#include "../../Windows/OGL.h"
+#include "../../../External/OGLExtensions/OGLExtensions.h"
 #include "../../UserOutput/UserOutput.h"
 
 // Static Data Initialization
@@ -189,7 +189,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 	s_renderingWindow = i_initializationParameters.mainWindow;
 
 	// Load any required OpenGL extensions
-	if (!External::GLExtensions::Load(&errorMessage))
+	if (!External::OGLExtensions::Load(&errorMessage))
 	{
 		ASSERTF(false, errorMessage.c_str());
 		Logging::OutputError(errorMessage.c_str());

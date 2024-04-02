@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Functions.cpp" />
-    <ClCompile Include="GL.cpp" />
+    <ClCompile Include="OGL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Includes.h" />
-    <ClInclude Include="GL.h" />
+    <ClInclude Include="OGL.h" />
   </ItemGroup>
 </Project>
