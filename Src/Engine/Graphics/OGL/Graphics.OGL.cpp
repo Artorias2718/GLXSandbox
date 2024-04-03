@@ -2,7 +2,7 @@
 //=============
 
 #include "../Graphics.h"
-#include "../sVertex.h"
+#include "../Structures/sVertex.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -162,7 +162,7 @@ void Engine::Graphics::RenderFrame()
 			const GLint indexOfFirstVertexToRender = 0;
 			// As of this comment we are only drawing a single triangle
 			// (you will have to update this code in future assignments!)
-			const unsigned int triangleCount = 1;
+			const unsigned int triangleCount = 2;
 			const unsigned int vertexCountPerTriangle = 3;
 			const unsigned int vertexCountToRender = triangleCount * vertexCountPerTriangle;
 			glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
@@ -292,7 +292,7 @@ bool Engine::Graphics::CleanUp()
 			if (wglDeleteContext(s_openGLRenderingContext) == FALSE)
 			{
 				wereThereErrors = true;
-				const std::string windowsErrorMessage = Windows::GetLastSystemError();
+				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
 				ASSERTF(false, windowsErrorMessage.c_str());
 				Logging::OutputError("Windows failed to delete the OpenGL rendering context: %s", windowsErrorMessage.c_str());
 			}
@@ -300,7 +300,7 @@ bool Engine::Graphics::CleanUp()
 		else
 		{
 			wereThereErrors = true;
-			const std::string windowsErrorMessage = Windows::GetLastSystemError();
+			const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
 			ASSERTF(false, windowsErrorMessage.c_str());
 			Logging::OutputError("Windows failed to unset the current OpenGL rendering context: %s", windowsErrorMessage.c_str());
 		}
@@ -532,7 +532,7 @@ namespace
 				}
 				else
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					ASSERTF(false, windowsErrorMessage.c_str());
 					Engine::Logging::OutputError("Windows failed to choose the closest pixel format: %s", windowsErrorMessage.c_str());
 					return false;
@@ -554,7 +554,7 @@ namespace
 				}
 				if (SetPixelFormat(s_deviceContext, pixelFormatId, &pixelFormatDescriptor) == FALSE)
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					ASSERTF(false, windowsErrorMessage.c_str());
 					Engine::Logging::OutputError("Windows couldn't set the desired pixel format: %s", windowsErrorMessage.c_str());
 					return false;
@@ -585,7 +585,7 @@ namespace
 				if (s_openGLRenderingContext == NULL)
 				{
 					DWORD errorCode;
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError(&errorCode);
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError(&errorCode);
 					std::ostringstream errorMessage;
 					errorMessage << "Windows failed to create an OpenGL rendering context: ";
 					if ((errorCode == ERROR_INVALID_VERSION_ARB)
@@ -611,7 +611,7 @@ namespace
 			// Set it as the rendering context of this thread
 			if (wglMakeCurrent(s_deviceContext, s_openGLRenderingContext) == FALSE)
 			{
-				const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+				const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 				ASSERTF(false, windowsErrorMessage.c_str());
 				Engine::Logging::OutputError("Windows failed to set the current OpenGL rendering context: %s",
 					windowsErrorMessage.c_str());
@@ -688,11 +688,11 @@ namespace
 			// You will have to update this in a future assignment
 			// (one of the most common mistakes in the class is to leave hard-coded values here).
 
-			const unsigned int triangleCount = 1;
+			const unsigned int triangleCount = 2;
 			const unsigned int vertexCountPerTriangle = 3;
 			const unsigned int vertexCount = triangleCount * vertexCountPerTriangle;
-			const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::sVertex);
-			Engine::Graphics::sVertex vertexData[vertexCount];
+			const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::Structures::sVertex);
+			Engine::Graphics::Structures::sVertex vertexData[vertexCount];
 			// Fill in the data for the triangle
 			{
 				vertexData[0].position.x = -0.125f;
@@ -703,6 +703,15 @@ namespace
 
 				vertexData[2].position.x = 0.125f;
 				vertexData[2].position.y = 0.125f;
+
+				vertexData[3].position.x = -0.125f;
+				vertexData[3].position.y = 0.125f;
+
+				vertexData[4].position.x = 0.125f;
+				vertexData[4].position.y = 0.125f;
+
+				vertexData[5].position.x = -0.125f;
+				vertexData[5].position.y = -0.125f;
 			}
 			glBufferData(GL_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(vertexData),
 				// In our class we won't ever read from the buffer
@@ -721,7 +730,7 @@ namespace
 		{
 			// The "stride" defines how large a single vertex is in the stream of data
 			// (or, said another way, how far apart each position element is)
-			const GLsizei stride = sizeof(Engine::Graphics::sVertex);
+			const GLsizei stride = sizeof(Engine::Graphics::Structures::sVertex);
 
 			// Position
 			// 2 floats == 8 bytes
@@ -731,7 +740,7 @@ namespace
 				const GLint elementCount = 2;
 				const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 				glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
-					reinterpret_cast<GLvoid*>(offsetof(Engine::Graphics::sVertex, position.x)));
+					reinterpret_cast<GLvoid*>(offsetof(Engine::Graphics::Structures::sVertex, position.x)));
 				const GLenum errorCode = glGetError();
 				if (errorCode == GL_NO_ERROR)
 				{
@@ -827,7 +836,7 @@ namespace
 		{
 			// Load the shader source code
 			{
-				const char* path_sourceCode = "data/shaders/ogl/fragment.glsl";
+				const char* path_sourceCode = "data/shaders/fragment.shader";
 				std::string errorMessage;
 				if (!Engine::Platform::LoadBinaryFile(path_sourceCode, dataFromFile, &errorMessage))
 				{
@@ -1010,7 +1019,7 @@ namespace
 		{
 			// Load the shader source code
 			{
-				const char* path_sourceCode = "data/shaders/ogl/vertex.glsl";
+				const char* path_sourceCode = "data/shaders/vertex.shader";
 				std::string errorMessage;
 				if (!Engine::Platform::LoadBinaryFile(path_sourceCode, dataFromFile, &errorMessage))
 				{

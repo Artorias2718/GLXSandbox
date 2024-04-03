@@ -161,7 +161,7 @@ namespace
 		std::string wglErrorMessage;
 		if ( address == NULL )
 		{
-			wglErrorMessage = Engine::Windows::GetLastSystemError();
+			wglErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 			ASSERTF( false, "The OpenGL extension function \"%s\" wasn't found"
 				" (it will now be looked for in the non-extension Windows functions)", i_functionName );
 		}
@@ -186,7 +186,7 @@ namespace
 				}
 				else
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					if ( wglErrorMessage.empty() )
 					{
 						wglErrorMessage = windowsErrorMessage;

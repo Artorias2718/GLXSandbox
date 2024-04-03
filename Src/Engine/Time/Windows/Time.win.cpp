@@ -95,7 +95,7 @@ bool Engine::Time::Initialize()
 			else
 			{
 				wereThereErrors = true;
-				const std::string windowsErrorMessage = Windows::GetLastSystemError();
+				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
 				ASSERTF( false, windowsErrorMessage.c_str() );
 				Logging::OutputMessage( "Windows failed to query performance frequency: %s", windowsErrorMessage.c_str() );
 				goto OnExit;
@@ -105,7 +105,7 @@ bool Engine::Time::Initialize()
 		if ( QueryPerformanceCounter( &s_totalTicksElapsed_atInitializion ) == FALSE )
 		{
 			wereThereErrors = true;
-			const std::string windowsErrorMessage = Windows::GetLastSystemError();
+			const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
 			ASSERTF( false, windowsErrorMessage.c_str() );
 			Logging::OutputMessage( "Windows failed to query the performance counter: %s", windowsErrorMessage.c_str() );
 			goto OnExit;

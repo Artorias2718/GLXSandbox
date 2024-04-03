@@ -4,22 +4,28 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sPosition.h" />
-    <ClInclude Include="sVertex.h" />
+    <ClInclude Include="OGL\Includes.h">
+      <Filter>OGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="D3D\Includes.h">
       <Filter>D3D</Filter>
     </ClInclude>
-    <ClInclude Include="OGL\Includes.h">
-      <Filter>OGL</Filter>
+    <ClInclude Include="Structures\sPosition.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sVertex.h">
+      <Filter>Structures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="D3D\Graphics.D3D.cpp">
-      <Filter>D3D</Filter>
-    </ClCompile>
     <ClCompile Include="OGL\Graphics.OGL.cpp">
       <Filter>OGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="D3D\Graphics.D3D.cpp">
+      <Filter>D3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +34,9 @@
     </Filter>
     <Filter Include="OGL">
       <UniqueIdentifier>{7965c822-70e5-4ca5-812d-88c098fd9d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structures">
+      <UniqueIdentifier>{e6568691-4b41-4c38-91a3-8b75d2e45f7d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

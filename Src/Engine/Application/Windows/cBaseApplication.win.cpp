@@ -197,7 +197,7 @@ LRESULT CALLBACK Engine::Application::cBaseApplication::OnMessageReceivedFromWin
 				{
 					// Make sure that there was no error
 					DWORD errorCode;
-					const std::string errorMessage = Windows::GetLastSystemError( &errorCode );
+					const std::string errorMessage = Windows::Functions::GetLastSystemError( &errorCode );
 					if ( errorCode != ERROR_SUCCESS )
 					{
 						ASSERTF( "Couldn't set main window user data: %s", errorMessage.c_str() );
@@ -423,7 +423,7 @@ namespace
 			}
 			else
 			{
-				const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+				const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 				ASSERTF( false, "Main window wasn't created: %s", windowsErrorMessage.c_str() );
 				Engine::Logging::OutputError( "Windows failed to create the main window: %s", windowsErrorMessage.c_str() );
 				return false;
@@ -444,7 +444,7 @@ namespace
 				// Get the coordinates of the entire window
 				if ( GetWindowRect( o_window, &windowCoordinates ) == FALSE )
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					ASSERTF( false, "Couldn't get coordinates of the main window: %s", windowsErrorMessage.c_str() );
 					Engine::Logging::OutputError( "Windows failed to get the coordinates of the main window: %s", windowsErrorMessage.c_str() );
 					goto OnError;
@@ -453,7 +453,7 @@ namespace
 				RECT clientDimensions;
 				if ( GetClientRect( o_window, &clientDimensions ) == FALSE )
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					ASSERTF( false, "Couldn't get the main window's client dimensions: %s", windowsErrorMessage.c_str() );
 					Engine::Logging::OutputError( "Windows failed to get the dimensions of the main window's client area:: %s",
 						windowsErrorMessage.c_str() );
@@ -477,7 +477,7 @@ namespace
 				}
 				else
 				{
-					const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 					ASSERTF( false, "Couldn't resize the main window to &i x &i: %s",
 						desiredWidth_window, desiredHeight_window, windowsErrorMessage.c_str() );
 					Engine::Logging::OutputError( "Windows failed to resize main window to &i x &i"
@@ -562,7 +562,7 @@ namespace
 		}
 		else
 		{
-			const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+			const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 			ASSERTF( false, "Main window class registration failed: %s", windowsErrorMessage.c_str() );
 			Engine::Logging::OutputError( "Windows failed to register the main window class: %s", windowsErrorMessage.c_str() );
 			return false;
@@ -581,7 +581,7 @@ namespace
 		}
 		else
 		{
-			const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+			const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 			ASSERTF( false, "Main window wasn't destroyed: %s", windowsErrorMessage.c_str() );
 			Engine::Logging::OutputError( "Windows failed to destroy the main window: %s", windowsErrorMessage.c_str() );
 			return false;
@@ -598,7 +598,7 @@ namespace
 		}
 		else
 		{
-			const std::string windowsErrorMessage = Engine::Windows::GetLastSystemError();
+			const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 			ASSERTF( false, "Main window class wasn't unregistered: %s", windowsErrorMessage.c_str() );
 			Engine::Logging::OutputError( "Windows failed to unregister the main window class: %s", windowsErrorMessage.c_str() );
 			return false;

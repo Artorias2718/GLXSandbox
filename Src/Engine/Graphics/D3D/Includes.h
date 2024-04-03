@@ -6,10 +6,12 @@
 #define ENGINE_GRAPHICS_D3D_INCLUDES_H
 
 #if defined( WINDOWS_API )
-#include <D3D11.h>
-#include <D3DX11async.h>
-#include <D3DX11core.h>
-#include <DXGI.h>
+#if defined D3D_API
+		#include <D3D11.h>
+		#include <D3DX11async.h>
+		#include <D3DX11core.h>
+		#include <DXGI.h>
+	#endif
 #endif
 
 #endif	// ENGINE_GRAPHICS_D3D_INCLUDES_H
