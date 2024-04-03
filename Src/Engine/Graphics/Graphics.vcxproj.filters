@@ -6,20 +6,22 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="sPosition.h" />
     <ClInclude Include="sVertex.h" />
-    <ClInclude Include="D3D\Includes.h">
-      <Filter>D3D</Filter>
-    </ClInclude>
     <ClInclude Include="OGL\Includes.h">
       <Filter>OGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="D3D\Includes.h">
+      <Filter>D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="D3D\Graphics.D3D.cpp">
-      <Filter>D3D</Filter>
-    </ClCompile>
     <ClCompile Include="OGL\Graphics.OGL.cpp">
       <Filter>OGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="D3D\Graphics.D3D.cpp">
+      <Filter>D3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,8 +3,8 @@
 	(ones that the user can set in an INI file)
 */
 
-#ifndef USERSETTINGS_H
-#define USERSETTINGS_H
+#ifndef ENGINE_USERSETTINGS_USERSETTINGS_H
+#define ENGINE_USERSETTINGS_USERSETTINGS_H
 
 // Interface
 //==========
@@ -18,4 +18,4 @@ namespace Engine
 	}
 }
 
-#endif	// USERSETTINGS_H
+#endif // !ENGINE_USERSETTINGS_USERSETTINGS_H
