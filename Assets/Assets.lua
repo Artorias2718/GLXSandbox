@@ -1,5 +1,9 @@
 return
 {
+    meshes =
+    {
+        "Square.lua"
+    },
     shaders =
     {
         { path = "Vertex.shader", arguments = { "vertex" } },

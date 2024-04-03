@@ -209,4 +209,5 @@ void Engine::Application::cBaseApplication::OnNewFrame()
 {
 	Time::OnNewFrame();
 	Graphics::RenderFrame();
+	Update();
 }
