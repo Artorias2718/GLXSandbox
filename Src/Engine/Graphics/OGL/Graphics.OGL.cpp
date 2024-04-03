@@ -3,6 +3,7 @@
 
 #include "../Graphics.h"
 #include "../Structures/sVertex.h"
+#include "../Assets/cMesh.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -28,16 +29,7 @@ namespace
 	HWND s_renderingWindow = NULL;
 	// These are Windows-specific interfaces
 	HDC s_deviceContext = NULL;
-	HGLRC s_openGLRenderingContext = NULL;
-
-	// The vertex buffer holds the data for each vertex
-	GLuint s_vertexArrayId = 0;
-#ifdef GRAPHICS_ISDEVICEDEBUGINFOENABLED
-	// OpenGL debuggers don't seem to support freeing the vertex buffer
-	// and letting the vertex array object hold a reference to it,
-	// and so if debug info is enabled an explicit reference is held
-	GLuint s_vertexBufferId = 0;
-#endif
+	HGLRC s_openGlRenderingContext = NULL;
 
 	// OpenGL encapsulates a matching vertex shader and fragment shader into what it calls a "program".
 
@@ -65,7 +57,7 @@ namespace
 	{
 		union
 		{
-			float g_elapsedSeconds;
+			float g_elapsedSecondCount_total;
 			float register0[4];	// You won't have to worry about why I do this until a later assignment
 		};
 	} s_constantBufferData;
@@ -80,7 +72,6 @@ namespace
 	bool CreateConstantBuffer();
 	bool CreateProgram();
 	bool CreateRenderingContext();
-	bool CreateVertexBuffer();
 	bool LoadFragmentShader(const GLuint i_programId);
 	bool LoadVertexShader(const GLuint i_programId);
 
@@ -119,7 +110,7 @@ void Engine::Graphics::RenderFrame()
 	// Update the constant buffer
 	{
 		// Update the struct (i.e. the memory that we own)
-		s_constantBufferData.g_elapsedSeconds = Time::ElapsedSeconds();
+		s_constantBufferData.g_elapsedSecondCount_total = Time::ElapsedSeconds();
 		// Make the uniform buffer active
 		{
 			glBindBuffer(GL_UNIFORM_BUFFER, s_constantBufferId);
@@ -147,27 +138,12 @@ void Engine::Graphics::RenderFrame()
 			glUseProgram(s_programId);
 			ASSERT(glGetError() == GL_NO_ERROR);
 		}
-		// Bind a specific vertex buffer to the device as a data source
+
+		for (std::vector<Assets::cMesh*>::iterator itor = meshes.begin(); itor != meshes.end(); ++itor)
 		{
-			glBindVertexArray(s_vertexArrayId);
-			ASSERT(glGetError() == GL_NO_ERROR);
+			(*itor)->Render();
 		}
-		// Render triangles from the currently-bound vertex buffer
-		{
-			// The mode defines how to interpret multiple vertices as a single "primitive";
-			// we define a triangle list
-			// (meaning that every primitive is a triangle and will be defined by three vertices)
-			const GLenum mode = GL_TRIANGLES;
-			// It's possible to start rendering primitives in the middle of the stream
-			const GLint indexOfFirstVertexToRender = 0;
-			// As of this comment we are only drawing a single triangle
-			// (you will have to update this code in future assignments!)
-			const unsigned int triangleCount = 2;
-			const unsigned int vertexCountPerTriangle = 3;
-			const unsigned int vertexCountToRender = triangleCount * vertexCountPerTriangle;
-			glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
-			ASSERT(glGetError() == GL_NO_ERROR);
-		}
+		meshes.clear();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -201,13 +177,6 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		ASSERT(false);
 		return false;
 	}
-
-	// Initialize the graphics objects
-	if (!CreateVertexBuffer())
-	{
-		ASSERT(false);
-		return false;
-	}
 	if (!CreateProgram())
 	{
 		ASSERT(false);
@@ -226,7 +195,7 @@ bool Engine::Graphics::CleanUp()
 {
 	bool wereThereErrors = false;
 
-	if (s_openGLRenderingContext != NULL)
+	if (s_openGlRenderingContext != NULL)
 	{
 		if (s_programId != 0)
 		{
@@ -240,36 +209,6 @@ bool Engine::Graphics::CleanUp()
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			}
 			s_programId = 0;
-		}
-#ifdef GRAPHICS_ISDEVICEDEBUGINFOENABLED
-		if (s_vertexBufferId != 0)
-		{
-			const GLsizei bufferCount = 1;
-			glDeleteBuffers(bufferCount, &s_vertexBufferId);
-			const GLenum errorCode = glGetError();
-			if (errorCode != GL_NO_ERROR)
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Logging::OutputError("OpenGL failed to delete the vertex buffer: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			}
-			s_vertexBufferId = 0;
-		}
-#endif
-		if (s_vertexArrayId != 0)
-		{
-			const GLsizei arrayCount = 1;
-			glDeleteVertexArrays(arrayCount, &s_vertexArrayId);
-			const GLenum errorCode = glGetError();
-			if (errorCode != GL_NO_ERROR)
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Logging::OutputError("OpenGL failed to delete the vertex array: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			}
-			s_vertexArrayId = 0;
 		}
 
 		if (s_constantBufferId != 0)
@@ -289,7 +228,7 @@ bool Engine::Graphics::CleanUp()
 
 		if (wglMakeCurrent(s_deviceContext, NULL) != FALSE)
 		{
-			if (wglDeleteContext(s_openGLRenderingContext) == FALSE)
+			if (wglDeleteContext(s_openGlRenderingContext) == FALSE)
 			{
 				wereThereErrors = true;
 				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
@@ -304,7 +243,7 @@ bool Engine::Graphics::CleanUp()
 			ASSERTF(false, windowsErrorMessage.c_str());
 			Logging::OutputError("Windows failed to unset the current OpenGL rendering context: %s", windowsErrorMessage.c_str());
 		}
-		s_openGLRenderingContext = NULL;
+		s_openGlRenderingContext = NULL;
 	}
 
 	if (s_deviceContext != NULL)
@@ -356,7 +295,7 @@ namespace
 			}
 		}
 		// Fill in the constant buffer
-		s_constantBufferData.g_elapsedSeconds = Engine::Time::ElapsedSeconds();
+		s_constantBufferData.g_elapsedSecondCount_total = Engine::Time::ElapsedSeconds();
 		// Allocate space and copy the constant data into the uniform buffer
 		{
 			const GLenum usage = GL_DYNAMIC_DRAW;	// The buffer will be modified frequently and used to draw
@@ -581,8 +520,8 @@ namespace
 					NULL
 				};
 				const HGLRC noSharedContexts = NULL;
-				s_openGLRenderingContext = wglCreateContextAttribsARB(s_deviceContext, noSharedContexts, desiredAttributes);
-				if (s_openGLRenderingContext == NULL)
+				s_openGlRenderingContext = wglCreateContextAttribsARB(s_deviceContext, noSharedContexts, desiredAttributes);
+				if (s_openGlRenderingContext == NULL)
 				{
 					DWORD errorCode;
 					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError(&errorCode);
@@ -609,7 +548,7 @@ namespace
 				}
 			}
 			// Set it as the rendering context of this thread
-			if (wglMakeCurrent(s_deviceContext, s_openGLRenderingContext) == FALSE)
+			if (wglMakeCurrent(s_deviceContext, s_openGlRenderingContext) == FALSE)
 			{
 				const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
 				ASSERTF(false, windowsErrorMessage.c_str());
@@ -620,199 +559,6 @@ namespace
 		}
 
 		return true;
-	}
-
-	bool CreateVertexBuffer()
-	{
-		bool wereThereErrors = false;
-		GLuint vertexBufferId = 0;
-
-		// Create a vertex array object and make it active
-		{
-			const GLsizei arrayCount = 1;
-			glGenVertexArrays(arrayCount, &s_vertexArrayId);
-			const GLenum errorCode = glGetError();
-			if (errorCode == GL_NO_ERROR)
-			{
-				glBindVertexArray(s_vertexArrayId);
-				const GLenum errorCode = glGetError();
-				if (errorCode != GL_NO_ERROR)
-				{
-					wereThereErrors = true;
-					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					Engine::Logging::OutputError("OpenGL failed to bind the vertex array: %s",
-						reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					goto OnExit;
-				}
-			}
-			else
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to get an unused vertex array ID: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
-
-		// Create a vertex buffer object and make it active
-		{
-			const GLsizei bufferCount = 1;
-			glGenBuffers(bufferCount, &vertexBufferId);
-			const GLenum errorCode = glGetError();
-			if (errorCode == GL_NO_ERROR)
-			{
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-				const GLenum errorCode = glGetError();
-				if (errorCode != GL_NO_ERROR)
-				{
-					wereThereErrors = true;
-					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					Engine::Logging::OutputError("OpenGL failed to bind the vertex buffer: %s",
-						reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					goto OnExit;
-				}
-			}
-			else
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to get an unused vertex buffer ID: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
-		// Assign the data to the buffer
-		{
-			// Eventually the vertex data should come from a file but for now it is hard-coded here.
-			// You will have to update this in a future assignment
-			// (one of the most common mistakes in the class is to leave hard-coded values here).
-
-			const unsigned int triangleCount = 2;
-			const unsigned int vertexCountPerTriangle = 3;
-			const unsigned int vertexCount = triangleCount * vertexCountPerTriangle;
-			const unsigned int bufferSize = vertexCount * sizeof(Engine::Graphics::Structures::sVertex);
-			Engine::Graphics::Structures::sVertex vertexData[vertexCount];
-			// Fill in the data for the triangle
-			{
-				vertexData[0].position.x = -0.125f;
-				vertexData[0].position.y = -0.125f;
-
-				vertexData[1].position.x = 0.125f;
-				vertexData[1].position.y = -0.125f;
-
-				vertexData[2].position.x = 0.125f;
-				vertexData[2].position.y = 0.125f;
-
-				vertexData[3].position.x = -0.125f;
-				vertexData[3].position.y = 0.125f;
-
-				vertexData[4].position.x = 0.125f;
-				vertexData[4].position.y = 0.125f;
-
-				vertexData[5].position.x = -0.125f;
-				vertexData[5].position.y = -0.125f;
-			}
-			glBufferData(GL_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(vertexData),
-				// In our class we won't ever read from the buffer
-				GL_STATIC_DRAW);
-			const GLenum errorCode = glGetError();
-			if (errorCode != GL_NO_ERROR)
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to allocate the vertex buffer: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
-		// Initialize the vertex format
-		{
-			// The "stride" defines how large a single vertex is in the stream of data
-			// (or, said another way, how far apart each position element is)
-			const GLsizei stride = sizeof(Engine::Graphics::Structures::sVertex);
-
-			// Position
-			// 2 floats == 8 bytes
-			// Offset = 0
-			{
-				const GLuint vertexElementLocation = 0;
-				const GLint elementCount = 2;
-				const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
-				glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
-					reinterpret_cast<GLvoid*>(offsetof(Engine::Graphics::Structures::sVertex, position.x)));
-				const GLenum errorCode = glGetError();
-				if (errorCode == GL_NO_ERROR)
-				{
-					glEnableVertexAttribArray(vertexElementLocation);
-					const GLenum errorCode = glGetError();
-					if (errorCode != GL_NO_ERROR)
-					{
-						wereThereErrors = true;
-						ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-						Engine::Logging::OutputError("OpenGL failed to enable the POSITION vertex attribute at location %u: %s",
-							vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-						goto OnExit;
-					}
-				}
-				else
-				{
-					wereThereErrors = true;
-					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					Engine::Logging::OutputError("OpenGL failed to set the POSITION vertex attribute at location %u: %s",
-						vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					goto OnExit;
-				}
-			}
-		}
-
-	OnExit:
-
-		if (s_vertexArrayId != 0)
-		{
-			// Unbind the vertex array
-			// (this must be done before deleting the vertex buffer)
-			glBindVertexArray(0);
-			const GLenum errorCode = glGetError();
-			if (errorCode == GL_NO_ERROR)
-			{
-				// The vertex and index buffer objects can be freed
-				// (the vertex array object will still hold references to them,
-				// and so they won't actually goes away until it gets freed).
-				// Unfortunately debuggers don't work well when these are freed
-				// (gDEBugger just doesn't show anything and RenderDoc crashes),
-				// and so don't free them if debug info is enabled.
-				if (vertexBufferId != 0)
-				{
-#ifndef GRAPHICS_ISDEVICEDEBUGINFOENABLED
-					const GLsizei bufferCount = 1;
-					glDeleteBuffers(bufferCount, &vertexBufferId);
-					const GLenum errorCode = glGetError();
-					if (errorCode != GL_NO_ERROR)
-					{
-						wereThereErrors = true;
-						ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-						Engine::Logging::OutputError("OpenGL failed to vertex buffer: %s",
-							reinterpret_cast<const char*>(gluErrorString(errorCode)));
-						goto OnExit;
-					}
-					vertexBufferId = 0;
-#else
-					s_vertexBufferId = vertexBufferId;
-#endif
-				}
-			}
-			else
-			{
-				wereThereErrors = true;
-				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Engine::Logging::OutputError("OpenGL failed to unbind the vertex array: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				goto OnExit;
-			}
-		}
-
-		return !wereThereErrors;
 	}
 
 	bool LoadFragmentShader(const GLuint i_programId)
@@ -1006,7 +752,7 @@ namespace
 			glGetBooleanv(GL_SHADER_COMPILER, &isShaderCompilingSupported);
 			if (!isShaderCompilingSupported)
 			{
-				//Engine::UserOutput::Print( "Compiling shaders at run-time isn't supported on this implementation (this should never happen)" );
+				Engine::UserOutput::Print("Compiling shaders at run-time isn't supported on this implementation (this should never happen)");
 				return false;
 			}
 		}

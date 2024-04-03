@@ -4,14 +4,30 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sPosition.h" />
-    <ClInclude Include="sVertex.h" />
     <ClInclude Include="OGL\Includes.h">
       <Filter>OGL</Filter>
     </ClInclude>
     <ClInclude Include="Functions.h" />
     <ClInclude Include="D3D\Includes.h">
       <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cMesh.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sPosition.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sVertex.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sIndexSet.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sColor.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D\Interfaces\D3DInterfaces.h">
+      <Filter>D3D\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +39,18 @@
     <ClCompile Include="D3D\Graphics.D3D.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
+    <ClCompile Include="D3D\Assets\cMesh.D3D.cpp">
+      <Filter>D3D\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\cMesh.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
+      <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -30,6 +58,21 @@
     </Filter>
     <Filter Include="OGL">
       <UniqueIdentifier>{7965c822-70e5-4ca5-812d-88c098fd9d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Assets">
+      <UniqueIdentifier>{2e29b7e7-fe2f-4b98-86d2-90aa8e8141a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OGL\Assets">
+      <UniqueIdentifier>{0f21d96d-bd38-4283-bec3-2f7966d6f906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{79fbec67-2f0c-4168-9097-91cffddb85a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structures">
+      <UniqueIdentifier>{f1237c99-f8d6-4098-a3bb-b0e0990ab600}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Interfaces">
+      <UniqueIdentifier>{47000c96-f9e5-4877-bf7e-e21f1f0eaa74}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

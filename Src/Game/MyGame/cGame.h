@@ -17,9 +17,9 @@
 // Class Declaration
 //==================
 
-namespace Engine
+namespace Game
 {
-	class cGame : public Application::cBaseApplication
+	class cGame : public Engine::Application::cBaseApplication
 	{
 		// Interface
 		//==========
@@ -82,6 +82,7 @@ namespace Engine
 		//--------------------------
 
 		virtual bool Initialize();
+		virtual bool Update();
 		virtual bool CleanUp();
 
 	};

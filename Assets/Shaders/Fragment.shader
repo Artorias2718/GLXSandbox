@@ -15,6 +15,7 @@ void main(
 
 	// The GPU provides us with position
 	in float4 i_position : SV_POSITION,
+	in float4 i_color: COLOR,
 
 	// Output
 	//=======
@@ -31,6 +32,7 @@ void main(
 
 // Whatever arbitrary data (i.e. everything excluding position) was output from the vertex shader
 // will be interpolated across the triangle and given as input to the fragment shader
+layout( location = 0 ) in vec4 i_color;
 
 // Output
 //=======
@@ -45,7 +47,5 @@ out vec4 o_color;
 void main()
 #endif
 {
-	// For now set the fragment as the interpolated color
-	//o_color = float4( 1.0, 1.0, 1.0, 1.0 );
-	o_color = float4( cos(g_elapsedSeconds), 1.0, sin(g_elapsedSeconds), 1.0 );
+	o_color = i_color;
 }

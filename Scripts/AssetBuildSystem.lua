@@ -175,6 +175,25 @@ function AssetTypeInfo.ShouldTargetBeBuilt( i_lastWriteTime_builtAsset )
 	return false
 end
 
+-- Mesh Asset Type
+--------------------
+
+NewAssetTypeInfo( "meshes",
+	{
+		-- This function is required for all asset types
+		GetBuilderRelativePath = function()
+			return "MeshBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function ( i_sourceRelativePath, i_assetType )
+			sourceAbsolutePath = s_AuthoredAssetDir .. i_sourceRelativePath
+			local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+			local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+			extensionWithPeriod = file:sub(1, file:find(".") - 1) .. ".mesh";
+			return relativeDirectory .. fileName .. extensionWithPeriod
+		end
+	}
+)
+
 -- Shader Asset Type
 --------------------
 
@@ -205,9 +224,12 @@ local function BuildAsset( i_assetInfo )
 	-- and the "target" is the built asset that is ready to be used in-game)
 	local assetDir = ""
 
-	if string.find(string.lower(i_assetInfo.path), 'shader')
-	then
-		assetDir = "/Shaders/"
+	if string.find(string.lower(assetTypeInfo.type), 'mesh')
+		then
+			assetDir = "/Meshes/"
+	elseif string.find(string.lower(assetTypeInfo.type), 'shader')
+		then
+			assetDir = "/Shaders/"
 	end
 
 	local path_source = s_AuthoredAssetDir .. assetDir .. i_assetInfo.path
