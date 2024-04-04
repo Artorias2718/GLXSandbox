@@ -21,12 +21,29 @@
 
 namespace Engine
 {
+	namespace Shared
+	{
+		class cGameObject;
+	}
+
 	namespace Graphics
 	{
 		namespace Assets
 		{
 			class cMesh;
 		}
+
+		namespace Interfaces
+		{
+			class cConstantBuffer;
+		}
+
+		namespace Structures
+		{
+			struct sFrame;
+			struct sDrawCall;
+		}
+
 		// Render
 		//-------
 
@@ -48,10 +65,16 @@ namespace Engine
 		};
 
 		bool Initialize( const sInitializationParameters& i_initializationParameters );
-		bool SubmitGameObject(Assets::cMesh* i_object);
+		bool SubmitGameObject(Shared::cGameObject* i_object);
 		bool CleanUp();
 
-		extern std::vector<Assets::cMesh*> meshes;
+		extern std::vector<Shared::cGameObject*> meshes;
+		
+		extern Interfaces::cConstantBuffer* s_frameBuffer;
+		extern Interfaces::cConstantBuffer* s_drawCallBuffer;
+
+		extern Structures::sFrame frameData;
+		extern Structures::sDrawCall drawCallData;
 	}
 }
 
