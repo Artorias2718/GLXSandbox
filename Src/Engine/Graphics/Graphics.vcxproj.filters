@@ -29,6 +29,18 @@
     <ClInclude Include="D3D\Interfaces\D3DInterfaces.h">
       <Filter>D3D\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Structures\sDrawCall.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures\sFrame.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\cConstantBuffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\eConstantBufferType.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -50,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="D3D\Interfaces\D3DInterfaces.cpp">
       <Filter>D3D\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces\cConstantBuffer.cpp">
+      <Filter>Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +88,9 @@
     </Filter>
     <Filter Include="D3D\Interfaces">
       <UniqueIdentifier>{47000c96-f9e5-4877-bf7e-e21f1f0eaa74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{f6ae975f-ffe3-4508-b689-63f03119e042}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

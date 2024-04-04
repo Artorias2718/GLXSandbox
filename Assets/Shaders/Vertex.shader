@@ -68,7 +68,7 @@ void main()
 		// will be different than the position that is input to it from C code,
 		// but for now the "out" position is set directly from the "in" position:
 
-		gl_Position = float4( i_position.x, i_position.y, 0.0, 1.0 );
+		gl_Position = float4( i_position.x + g_screenPosition.x, i_position.y + g_screenPosition.y, 0.0, 1.0 );
 
 		// Pass the input color to the fragment shader as-is
 		{

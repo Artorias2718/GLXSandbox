@@ -16,6 +16,12 @@
 #include "../../Platform/Platform.h"
 #include "../../Time/Time.h"
 
+#include "../Interfaces/cConstantBuffer.h"
+#include "../Structures/sFrame.h"
+#include "../Structures/sDrawCall.h"
+
+#include "../../Shared/cGameObject.h"
+
 // Static Data Initialization
 //===========================
 
@@ -42,17 +48,6 @@ namespace
 	// Its output is:
 	//	* The final color that the pixel should be
 	ID3D11PixelShader* s_fragmentShader = NULL;
-
-	// This struct determines the layout of the constant data that the CPU will send to the GPU
-	struct
-	{
-		union
-		{
-			float g_elapsedSeconds;
-			float register0[4];	// You won't have to worry about why I do this until a later assignment
-		};
-	} s_constantBufferData;
-	ID3D11Buffer* s_constantBuffer = NULL;
 }
 
 // Helper Function Declarations
@@ -60,7 +55,7 @@ namespace
 
 namespace
 {
-	bool CreateConstantBuffer();
+	bool CreateConstantBuffers();
 	bool CreateDevice(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
 	bool CreateVertexBuffer(Engine::Platform::sDataFromFile& i_compiledShader);
 	bool CreateView(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
@@ -87,45 +82,8 @@ void Engine::Graphics::RenderFrame()
 
 	// Update the constant buffer
 	{
-		// Update the struct (i.e. the memory that we own)
-		s_constantBufferData.g_elapsedSeconds = Time::ElapsedSeconds();
-		// Get a pointer from Direct3D that can be written to
-		void* memoryToWriteTo = NULL;
-		{
-			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
-			{
-				// Discard previous contents when writing
-				const unsigned int noSubResources = 0;
-				const D3D11_MAP mapType = D3D11_MAP_WRITE_DISCARD;
-				const unsigned int noFlags = 0;
-				const HRESULT result = Interfaces::D3DInterfaces::s_direct3dImmediateContext->Map(s_constantBuffer, noSubResources, mapType, noFlags, &mappedSubResource);
-				if (SUCCEEDED(result))
-				{
-					memoryToWriteTo = mappedSubResource.pData;
-				}
-				else
-				{
-					ASSERT(false);
-				}
-			}
-		}
-		if (memoryToWriteTo)
-		{
-			// Copy the new data to the memory that Direct3D has provided
-			memcpy(memoryToWriteTo, &s_constantBufferData, sizeof(s_constantBufferData));
-			// Let Direct3D know that the memory contains the data
-			// (the pointer will be invalid after this call)
-			const unsigned int noSubResources = 0;
-			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->Unmap(s_constantBuffer, noSubResources);
-			memoryToWriteTo = NULL;
-		}
-		// Bind the constant buffer to the shader
-		{
-			const unsigned int registerAssignedInShader = 0;
-			const unsigned int bufferCount = 1;
-			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
-			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &s_constantBuffer);
-		}
+		frameData.g_elapsedSeconds = Time::ElapsedSeconds();
+		s_frameBuffer->Update(Engine::Graphics::Interfaces::FRAME, &frameData);
 	}
 
 	// Draw the geometry
@@ -138,9 +96,13 @@ void Engine::Graphics::RenderFrame()
 			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->PSSetShader(s_fragmentShader, noInterfaces, interfaceCount);
 		}
 
-		for (std::vector<Engine::Graphics::Assets::cMesh*>::iterator itor = meshes.begin(); itor != meshes.end(); ++itor)
+		for (std::vector<Shared::cGameObject*>::iterator itor = meshes.begin(); itor != meshes.end(); ++itor)
 		{
-			(*itor)->Render();
+			Engine::Graphics::drawCallData.g_screenPosition[0] = (*itor)->m_position.x;
+			Engine::Graphics::drawCallData.g_screenPosition[1] = (*itor)->m_position.y;
+			s_drawCallBuffer->Update(Engine::Graphics::Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
+
+			(*itor)->m_mesh->Render();
 		}
 		meshes.clear();
 	}
@@ -195,7 +157,7 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		wereThereErrors = true;
 		goto OnExit;
 	}
-	if (!CreateConstantBuffer())
+	if (!CreateConstantBuffers())
 	{
 		wereThereErrors = true;
 		goto OnExit;
@@ -238,10 +200,16 @@ bool Engine::Graphics::CleanUp()
 			s_fragmentShader = NULL;
 		}
 
-		if (s_constantBuffer)
+		if (s_frameBuffer)
 		{
-			s_constantBuffer->Release();
-			s_constantBuffer = NULL;
+			s_frameBuffer->CleanUp();
+			s_frameBuffer = NULL;
+		}
+
+		if (s_drawCallBuffer)
+		{
+			s_drawCallBuffer->CleanUp();
+			s_drawCallBuffer = NULL;
 		}
 
 		if (Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView)
@@ -274,37 +242,37 @@ bool Engine::Graphics::CleanUp()
 
 namespace
 {
-	bool CreateConstantBuffer()
+	bool CreateConstantBuffers()
 	{
-		D3D11_BUFFER_DESC bufferDescription = { 0 };
 		{
-			// The byte width must be rounded up to a multiple of 16
-			bufferDescription.ByteWidth = sizeof(s_constantBufferData);
-			bufferDescription.Usage = D3D11_USAGE_DYNAMIC;	// The CPU must be able to update the buffer
-			bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// The CPU must write, but doesn't read
-			bufferDescription.MiscFlags = 0;
-			bufferDescription.StructureByteStride = 0;	// Not used
+			D3D11_BUFFER_DESC bufferDescription = { 0 };
+			D3D11_SUBRESOURCE_DATA initialData = { 0 };
+
+			Engine::Graphics::s_frameBuffer = new Engine::Graphics::Interfaces::cConstantBuffer(
+				Engine::Graphics::Interfaces::FRAME,
+				bufferDescription,
+				sizeof(Engine::Graphics::Structures::sFrame),
+				initialData,
+				&Engine::Graphics::frameData
+			);
 		}
-		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			// Fill in the constant buffer
-			s_constantBufferData.g_elapsedSeconds = Engine::Time::ElapsedSeconds();
-			initialData.pSysMem = &s_constantBufferData;
-			// (The other data members are ignored for non-texture buffers)
+			D3D11_BUFFER_DESC bufferDescription = { 0 };
+			D3D11_SUBRESOURCE_DATA initialData = { 0 };
+
+			Engine::Graphics::s_drawCallBuffer = new Engine::Graphics::Interfaces::cConstantBuffer(
+				Engine::Graphics::Interfaces::DRAWCALL,
+				bufferDescription,
+				sizeof(Engine::Graphics::Structures::sDrawCall),
+				initialData,
+				new Engine::Graphics::Structures::sDrawCall()
+			);
 		}
 
-		const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateBuffer(&bufferDescription, &initialData, &s_constantBuffer);
-		if (SUCCEEDED(result))
-		{
-			return true;
-		}
-		else
-		{
-			ASSERT(false);
-			Engine::Logging::OutputError("Direct3D failed to create a constant buffer with HRESULT %#010x", result);
-			return false;
-		}
+		Engine::Graphics::s_frameBuffer->Bind(Engine::Graphics::Interfaces::FRAME);
+		Engine::Graphics::s_drawCallBuffer->Bind(Engine::Graphics::Interfaces::DRAWCALL);
+
+		return true;
 	}
 
 	bool CreateDevice(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight)
