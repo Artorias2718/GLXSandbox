@@ -25,6 +25,7 @@
 #include "../Structures/sDrawCall.h"
 
 #include "../../Shared/cGameObject.h"
+#include "../../Math/Functions.h"
 
 // Static Data Initialization
 //===========================
@@ -67,6 +68,7 @@ namespace
 	bool CreateConstantBuffers();
 	bool CreateProgram();
 	bool CreateRenderingContext();
+	bool EnableDepthTesting();
 	bool LoadFragmentShader(const GLuint i_programId);
 	bool LoadVertexShader(const GLuint i_programId);
 
@@ -95,17 +97,11 @@ void Engine::Graphics::RenderFrame()
 		// Black is usually used
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		ASSERT(glGetError() == GL_NO_ERROR);
-		// In addition to the color, "depth" and "stencil" can also be cleared,
-		// but for now we only care about color
-		const GLbitfield clearColor = GL_COLOR_BUFFER_BIT;
-		glClear(clearColor);
+		glDepthMask(GL_TRUE);
+		glClearDepth(1.0f);
+		const GLbitfield clearColorAndDepth = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+		glClear(clearColorAndDepth);
 		ASSERT(glGetError() == GL_NO_ERROR);
-	}
-
-	// Update the constant buffer
-	{
-		Engine::Graphics::frameData.g_elapsedSeconds = Time::ElapsedSeconds();
-		s_frameBuffer->Update(Engine::Graphics::Interfaces::FRAME, &frameData);
 	}
 
 	// Draw the geometry
@@ -118,8 +114,7 @@ void Engine::Graphics::RenderFrame()
 
 		for (std::vector<Shared::cGameObject*>::iterator itor = meshes.begin(); itor != meshes.end(); ++itor)
 		{
-			Engine::Graphics::drawCallData.g_screenPosition[0] = (*itor)->m_position.x;
-			Engine::Graphics::drawCallData.g_screenPosition[1] = (*itor)->m_position.y;
+			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::UpdateTransform((*itor)->m_transform);
 			s_drawCallBuffer->Update(Engine::Graphics::Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
 
 			(*itor)->m_mesh->Render();
@@ -154,6 +149,11 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 	}
 	// Create an OpenGL rendering context
 	if (!CreateRenderingContext())
+	{
+		ASSERT(false);
+		return false;
+	}
+	if (!EnableDepthTesting())
 	{
 		ASSERT(false);
 		return false;
@@ -412,6 +412,8 @@ namespace
 					WGL_RED_BITS_ARB, 8,
 					WGL_GREEN_BITS_ARB, 8,
 					WGL_BLUE_BITS_ARB, 8,
+					WGL_DEPTH_BITS_ARB, 24,
+					WGL_STENCIL_BITS_ARB, 8,
 					// NULL terminator
 					NULL
 				};
@@ -449,6 +451,8 @@ namespace
 					pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
 					pixelFormatDescriptor.cColorBits = 24;
 					pixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
+					pixelFormatDescriptor.cDepthBits = 24;
+					pixelFormatDescriptor.cStencilBits = 8;
 				}
 				if (SetPixelFormat(s_deviceContext, pixelFormatId, &pixelFormatDescriptor) == FALSE)
 				{
@@ -517,6 +521,16 @@ namespace
 			}
 		}
 
+		return true;
+	}
+
+	bool EnableDepthTesting()
+	{
+		glEnable(GL_CULL_FACE);
+		// Depth Testing
+		glDepthFunc(GL_LESS);
+		glEnable(GL_DEPTH_TEST);
+		
 		return true;
 	}
 

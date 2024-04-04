@@ -53,6 +53,11 @@ Engine::Graphics::Assets::cMesh::cMesh(std::string i_fileName)
 					lua_gettable(luaState, -2);
 					m_vertices[i - 1].position.y = static_cast<float>(lua_tonumber(luaState, -1));
 					lua_pop(luaState, 1);
+
+					lua_pushstring(luaState, "z");
+					lua_gettable(luaState, -2);
+					m_vertices[i - 1].position.z = static_cast<float>(lua_tonumber(luaState, -1));
+					lua_pop(luaState, 1);
 				}
 				lua_pop(luaState, 1);
 

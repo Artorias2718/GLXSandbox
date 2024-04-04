@@ -9,7 +9,7 @@ namespace Engine
 		{
 			struct sPosition
 			{
-				float x, y;
+				float x, y, z;
 			};
 		}
 	}

@@ -2,7 +2,7 @@
 #define ENGINE_SHARED_CGAMEOBJECT_H
 
 #include <string>
-#include "../Graphics/Structures/sPosition.h"
+#include "../Shared/sTransform.h"
 
 namespace Engine 
 {
@@ -20,10 +20,12 @@ namespace Engine
 		public:
 			cGameObject();
 			cGameObject(Graphics::Assets::cMesh *i_mesh);
-			~cGameObject();
+			virtual ~cGameObject();
 
 			Graphics::Assets::cMesh *m_mesh;
-			Graphics::Structures::sPosition m_position;
+			Shared::sTransform m_transform;
+
+			bool m_active;
 		};
 	}
 }

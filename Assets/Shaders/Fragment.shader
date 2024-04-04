@@ -15,8 +15,8 @@ void main(
 
 	// The GPU provides us with position
 	in float4 i_position : SV_POSITION,
-	in float4 i_color: COLOR,
-
+	in float4 i_color : COLOR,
+    
 	// Output
 	//=======
 
@@ -47,5 +47,6 @@ out vec4 o_color;
 void main()
 #endif
 {
+	// For now set the fragment as the interpolated color
 	o_color = i_color;
 }

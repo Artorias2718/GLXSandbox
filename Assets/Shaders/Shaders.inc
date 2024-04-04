@@ -39,16 +39,24 @@
     //==========
     
     #define DeclareConstantBuffer( i_name, i_id ) layout( std140, binding = i_id ) uniform i_name
+    
+    // Multiply 4x4 Matrix by 4x1 Vector
+    //==================================
+
+    #define mul( i_matrix, i_vector) i_matrix * i_vector
+	#define mul( i_vector, i_matrix) i_vector * i_matrix
 #endif
 
 // Constants
 //==========
-DeclareConstantBuffer( frame, 0 )
+DeclareConstantBuffer( frameBuffer, 0 )
 {
+    float4x4 g_worldToCamera;
+    float4x4 g_cameraToScreen;
 	float g_elapsedSeconds;
 };
 
-DeclareConstantBuffer( drawCall, 1 )
+DeclareConstantBuffer( drawCallBuffer, 1 )
 {
-	float2 g_screenPosition;
+    float4x4 g_localToWorld;
 };

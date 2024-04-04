@@ -10,6 +10,8 @@
 #include "../../UserOutput/UserOutput.h"
 #include "../../UserSettings/UserSettings.h"
 #include "../../Windows/Functions.h"
+//#include "../../Math/cVector.h"
+#include "../../Shared/MouseParams.h"
 
 // Helper Function Declarations
 //=============================
@@ -172,6 +174,28 @@ LRESULT CALLBACK Engine::Application::cBaseApplication::OnMessageReceivedFromWin
 					// then do nothing to keep running the program
 				}
 			}
+		}
+		break;
+		// The mouse was moved
+		case WM_MOUSEMOVE:
+		{
+			Shared::MouseParams::mouseMoved = true;
+
+			Shared::MouseParams::mouseX = LOWORD(i_lParam);
+			Shared::MouseParams::mouseY = HIWORD(i_lParam);
+
+			if (Shared::MouseParams::mouseX - Shared::MouseParams::prevMouseX < 0)
+			{
+				Shared::MouseParams::verticalAxis.y = -1;
+			}
+
+			if (Shared::MouseParams::mouseX - Shared::MouseParams::prevMouseX > 0)
+			{
+				Shared::MouseParams::verticalAxis.y = 1;
+			}
+
+			Shared::MouseParams::prevMouseX = Shared::MouseParams::mouseX;
+			Shared::MouseParams::prevMouseY = Shared::MouseParams::mouseY;
 		}
 		break;
 	// A window has been created
