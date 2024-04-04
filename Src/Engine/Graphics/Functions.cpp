@@ -21,14 +21,14 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 		// Slot 0
 
 		// POSITION
-		// 2 floats == 8 bytes
+		// 3 floats == 12 bytes
 		// Offset = 0
 		{
 			D3D11_INPUT_ELEMENT_DESC& positionElement = i_layoutDescription[0];
 
 			positionElement.SemanticName = "POSITION";
 			positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-			positionElement.Format = DXGI_FORMAT_R32G32_FLOAT;
+			positionElement.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 			positionElement.InputSlot = 0;
 			positionElement.AlignedByteOffset = offsetof(Engine::Graphics::Structures::sVertex, position.x);
 			positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -63,7 +63,7 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 	// Offset = 0
 	{
 		const GLuint vertexElementLocation = 0;
-		const GLint elementCount = 2;
+		const GLint elementCount = 3;
 		const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 		glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
 			reinterpret_cast<GLvoid*>(offsetof(Engine::Graphics::Structures::sVertex, position.x)));

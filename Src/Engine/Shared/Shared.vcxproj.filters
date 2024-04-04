@@ -2,8 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="cGameObject.cpp" />
+    <ClCompile Include="cCamera.cpp" />
+    <ClCompile Include="MouseParams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cGameObject.h" />
+    <ClInclude Include="cCamera.h" />
+    <ClInclude Include="eCameraType.h" />
+    <ClInclude Include="MouseParams.h" />
+    <ClInclude Include="sTransform.h" />
   </ItemGroup>
 </Project>

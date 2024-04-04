@@ -14,7 +14,7 @@ namespace Engine
 			struct sVertex
 			{
 				// POSITION
-				// 2 floats == 8 bytes
+				// 3 floats == 12 bytes
 				// Offset = 0
 				sPosition position;
 

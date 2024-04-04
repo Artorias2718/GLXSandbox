@@ -5,27 +5,33 @@
 
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
-#include "../../Engine/Shared/cGameObject.h"
+#include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/UserInput/UserInput.h"
+#include "../../Engine/Math/Functions.h"
+#include "../../Engine/Shared/MouseParams.h"
+#include "../../Engine/Math/glm/gtc/quaternion.hpp"
 
 // Interface
 //==========
 
 namespace
 {
-	const float SPEED = 0.25f;
+	const float OFFSET = 8.0f;
+	float angle = 0.0f;
 
-	Engine::Shared::cGameObject* square;
-	Engine::Shared::cGameObject* triangle;
+	Engine::Shared::cGameObject* cube;
+	Engine::Shared::cGameObject* plane;
+	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
+	bool Rotate(Engine::Shared::cGameObject* i_object);
 }
 
 // Initialization / Clean Up
 //--------------------------
 
-Game::cGame::~cGame()
+Game::MyGame::cGame::~cGame()
 {
 	CleanUp();
 }
@@ -36,28 +42,47 @@ Game::cGame::~cGame()
 // Initialization / Clean Up
 //--------------------------
 
-bool Game::cGame::Initialize()
+bool Game::MyGame::cGame::Initialize()
 {
-	square = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("square"));
-	triangle = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("triangle"));
+	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
+	camera = new Engine::Shared::cCamera("flycamera");
 
-	square->m_position.x -= 0.25f;
-	triangle->m_position.x += 0.25f;
+	cube->m_transform.position += 0.25f * Engine::Math::up;
+	plane->m_transform.scale *= 5.0f;
 
 	return true;
 }
 
-bool Game::cGame::Update()
+bool Game::MyGame::cGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(square);
-	Engine::Graphics::SubmitGameObject(triangle);
+	Engine::Graphics::SubmitGameObject(cube);
+	Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(camera);
+	
+	if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
+	{
+		cube->Move(OFFSET * Engine::Time::DeltaTime());
+	}
+	else
+	{
+		camera->Move(OFFSET * Engine::Time::DeltaTime());
+	}
 
-	Move(square);
+	if (Engine::Shared::MouseParams::mouseMoved)
+	{
+		Engine::Shared::MouseParams::mouseMoved = false;
+		angle = glm::radians(camera->m_rotationSpeed);
+		camera->Rotate(glm::angleAxis(angle, Engine::Shared::MouseParams::verticalAxis));
+	}
 
+	angle = glm::radians(64.0f) * Engine::Time::DeltaTime();
+	cube->Rotate(angle, cube->m_transform.up);
+	
 	return true;
 }
 
-bool Game::cGame::CleanUp()
+bool Game::MyGame::cGame::CleanUp()
 {
 	return true;
 }
@@ -66,23 +91,35 @@ namespace
 {
 	bool Move(Engine::Shared::cGameObject* i_object)
 	{
-		if (Engine::UserInput::IsKeyPressed('A'))
+		float offset = 0;
+		if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
 		{
-			i_object->m_position.x -= SPEED * Engine::Time::DeltaTime();
+			Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
+			offset = i_camera->m_movementSpeed;
+			i_camera->Move(offset);
 		}
-		if (Engine::UserInput::IsKeyPressed('D'))
+		if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
 		{
-			i_object->m_position.x += SPEED * Engine::Time::DeltaTime();
+			offset = OFFSET;
+			i_object->Move(offset);
 		}
-		if (Engine::UserInput::IsKeyPressed('W'))
-		{
-			i_object->m_position.y += SPEED * Engine::Time::DeltaTime();
-		}
-		if (Engine::UserInput::IsKeyPressed('S'))
-		{
-			i_object->m_position.y -= SPEED * Engine::Time::DeltaTime();
-		}
+		return true;
+	}
 
+	bool Rotate(Engine::Shared::cGameObject* i_object)
+	{
+		float offset = 0;
+		if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
+		{
+			Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
+			offset = i_camera->m_rotationSpeed;
+			i_object->Rotate(offset, Engine::Shared::MouseParams::verticalAxis);
+		}
+		else
+		{
+			offset = OFFSET;
+			i_object->Rotate(offset, i_object->m_transform.up);
+		}
 		return true;
 	}
 }

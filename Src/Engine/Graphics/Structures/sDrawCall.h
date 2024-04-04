@@ -1,6 +1,8 @@
 #ifndef ENGINE_GRAPHICS_STRUCTURES_SDRAWCALL_H
 #define ENGINE_GRAPHICS_STRUCTURES_SDRAWCALL_H
 
+#include "../../Math/glm/mat4x4.hpp"
+
 namespace Engine
 {
 	namespace Graphics
@@ -9,11 +11,7 @@ namespace Engine
 		{
 			struct sDrawCall
 			{
-				union
-				{
-					float g_screenPosition[2];
-					float register0[4];
-				};
+				glm::mat4x4 g_localToWorld;
 			};
 		}
 	}
