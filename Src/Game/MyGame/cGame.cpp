@@ -17,15 +17,15 @@
 
 namespace
 {
-	const float SPEED = 8.0f;
+	const float OFFSET = 8.0f;
 	float angle = 0.0f;
 
-	Engine::Shared::cGameObject* cube;
+	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
-	bool Rotate(Engine::Shared::cGameObject* i_object, float i_angle, const glm::vec3& i_axis);
+	bool Rotate(Engine::Shared::cGameObject* i_object);
 }
 
 // Initialization / Clean Up
@@ -42,13 +42,15 @@ Game::MyGame::cGame::~cGame()
 // Initialization / Clean Up
 //--------------------------
 
+
+
 bool Game::MyGame::cGame::Initialize()
 {
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"));
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	cube->m_transform.position += 0.25f * Engine::Math::up;
+	suzanne->m_transform.position += 0.25f * Engine::Math::up;
 	plane->m_transform.scale *= 5.0f;
 
 	return true;
@@ -56,21 +58,28 @@ bool Game::MyGame::cGame::Initialize()
 
 bool Game::MyGame::cGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(cube);
+	Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(camera);
 
-	angle -= glm::radians(64.0f) * Engine::Time::DeltaTime();
-	Rotate(cube, angle, Engine::Math::up);
-	Move(cube);
-
-	Move(camera);
+	if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
+	{
+		suzanne->Move(OFFSET * Engine::Time::DeltaTime());
+	}
+	else
+	{
+		camera->Move(OFFSET * Engine::Time::DeltaTime());
+	}
 
 	if (Engine::Shared::MouseParams::mouseMoved)
 	{
 		Engine::Shared::MouseParams::mouseMoved = false;
-		Rotate(camera, angle, Engine::Math::up);
+		angle = glm::radians(camera->m_rotationSpeed);
+		camera->Rotate(glm::angleAxis(angle, Engine::Shared::MouseParams::verticalAxis));
 	}
-	Engine::Graphics::SubmitGameObject(camera);
+
+	angle = glm::radians(64.0f) * Engine::Time::DeltaTime();
+	suzanne->Rotate(angle, suzanne->m_transform.up);
 	return true;
 }
 
@@ -83,92 +92,34 @@ namespace
 {
 	bool Move(Engine::Shared::cGameObject* i_object)
 	{
+		float offset = 0;
 		if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
 		{
 			Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
-
-			const float CAMERAOFFSET = i_camera->m_movementSpeed * Engine::Time::DeltaTime();
-
-			if (!Engine::UserInput::IsKeyPressed(VK_RSHIFT))
-			{
-				if (Engine::UserInput::IsKeyPressed('A'))
-				{
-					i_object->m_transform.position -= CAMERAOFFSET * i_object->m_transform.right;
-				}
-				if (Engine::UserInput::IsKeyPressed('D'))
-				{
-					i_object->m_transform.position += CAMERAOFFSET * i_object->m_transform.right;
-				}
-				if (Engine::UserInput::IsKeyPressed('W'))
-				{
-					i_object->m_transform.position += CAMERAOFFSET * i_object->m_transform.up;
-				}
-				if (Engine::UserInput::IsKeyPressed('S'))
-				{
-					i_object->m_transform.position -= CAMERAOFFSET * i_object->m_transform.up;
-				}
-				if (Engine::UserInput::IsKeyPressed('Q'))
-				{
-					i_object->m_transform.position -= CAMERAOFFSET * i_object->m_transform.forward;
-				}
-				if (Engine::UserInput::IsKeyPressed('E'))
-				{
-					i_object->m_transform.position += CAMERAOFFSET * i_object->m_transform.forward;
-				}
-			}
+			offset = i_camera->m_movementSpeed;
+			i_camera->Move(offset);
 		}
-		else
+		if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
 		{
-			const float OFFSET = SPEED * Engine::Time::DeltaTime();
-			if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
-			{
-				if (Engine::UserInput::IsKeyPressed('A'))
-				{
-					i_object->m_transform.position -= OFFSET * i_object->m_transform.right;
-				}
-				if (Engine::UserInput::IsKeyPressed('D'))
-				{
-					i_object->m_transform.position += OFFSET * i_object->m_transform.right;
-				}
-				if (Engine::UserInput::IsKeyPressed('W'))
-				{
-					i_object->m_transform.position += OFFSET * i_object->m_transform.up;
-				}
-				if (Engine::UserInput::IsKeyPressed('S'))
-				{
-					i_object->m_transform.position -= OFFSET * i_object->m_transform.up;
-				}
-				if (Engine::UserInput::IsKeyPressed('Q'))
-				{
-					i_object->m_transform.position -= OFFSET * i_object->m_transform.forward;
-				}
-				if (Engine::UserInput::IsKeyPressed('E'))
-				{
-					i_object->m_transform.position += OFFSET * i_object->m_transform.forward;
-				}
-			}
+			offset = OFFSET;
+			i_object->Move(offset);
 		}
-
 		return true;
 	}
 
-	bool Rotate(Engine::Shared::cGameObject* i_object, float i_angle, const glm::vec3& i_axis)
+	bool Rotate(Engine::Shared::cGameObject* i_object)
 	{
+		float offset = 0;
 		if (dynamic_cast<Engine::Shared::cCamera*>(i_object))
 		{
 			Engine::Shared::cCamera* i_camera = dynamic_cast<Engine::Shared::cCamera*>(i_object);
-
-			glm::quat rotation = glm::angleAxis(glm::radians(i_camera->m_rotationSpeed), Engine::Shared::MouseParams::verticalAxis);
-			i_camera->m_transform.orientation = glm::normalize(i_camera->m_transform.orientation * rotation);
-
-			i_camera->m_transform.right = rotation * i_camera->m_transform.right;
-			i_camera->m_transform.up = rotation * i_camera->m_transform.up;
-			i_camera->m_transform.forward = rotation * i_camera->m_transform.forward;
+			offset = i_camera->m_rotationSpeed;
+			i_object->Rotate(offset, Engine::Shared::MouseParams::verticalAxis);
 		}
 		else
 		{
-			glm::quat rotation = glm::angleAxis(angle, i_axis);
-			i_object->m_transform.orientation = glm::normalize(rotation);
+			offset = OFFSET;
+			i_object->Rotate(offset, i_object->m_transform.up);
 		}
 		return true;
 	}

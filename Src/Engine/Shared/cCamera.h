@@ -17,8 +17,7 @@ namespace Engine
 			cCamera(const std::string& i_fileName = "");
 			~cCamera();
 
-			bool Move();
-			bool Rotate();
+			bool Rotate(glm::quat& rotation);
 			bool Update();
 
 			glm::mat4x4 WorldToCamera();

@@ -169,53 +169,13 @@ Engine::Shared::cCamera::cCamera(const std::string& i_fileName)
 
 Engine::Shared::cCamera::~cCamera() {}
 
-bool Engine::Shared::cCamera::Move()
+bool Engine::Shared::cCamera::Rotate(glm::quat& rotation)
 {
-	const float OFFSET = m_movementSpeed * Time::DeltaTime();
+	m_transform.orientation = glm::normalize(m_transform.orientation * rotation);
 
-	if (UserInput::IsKeyPressed('A'))
-	{
-		m_transform.position -= OFFSET * m_transform.right;
-	}
-	if (UserInput::IsKeyPressed('D'))
-	{
-		m_transform.position += OFFSET * m_transform.right;
-	}
-	if (UserInput::IsKeyPressed('W'))
-	{
-		m_transform.position += OFFSET * m_transform.up;
-	}
-	if (UserInput::IsKeyPressed('S'))
-	{
-		m_transform.position -= OFFSET * m_transform.up;
-	}
-	if (UserInput::IsKeyPressed('Q'))
-	{
-		m_transform.position -= OFFSET * m_transform.forward;
-	}
-	if (UserInput::IsKeyPressed('E'))
-	{
-		m_transform.position += OFFSET * m_transform.forward;
-	}
-
-	if (MouseParams::mouseMoved)
-	{
-		MouseParams::mouseMoved = false;
-		Rotate();
-	}
-
-	return true;
-}
-
-bool Engine::Shared::cCamera::Rotate()
-{
-	glm::quat rotation(glm::radians(m_rotationSpeed), Shared::MouseParams::verticalAxis);
-	m_transform.orientation = m_transform.orientation * rotation;
-	m_transform.orientation = glm::normalize(m_transform.orientation);
-
-	m_transform.right = rotation * m_transform.right;
-	m_transform.up = rotation * m_transform.up;
-	m_transform.forward = rotation * m_transform.forward;
+	m_transform.right = m_transform.right * rotation;
+	m_transform.up = m_transform.up * rotation;
+	m_transform.forward = m_transform.forward * rotation;
 
 	return true;
 }
