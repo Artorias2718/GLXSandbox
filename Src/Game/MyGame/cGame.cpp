@@ -20,7 +20,7 @@ namespace
 	const float SPEED = 8.0f;
 	float angle = 0.0f;
 
-	Engine::Shared::cGameObject* cube;
+	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cCamera* camera;
 
@@ -42,13 +42,15 @@ Game::MyGame::cGame::~cGame()
 // Initialization / Clean Up
 //--------------------------
 
+
+
 bool Game::MyGame::cGame::Initialize()
 {
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"));
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"));
 	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	cube->m_transform.position += 0.25f * Engine::Math::up;
+	suzanne->m_transform.position += 0.25f * Engine::Math::up;
 	plane->m_transform.scale *= 5.0f;
 
 	return true;
@@ -56,12 +58,12 @@ bool Game::MyGame::cGame::Initialize()
 
 bool Game::MyGame::cGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(cube);
+	Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(plane);
 
-	angle -= glm::radians(64.0f) * Engine::Time::DeltaTime();
-	Rotate(cube, angle, Engine::Math::up);
-	Move(cube);
+	angle = glm::radians(64.0f) * Engine::Time::DeltaTime();
+	Move(suzanne);
+	Rotate(suzanne, angle, Engine::Math::up);
 
 	Move(camera);
 
@@ -168,7 +170,7 @@ namespace
 		else
 		{
 			glm::quat rotation = glm::angleAxis(angle, i_axis);
-			i_object->m_transform.orientation = glm::normalize(rotation);
+			i_object->m_transform.orientation = glm::normalize(i_object->m_transform.orientation * rotation);
 		}
 		return true;
 	}
