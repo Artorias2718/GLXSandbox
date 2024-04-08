@@ -115,9 +115,13 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 	}
 	// Assign the data to the buffer
 	{
-		const unsigned int bufferSize = m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16);
+		const unsigned int bufferSize = m_isShort
+			? m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet16)
+			: m_indexSetCount * sizeof(Engine::Graphics::Structures::sIndexSet32);
 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(m_indexSet16),
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<GLvoid*>(m_isShort
+			? reinterpret_cast<Engine::Graphics::Structures::sIndexSet32*>(m_indexSet16)
+			: m_indexSet32),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const GLenum errorCode = glGetError();
