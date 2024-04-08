@@ -22,6 +22,9 @@ namespace Engine
 			cGameObject(Graphics::Assets::cMesh *i_mesh);
 			virtual ~cGameObject();
 
+			bool Move(float offset);
+			bool Rotate(float offset, glm::vec3& axis);
+
 			Graphics::Assets::cMesh *m_mesh;
 			Shared::sTransform m_transform;
 

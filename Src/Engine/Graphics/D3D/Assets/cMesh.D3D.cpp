@@ -43,7 +43,10 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 
 	// Intialize the index buffer
 	{
-		const unsigned int bufferSize = m_indexSetCount * sizeof(Structures::sIndexSet16);
+		const unsigned int bufferSize = m_isShort
+									  ? m_indexSetCount * sizeof(Structures::sIndexSet16)
+									  : m_indexSetCount * sizeof(Structures::sIndexSet32);
+
 		D3D11_BUFFER_DESC bufferDescription = { 0 };
 		{
 			bufferDescription.ByteWidth = bufferSize;
@@ -55,7 +58,10 @@ bool Engine::Graphics::Assets::cMesh::Initialize()
 		}
 		D3D11_SUBRESOURCE_DATA initialData = { 0 };
 		{
-			initialData.pSysMem = m_indexSet16;
+			initialData.pSysMem = m_isShort
+								? reinterpret_cast<Structures::sIndexSet32*>(m_indexSet16)
+								: m_indexSet32;
+
 			// (The other data members are ignored for non-texture buffers)
 		}
 
