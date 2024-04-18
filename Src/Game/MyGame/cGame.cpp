@@ -4,6 +4,7 @@
 #include "cGame.h"
 
 #include "../../Engine/Graphics/Graphics.h"
+#include "../../Engine/Graphics/Assets/cEffect.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -20,6 +21,8 @@ namespace
 	const float OFFSET = 8.0f;
 	float angle = 0.0f;
 
+	Engine::Graphics::Assets::cEffect* solid;
+	
 	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cCamera* camera;
@@ -46,8 +49,10 @@ Game::MyGame::cGame::~cGame()
 
 bool Game::MyGame::cGame::Initialize()
 {
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"));
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"));
+	solid = new Engine::Graphics::Assets::cEffect("solid");
+	
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), solid);
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), solid);
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	suzanne->m_transform.position += 0.25f * Engine::Math::up;

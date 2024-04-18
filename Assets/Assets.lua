@@ -13,7 +13,7 @@ return
     },
     shaders =
     {
-        { path = "Vertex.shader", arguments = { "vertex" } },
-        { path = "Fragment.shader", arguments = { "fragment" } },
+        { path = "Solid/Vertex.shader", arguments = { "vertex" } },
+        { path = "Solid/Fragment.shader", arguments = { "fragment" } },
     }
 }

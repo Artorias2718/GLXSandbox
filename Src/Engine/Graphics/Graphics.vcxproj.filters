@@ -41,21 +41,15 @@
     <ClInclude Include="Interfaces\eConstantBufferType.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\cEffect.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="OGL\Graphics.OGL.cpp">
-      <Filter>OGL</Filter>
-    </ClCompile>
     <ClCompile Include="Functions.cpp" />
-    <ClCompile Include="D3D\Graphics.D3D.cpp">
-      <Filter>D3D</Filter>
-    </ClCompile>
     <ClCompile Include="D3D\Assets\cMesh.D3D.cpp">
       <Filter>D3D\Assets</Filter>
-    </ClCompile>
-    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
-      <Filter>OGL\Assets</Filter>
     </ClCompile>
     <ClCompile Include="Assets\cMesh.cpp">
       <Filter>Assets</Filter>
@@ -65,6 +59,18 @@
     </ClCompile>
     <ClCompile Include="Interfaces\cConstantBuffer.cpp">
       <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\cEffect.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\cEffect.D3D.cpp">
+      <Filter>D3D\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cEffect.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

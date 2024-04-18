@@ -11,6 +11,7 @@ namespace Engine
 		namespace Assets 
 		{
 			class cMesh;
+			class cEffect;
 		}
 	}
 	namespace Shared
@@ -19,13 +20,14 @@ namespace Engine
 		{
 		public:
 			cGameObject();
-			cGameObject(Graphics::Assets::cMesh *i_mesh);
+			cGameObject(Graphics::Assets::cMesh *i_mesh, Graphics::Assets::cEffect *i_effect);
 			virtual ~cGameObject();
 
 			bool Move(float offset);
 			bool Rotate(float offset, glm::vec3& axis);
 
 			Graphics::Assets::cMesh *m_mesh;
+			Graphics::Assets::cEffect *m_effect;
 			Shared::sTransform m_transform;
 
 			bool m_active;

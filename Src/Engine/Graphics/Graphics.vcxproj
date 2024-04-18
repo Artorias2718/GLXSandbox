@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\cEffect.h" />
     <ClInclude Include="Assets\cMesh.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="D3D\Includes.h">
@@ -46,12 +47,13 @@
     <ClInclude Include="Structures\sVertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\cEffect.cpp" />
     <ClCompile Include="Assets\cMesh.cpp" />
-    <ClCompile Include="D3D\Assets\cMesh.D3D.cpp">
+    <ClCompile Include="D3D\Assets\cEffect.D3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="D3D\Graphics.D3D.cpp">
+    <ClCompile Include="D3D\Assets\cMesh.D3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -62,11 +64,11 @@
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Interfaces\cConstantBuffer.cpp" />
-    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
+    <ClCompile Include="OGL\Assets\cEffect.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="OGL\Graphics.OGL.cpp">
+    <ClCompile Include="OGL\Assets\cMesh.OGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
