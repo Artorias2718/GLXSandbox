@@ -25,10 +25,10 @@ namespace Engine
 				//~cConstantBuffer();
 
 #if defined D3D_API 
-				cConstantBuffer(eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_buffer_description,
-					UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_sub_resource_data, void* i_constantBufferData = 0);
-				bool Initialize(eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_buffer_description,
-					UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_sub_resource_data, void* i_constantBufferData = 0);
+				cConstantBuffer(Interfaces::eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
+					UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData = 0);
+				bool Initialize(eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
+					UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData = 0);
 #elif defined OGL_API 
 				cConstantBuffer(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData = 0);
 				bool Initialize(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData = 0);

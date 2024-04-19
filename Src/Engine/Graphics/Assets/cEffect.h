@@ -23,13 +23,13 @@ namespace Engine
 			class cEffect
 			{
 			public:
-				cEffect(const std::string& i_effectName = "");
+				cEffect(const std::string& i_effect = "");
 				~cEffect();
 
 				bool Bind();
 				bool CleanUp();
 
-				std::string m_effectName;
+				std::string m_effect;
 			private:
 				bool LoadShaders();
 				bool LoadVertexShader();

@@ -120,6 +120,7 @@ local function RegisterAssetToBeBuilt( i_sourceAssetRelativePath, i_assetType, i
 			-- (This table is simultaneously used as a dictionary and an array)
 			registeredAssetsToBuild[uniquePath] = registrationInfo
 			registeredAssetsToBuild[#registeredAssetsToBuild + 1] = registrationInfo
+
 			-- And also register any assets that are referenced by this asset
 			assetTypeInfo.RegisterReferencedAssets( uniquePath )
 		else
@@ -194,6 +195,39 @@ NewAssetTypeInfo( "gameobjects",
 	}
 )
 
+-- Material Asset type
+--------------------
+
+NewAssetTypeInfo( "materials",
+  {
+	GetBuilderRelativePath = function()
+		return "MaterialBuilder.exe"
+	end,
+    RegisterReferencedAssets = function( i_sourceRelativePath )
+      local sourceAbsolutePath = s_AuthoredAssetDir .. "/Materials/" .. i_sourceRelativePath
+      if DoesFileExist( sourceAbsolutePath ) then
+        local material = dofile( sourceAbsolutePath )
+
+		local effect = material.effect
+
+		-- Get the shader paths from the effect table
+		local fragment = "/Shaders/" .. effect .. "/Fragment.shader"
+		local vertex = "/Shaders/" .. effect .. "/Vertex.shader"
+
+		RegisterAssetToBeBuilt( fragment, "shaders", { "fragment" } )
+		RegisterAssetToBeBuilt( vertex,   "shaders", { "vertex" } )
+      end
+    end,
+	ConvertSourceRelativePathToBuiltRelativePath = function ( i_sourceRelativePath, i_assetType )
+		sourceAbsolutePath = s_AuthoredAssetDir .. i_sourceRelativePath
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		extensionWithPeriod = file:sub(1, file:find(".") - 1) .. ".mat";
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+  }
+)
+
 -- Mesh Asset Type
 --------------------
 
@@ -228,6 +262,10 @@ NewAssetTypeInfo( "shaders",
 			local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
 			extensionWithPeriod = file:sub(1, file:find(".") - 1) .. ".shader";
 			return relativeDirectory .. fileName .. extensionWithPeriod
+		end,
+		ShouldTargetBeBuilt = function( i_lastWriteTime_builtAsset )
+        	local lastWriteTime_includeFile = GetLastWriteTime( s_AuthoredAssetDir .. "Shaders/Shaders.inc" )
+			return lastWriteTime_includeFile > i_lastWriteTime_builtAsset
 		end
 	}
 )
@@ -246,12 +284,14 @@ local function BuildAsset( i_assetInfo )
 	if string.find(string.lower(assetTypeInfo.type), 'gameobject')
 		then
 			assetDir = "/GameObjects/"
-	elseif string.find(string.lower(assetTypeInfo.type), 'mesh')
+	end
+	if string.find(string.lower(assetTypeInfo.type), 'material')
+		then
+			assetDir = "/Materials/"
+	end
+	if string.find(string.lower(assetTypeInfo.type), 'mesh')
 		then
 			assetDir = "/Meshes/"
-	elseif string.find(string.lower(assetTypeInfo.type), 'shader')
-		then
-			assetDir = "/Shaders/"
 	end
 
 	local path_source = s_AuthoredAssetDir .. assetDir .. i_assetInfo.path

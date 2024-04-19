@@ -2,8 +2,8 @@
 	This file helps with working with OpenGL under Windows
 */
 
-#ifndef WINDOWS_GL_H
-#define WINDOWS_GL_H
+#ifndef ENGINE_WINDOWS_OGL_H
+#define ENGINE_WINDOWS_OGL_H
 
 // Header Files
 //=============
@@ -30,9 +30,9 @@ namespace Engine
 				HWND window;
 				ATOM windowClass;
 				HDC deviceContext;
-				HGLRC openGLRenderingContext;
+				HGLRC oglRenderingContext;
 
-				sHiddenWindowInfo() : window( NULL ), windowClass( NULL ), deviceContext( NULL ), openGLRenderingContext( NULL ) {}
+				sHiddenWindowInfo() : window( NULL ), windowClass( NULL ), deviceContext( NULL ), oglRenderingContext( NULL ) {}
 			};
 
 			// It is ok if the HINSTANCE that is passed to CreateHiddenContextWindow() is NULL,
@@ -43,4 +43,4 @@ namespace Engine
 	}
 }
 
-#endif	// WINDOWS_OPENGL_H
+#endif	// !ENGINE_WINDOWS_OGL_H

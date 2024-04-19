@@ -70,7 +70,7 @@ bool Engine::Graphics::Assets::cEffect::LoadVertexShader()
 	bool wereThereErrors = false;
 
 	Platform::sDataFromFile compiledShader;
-	std::string shaderFilePath = "data/shaders/" + m_effectName + "/vertex.shader";
+	std::string shaderFilePath = "data/shaders/" + m_effect + "/vertex.shader";
 
 	// Load the compiled shader
 	{
@@ -138,7 +138,7 @@ bool Engine::Graphics::Assets::cEffect::LoadFragmentShader()
 	bool wereThereErrors = false;
 
 	Platform::sDataFromFile compiledShader;
-	std::string shaderFilePath = "data/shaders/" + m_effectName + "/fragment.shader";
+	std::string shaderFilePath = "data/shaders/" + m_effect + "/fragment.shader";
 
 	// Load the compiled shader
 	{

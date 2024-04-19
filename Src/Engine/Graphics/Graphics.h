@@ -42,6 +42,7 @@ namespace Engine
 		{
 			struct sFrame;
 			struct sDrawCall;
+			struct sMaterial;
 		}
 
 		// Render
@@ -58,7 +59,7 @@ namespace Engine
 			HWND mainWindow;
 	#if defined( D3D_API )
 			unsigned int resolutionWidth, resolutionHeight;
-	#elif defined( GL_API )
+	#elif defined( OGL_API )
 			HINSTANCE thisInstanceOfTheApplication;
 	#endif
 #endif

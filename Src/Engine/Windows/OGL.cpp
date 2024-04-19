@@ -12,7 +12,7 @@
 
 namespace
 {
-	const char* const s_hiddenWindowClass_name = "Engine Hidden OpenGL Context Window Class";
+	const char* const s_hiddenWindowClass_name = "EAE6320 Hidden OpenGL Context Window Class";
 }
 
 // Interface
@@ -39,7 +39,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 				wereThereErrors = true;
 				if ( o_errorMessage )
 				{
-					const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+					const std::string windowsErrorMessage = Functions::GetLastSystemError();
 					std::ostringstream errorMessage;
 					errorMessage << "Windows failed to get the current instance handle: " << windowsErrorMessage;
 					*o_errorMessage = errorMessage.str();
@@ -62,7 +62,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 				wereThereErrors = true;
 				if ( o_errorMessage )
 				{
-					const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+					const std::string windowsErrorMessage = Functions::GetLastSystemError();
 					std::ostringstream errorMessage;
 					errorMessage << "Windows failed to register the hidden OpenGL context window's class: " << windowsErrorMessage;
 					*o_errorMessage = errorMessage.str();
@@ -72,7 +72,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 		}
 		// Create the hidden window
 		{
-			const char* const windowName = "EAE6320 Hidden OpenGL Context Window";
+			const char* const windowName = "Game Hidden OpenGL Context Window";
 			const DWORD windowStyle = WS_POPUP
 				| WS_MINIMIZE;	// Just in case
 			const DWORD windowStyle_extended = 0;
@@ -89,7 +89,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 				wereThereErrors = true;
 				if ( o_errorMessage )
 				{
-					const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+					const std::string windowsErrorMessage = Functions::GetLastSystemError();
 					std::ostringstream errorMessage;
 					errorMessage << "Windows failed to create the hidden OpenGL context window: " << windowsErrorMessage;
 					*o_errorMessage = errorMessage.str();
@@ -133,7 +133,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 				wereThereErrors = true;
 				if ( o_errorMessage )
 				{
-					const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+					const std::string windowsErrorMessage = Functions::GetLastSystemError();
 					std::ostringstream errorMessage;
 					errorMessage << "Windows couldn't choose the closest pixel format"
 						" for the hidden OpenGL context window: "
@@ -149,7 +149,7 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 			wereThereErrors = true;
 			if ( o_errorMessage )
 			{
-				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+				const std::string windowsErrorMessage = Functions::GetLastSystemError();
 				std::ostringstream errorMessage;
 				errorMessage << "Windows couldn't set the desired pixel format " << pixelFormatId
 					<< " for the hidden OpenGL context window: "
@@ -160,13 +160,13 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 		}
 	}
 	// Create the rendering context
-	o_info.openGLRenderingContext = wglCreateContext( o_info.deviceContext );
-	if ( o_info.openGLRenderingContext == NULL )
+	o_info.oglRenderingContext = wglCreateContext( o_info.deviceContext );
+	if ( o_info.oglRenderingContext == NULL )
 	{
 		wereThereErrors = true;
 		if ( o_errorMessage )
 		{
-			const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+			const std::string windowsErrorMessage = Functions::GetLastSystemError();
 			std::ostringstream errorMessage;
 			errorMessage << "Windows failed to create a hidden OpenGL rendering context: "
 				<< windowsErrorMessage;
@@ -175,12 +175,12 @@ bool Engine::Windows::OGL::CreateHiddenContextWindow( HINSTANCE& io_hInstance, s
 		goto OnExit;
 	}
 	// Set it as the rendering context of this thread
-	if ( wglMakeCurrent( o_info.deviceContext, o_info.openGLRenderingContext ) == FALSE )
+	if ( wglMakeCurrent( o_info.deviceContext, o_info.oglRenderingContext ) == FALSE )
 	{
 		wereThereErrors = true;
 		if ( o_errorMessage )
 		{
-			const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+			const std::string windowsErrorMessage = Functions::GetLastSystemError();
 			std::ostringstream errorMessage;
 			errorMessage << "Windows failed to set the current OpenGL rendering context"
 				" for the hidden window: "
@@ -199,10 +199,10 @@ bool Engine::Windows::OGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHid
 {
 	bool wereThereErrors = false;
 
-	if ( io_info.openGLRenderingContext != NULL )
+	if ( io_info.oglRenderingContext != NULL )
 	{
 		ASSERTF( io_info.deviceContext != NULL, "If a rendering context exists then a device context should also" );
-		if ( wglGetCurrentContext() == io_info.openGLRenderingContext )
+		if ( wglGetCurrentContext() == io_info.oglRenderingContext )
 		{
 			if ( wglMakeCurrent( io_info.deviceContext, NULL ) == FALSE )
 			{
@@ -210,26 +210,26 @@ bool Engine::Windows::OGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHid
 				ASSERT( false );
 				if ( o_errorMessage )
 				{
-					const std::string windowsError = Windows::Functions::GetLastSystemError();
+					const std::string windowsError = Functions::GetLastSystemError();
 					std::ostringstream errorMessage;
 					errorMessage << "\nWindows failed to unset the current hidden OpenGL device context: " << windowsError;
 					*o_errorMessage += errorMessage.str();
 				}
 			}
 		}
-		if ( wglDeleteContext( io_info.openGLRenderingContext ) == FALSE )
+		if ( wglDeleteContext( io_info.oglRenderingContext ) == FALSE )
 		{
 			wereThereErrors = true;
 			ASSERT( false );
 			if ( o_errorMessage )
 			{
-				const std::string windowsError = Windows::Functions::GetLastSystemError();
+				const std::string windowsError = Functions::GetLastSystemError();
 				std::ostringstream errorMessage;
 				errorMessage << "\nWindows failed to delete the hidden OpenGL rendering context: " << windowsError;
 				*o_errorMessage += errorMessage.str();
 			}
 		}
-		io_info.openGLRenderingContext = NULL;
+		io_info.oglRenderingContext = NULL;
 	}
 	if ( io_info.deviceContext != NULL )
 	{
@@ -252,7 +252,7 @@ bool Engine::Windows::OGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHid
 			ASSERT( false );
 			if ( o_errorMessage )
 			{
-				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+				const std::string windowsErrorMessage = Functions::GetLastSystemError();
 				std::ostringstream errorMessage;
 				errorMessage << "\nWindows failed to destroy the hidden OpenGL context window: " << windowsErrorMessage;
 				*o_errorMessage += errorMessage.str();
@@ -269,7 +269,7 @@ bool Engine::Windows::OGL::FreeHiddenContextWindow( HINSTANCE& i_hInstance, sHid
 			wereThereErrors = true;
 			if ( o_errorMessage )
 			{
-				const std::string windowsErrorMessage = Windows::Functions::GetLastSystemError();
+				const std::string windowsErrorMessage = Functions::GetLastSystemError();
 				std::ostringstream errorMessage;
 				errorMessage << "\nWindows failed to unregister the hidden OpenGL context window's class \""
 					<< io_info.windowClass << "\": " << windowsErrorMessage;

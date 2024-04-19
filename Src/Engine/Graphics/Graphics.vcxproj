@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\cEffect.h" />
+    <ClInclude Include="Assets\cMaterial.h" />
     <ClInclude Include="Assets\cMesh.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="D3D\Includes.h">
@@ -48,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Assets\cEffect.cpp" />
+    <ClCompile Include="Assets\cMaterial.cpp" />
     <ClCompile Include="Assets\cMesh.cpp" />
     <ClCompile Include="D3D\Assets\cEffect.D3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

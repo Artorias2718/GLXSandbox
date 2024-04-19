@@ -10,7 +10,8 @@ namespace Engine
 			enum eConstantBufferType
 			{
 				FRAME,
-				DRAWCALL
+				DRAWCALL,
+				MATERIAL
 			};
 		}
 	}

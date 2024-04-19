@@ -185,7 +185,7 @@ bool Engine::Graphics::Assets::cEffect::LoadVertexShader()
 	{
 		// Load the shader source code
 		{
-			std::string shaderFilePath = "data/shaders/" + m_effectName + "/vertex.shader";
+			std::string shaderFilePath = "data/shaders/" + m_effect + "/vertex.shader";
 			std::string errorMessage;
 			if (!Engine::Platform::LoadBinaryFile(shaderFilePath.c_str(), dataFromFile, &errorMessage))
 			{
@@ -368,7 +368,7 @@ bool Engine::Graphics::Assets::cEffect::LoadFragmentShader()
 	{
 		// Load the shader source code
 		{
-			std::string shaderFilePath = "data/shaders/" + m_effectName + "/fragment.shader";
+			std::string shaderFilePath = "data/shaders/" + m_effect + "/fragment.shader";
 			std::string errorMessage;
 
 			if (!Platform::LoadBinaryFile(shaderFilePath.c_str(), dataFromFile, &errorMessage))

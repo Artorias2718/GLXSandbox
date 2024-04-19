@@ -1,10 +1,10 @@
 #include "../Interfaces/cConstantBuffer.h"
 
 #if defined D3D_API
-	#include "../D3D/Interfaces/D3DInterfaces.h"
-	#include "../D3D/Includes.h"
+#include "../D3D/Interfaces/D3DInterfaces.h"
+#include "../D3D/Includes.h"
 #elif defined OGL_API
-	#include "../OGL/Includes.h"
+#include "../OGL/Includes.h"
 #endif
 
 #include "../../Asserts/Asserts.h"
@@ -14,29 +14,33 @@
 
 #include "../Structures/sFrame.h"
 #include "../Structures/sDrawCall.h"
+#include "../Structures/sMaterial.h"
 
 #if defined D3D_API
-	Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(Interfaces::eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
-		UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData)
-	{
-		if (!Initialize(i_bufferType, i_bufferDescription, i_bufferSize, i_subResourceData, i_constantBufferData))
+Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
+	UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData)
+{
+	if (!Initialize(i_bufferType, i_bufferDescription, i_bufferSize, i_subResourceData, i_constantBufferData))
 #elif defined OGL_API
-	Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData)
-	{
-		if (!Initialize(i_bufferType, i_bufferSize, i_constantBufferData))
+Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData)
+{
+	if (!Initialize(i_bufferType, i_bufferSize, i_constantBufferData))
 #endif
+	{
+		switch (i_bufferType)
 		{
-			switch (i_bufferType)
-			{
-			case FRAME:
-				ASSERTF(false, "There was a problem initializing the frame constant buffer!");
-				break;
-			case DRAWCALL:
-				ASSERTF(false, "There was a problem initializing the drawcall constant buffer!");
-				break;
-			}
+		case FRAME:
+			ASSERTF(false, "There was a problem initializing the frame constant buffer!");
+			break;
+		case DRAWCALL:
+			ASSERTF(false, "There was a problem initializing the drawcall constant buffer!");
+			break;
+		case MATERIAL:
+			ASSERTF(false, "There was a problem initializing the material constant buffer!");
+			break;
 		}
 	}
+}
 
 
 #if defined D3D_API
@@ -62,6 +66,9 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Initialize(Interfaces::eCons
 			break;
 		case DRAWCALL:
 			i_subResourceData.pSysMem = reinterpret_cast<Structures::sDrawCall*>(i_constantBufferData);
+			break;
+		case MATERIAL:
+			i_subResourceData.pSysMem = reinterpret_cast<Structures::sMaterial*>(i_constantBufferData);
 			break;
 		}
 	}
@@ -111,12 +118,14 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Initialize(eConstantBufferTy
 			switch (i_bufferType)
 			{
 			case FRAME:
+			case MATERIAL:
 				glBufferData(GL_UNIFORM_BUFFER, i_bufferSize, i_constantBufferData, usage);
 				break;
 			case DRAWCALL:
 				glBufferData(GL_UNIFORM_BUFFER, i_bufferSize, NULL, usage);
 				break;
 			}
+
 
 			glBindBuffer(GL_UNIFORM_BUFFER, m_constantBufferId);
 			const GLenum errorCode = glGetError();
@@ -145,32 +154,39 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Bind(eConstantBufferType i_b
 	{
 		const unsigned int bufferCount = 1;
 
-        #if defined D3D_API
-		    switch (i_bufferType)
-		    {
-		        case FRAME:
-		        {
-		        	const unsigned int registerAssignedInShader = 0;
-		        	D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
-		        	D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
-		        	break;
-		        }
-		        case DRAWCALL:
-		        {
-		        	const unsigned int registerAssignedInShader = 1;
-		        	D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
-		        	break;
-		        }
-		    }
-        #elif defined OGL_API
-        	// Update the constant buffer
-        	{
-        		// Bind the constant buffers to the shader
-        		glBindBufferBase(GL_UNIFORM_BUFFER, i_bufferType, m_constantBufferId);
-        		ASSERT(glGetError() == GL_NO_ERROR);
-        	}
-        	return true;
-        #endif
+#if defined D3D_API
+		switch (i_bufferType)
+		{
+		case FRAME:
+		{
+			const unsigned int registerAssignedInShader = 0;
+			D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			break;
+		}
+		case DRAWCALL:
+		{
+			const unsigned int registerAssignedInShader = 1;
+			D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			break;
+		}
+		case MATERIAL:
+		{
+			const unsigned int registerAssignedInShader = 2;
+			//D3DInterfaces::s_direct3dImmediateContext->VSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			D3DInterfaces::s_direct3dImmediateContext->PSSetConstantBuffers(registerAssignedInShader, bufferCount, &m_constantBufferId);
+			break;
+		}
+		}
+#elif defined OGL_API
+		// Update the constant buffer
+		{
+			// Bind the constant buffers to the shader
+			glBindBufferBase(GL_UNIFORM_BUFFER, i_bufferType, m_constantBufferId);
+			ASSERT(glGetError() == GL_NO_ERROR);
+		}
+		return true;
+#endif
 	}
 	return !wereThereErrors;
 }
@@ -178,110 +194,110 @@ bool Engine::Graphics::Interfaces::cConstantBuffer::Bind(eConstantBufferType i_b
 bool Engine::Graphics::Interfaces::cConstantBuffer::Update(eConstantBufferType i_bufferType, void* i_constantBufferData)
 {
 	bool wereThereErrors = false;
-    
+
 	// Update the constant buffer
-    #if defined D3D_API
-	    // Update the struct (i.e. the memory that we own)
+#if defined D3D_API
+	// Update the struct (i.e. the memory that we own)
 
-	    // Get a pointer from Direct3D that can be written to
-	    void* memoryToWriteTo = NULL;
-	    {
-	    	D3D11_MAPPED_SUBRESOURCE mappedSubResource;
-	    	{
-	    		// Discard previous contents when writing
-	    		const unsigned int noSubResources = 0;
-	    		const D3D11_MAP mapType = D3D11_MAP_WRITE_DISCARD;
-	    		const unsigned int noFlags = 0;
-	    		const HRESULT result = D3DInterfaces::s_direct3dImmediateContext->Map(m_constantBufferId, noSubResources, mapType, noFlags, &mappedSubResource);
-	    		if (SUCCEEDED(result))
-	    		{
-	    			memoryToWriteTo = mappedSubResource.pData;
-	    		}
-	    		else
-	    		{
-	    			wereThereErrors = true;
-	    			goto OnExit;
-	    		}
-	    	}
-	    }
-	    if (memoryToWriteTo)
-	    {
-	    	// Copy the new data to the memory that Direct3D has provided
+	// Get a pointer from Direct3D that can be written to
+	void* memoryToWriteTo = NULL;
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedSubResource;
+		{
+			// Discard previous contents when writing
+			const unsigned int noSubResources = 0;
+			const D3D11_MAP mapType = D3D11_MAP_WRITE_DISCARD;
+			const unsigned int noFlags = 0;
+			const HRESULT result = D3DInterfaces::s_direct3dImmediateContext->Map(m_constantBufferId, noSubResources, mapType, noFlags, &mappedSubResource);
+			if (SUCCEEDED(result))
+			{
+				memoryToWriteTo = mappedSubResource.pData;
+			}
+			else
+			{
+				wereThereErrors = true;
+				goto OnExit;
+			}
+		}
+	}
+	if (memoryToWriteTo)
+	{
+		// Copy the new data to the memory that Direct3D has provided
 
-	    	switch (i_bufferType)
-	    	{
-	    	case FRAME:
-	    		memcpy(memoryToWriteTo, i_constantBufferData, sizeof(Structures::sFrame));
-	    		break;
-	    	case DRAWCALL:
-	    		memcpy(memoryToWriteTo, i_constantBufferData, sizeof(Structures::sDrawCall));
-	    		break;
-	    	}
+		switch (i_bufferType)
+		{
+		case FRAME:
+			memcpy(memoryToWriteTo, i_constantBufferData, sizeof(Structures::sFrame));
+			break;
+		case DRAWCALL:
+			memcpy(memoryToWriteTo, i_constantBufferData, sizeof(Structures::sDrawCall));
+			break;
+		}
 
-	    	// Let Direct3D know that the memory contains the data
-	    	// (the pointer will be invalid after this call)
-	    	const unsigned int noSubResources = 0;
-	    	D3DInterfaces::s_direct3dImmediateContext->Unmap(m_constantBufferId, noSubResources);
-	    	memoryToWriteTo = NULL;
-	    }
-    #elif defined OGL_API
-	    // Update the struct (i.e. the memory that we own)
+		// Let Direct3D know that the memory contains the data
+		// (the pointer will be invalid after this call)
+		const unsigned int noSubResources = 0;
+		D3DInterfaces::s_direct3dImmediateContext->Unmap(m_constantBufferId, noSubResources);
+		memoryToWriteTo = NULL;
+	}
+#elif defined OGL_API
+	// Update the struct (i.e. the memory that we own)
 
-	    // Make the uniform buffer active
-	    {
-	    	glBindBuffer(GL_UNIFORM_BUFFER, m_constantBufferId);
-	    	ASSERT(glGetError() == GL_NO_ERROR);
-	    }
-	    // Copy the updated memory to the GPU
-	    {
-	    	GLintptr updateAtTheBeginning = 0;
-	    	GLsizeiptr updateTheEntireBuffer = 0;
+	// Make the uniform buffer active
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_constantBufferId);
+		ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	// Copy the updated memory to the GPU
+	{
+		GLintptr updateAtTheBeginning = 0;
+		GLsizeiptr updateTheEntireBuffer = 0;
 
-	    	switch (i_bufferType)
-	    	{
-	    	case FRAME:
-	    		updateTheEntireBuffer = static_cast<GLsizeiptr>(sizeof(Structures::sFrame));
-	    		break;
-	    	case DRAWCALL:
-	    		updateTheEntireBuffer = static_cast<GLsizeiptr>(sizeof(Structures::sDrawCall));
-	    		break;
-	    	}
+		switch (i_bufferType)
+		{
+		case FRAME:
+			updateTheEntireBuffer = static_cast<GLsizeiptr>(sizeof(Structures::sFrame));
+			break;
+		case DRAWCALL:
+			updateTheEntireBuffer = static_cast<GLsizeiptr>(sizeof(Structures::sDrawCall));
+			break;
+		}
 
-	    	glBufferSubData(GL_UNIFORM_BUFFER, updateAtTheBeginning, updateTheEntireBuffer, i_constantBufferData);
-	    	ASSERT(glGetError() == GL_NO_ERROR);
-			
-			goto OnExit;
-	    }    
-    #endif
-	OnExit:
-		return !wereThereErrors;
+		glBufferSubData(GL_UNIFORM_BUFFER, updateAtTheBeginning, updateTheEntireBuffer, i_constantBufferData);
+		ASSERT(glGetError() == GL_NO_ERROR);
+
+		goto OnExit;
+	}
+#endif
+OnExit:
+	return !wereThereErrors;
 }
 
 
 bool Engine::Graphics::Interfaces::cConstantBuffer::CleanUp()
 {
 	bool wereThereErrors = false;
-    #if defined D3D_API
-	    if (m_constantBufferId)
-	    {
-	    	m_constantBufferId->Release();
-	    	m_constantBufferId = NULL;
-	    }
-    #elif defined OGL_API
-	    if (m_constantBufferId != 0)
-	    {
-	    	const GLsizei bufferCount = 1;
-	    	glDeleteBuffers(bufferCount, &m_constantBufferId);
-	    	const GLenum errorCode = glGetError();
-	    	if (errorCode != GL_NO_ERROR)
-	    	{
-	    		wereThereErrors = true;
-	    		ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-	    		Logging::OutputError("OpenGL failed to delete the constant buffer: %s",
-	    			reinterpret_cast<const char*>(gluErrorString(errorCode)));
-	    	}
-	    	m_constantBufferId = 0;
-	    }
-    #endif
+#if defined D3D_API
+	if (m_constantBufferId)
+	{
+		m_constantBufferId->Release();
+		m_constantBufferId = NULL;
+	}
+#elif defined OGL_API
+	if (m_constantBufferId != 0)
+	{
+		const GLsizei bufferCount = 1;
+		glDeleteBuffers(bufferCount, &m_constantBufferId);
+		const GLenum errorCode = glGetError();
+		if (errorCode != GL_NO_ERROR)
+		{
+			wereThereErrors = true;
+			ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			Logging::OutputError("OpenGL failed to delete the constant buffer: %s",
+				reinterpret_cast<const char*>(gluErrorString(errorCode)));
+		}
+		m_constantBufferId = 0;
+	}
+#endif
 	return !wereThereErrors;
 }

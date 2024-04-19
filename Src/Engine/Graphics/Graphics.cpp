@@ -6,12 +6,13 @@
 #include "../Asserts/Asserts.h"
 #include "../Logging/Logging.h"
 
+#include "Assets/cMaterial.h"
 #include "Assets/cMesh.h"
-#include "Assets/cEffect.h"
 
 #include "Interfaces/cConstantBuffer.h"
 #include "Structures/sFrame.h"
 #include "Structures/sDrawCall.h"
+#include "Structures/sMaterial.h"
 
 #include "../Shared/cCamera.h"
 #include "../Time/Time.h"
@@ -110,7 +111,7 @@ void Engine::Graphics::RenderFrame()
 		{
 			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::UpdateTransform(((*itor)->m_transform));
 			s_drawCallBuffer->Update(Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
-			(*itor)->m_effect->Bind();
+			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
 		}
 		meshes.clear();

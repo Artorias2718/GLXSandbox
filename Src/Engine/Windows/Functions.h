@@ -21,22 +21,22 @@ namespace Engine
 {
 	namespace Windows
 	{
-		struct sDataFromFile
-		{
-			void* data;
-			size_t size;
-
-			void Free()
+			struct sDataFromFile
 			{
-				if (data != NULL)
-				{
-					free(data);
-					data = NULL;
-				}
-			}
+				void* data;
+				size_t size;
 
-			sDataFromFile() : data(NULL), size(0) {}
-		};
+				void Free()
+				{
+					if (data != NULL)
+					{
+						free(data);
+						data = NULL;
+					}
+				}
+
+				sDataFromFile() : data(NULL), size(0) {}
+			};
 
 		namespace Functions
 		{

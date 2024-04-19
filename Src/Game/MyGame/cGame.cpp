@@ -4,7 +4,7 @@
 #include "cGame.h"
 
 #include "../../Engine/Graphics/Graphics.h"
-#include "../../Engine/Graphics/Assets/cEffect.h"
+#include "../../Engine/Graphics/Assets/cMaterial.h"
 #include "../../Engine/Graphics/Assets/cMesh.h"
 #include "../../Engine/Shared/cCamera.h"
 #include "../../Engine/Time/Time.h"
@@ -21,8 +21,11 @@ namespace
 	const float OFFSET = 8.0f;
 	float angle = 0.0f;
 
-	Engine::Graphics::Assets::cEffect* solid;
+	Engine::Graphics::Assets::cMaterial* red;
+	Engine::Graphics::Assets::cMaterial* green;
+	Engine::Graphics::Assets::cMaterial* blue;
 	
+	Engine::Shared::cGameObject* cube;
 	Engine::Shared::cGameObject* suzanne;
 	Engine::Shared::cGameObject* plane;
 	Engine::Shared::cCamera* camera;
@@ -49,10 +52,13 @@ Game::MyGame::cGame::~cGame()
 
 bool Game::MyGame::cGame::Initialize()
 {
-	solid = new Engine::Graphics::Assets::cEffect("solid");
+	red = new Engine::Graphics::Assets::cMaterial("red");
+	green = new Engine::Graphics::Assets::cMaterial("green");
+	blue = new Engine::Graphics::Assets::cMaterial("blue");
 	
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), solid);
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), solid);
+	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), red);
+	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), green);
+	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), blue);
 	camera = new Engine::Shared::cCamera("flycamera");
 
 	suzanne->m_transform.position += 0.25f * Engine::Math::up;
@@ -63,6 +69,7 @@ bool Game::MyGame::cGame::Initialize()
 
 bool Game::MyGame::cGame::Update()
 {
+	Engine::Graphics::SubmitGameObject(cube);
 	Engine::Graphics::SubmitGameObject(suzanne);
 	Engine::Graphics::SubmitGameObject(plane);
 	Engine::Graphics::SubmitGameObject(camera);

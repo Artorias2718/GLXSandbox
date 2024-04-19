@@ -16,6 +16,7 @@ namespace Engine
 				sColor(tNumber i_r = 1, tNumber i_g = 1, tNumber i_b = 1, tNumber i_a = 1) : r(i_r), g(i_g), b(i_b), a(i_a) {}
 			};
 
+			typedef sColor<float> sColorF;
 			typedef sColor<uint8_t> sColor8;
 		}
 	}

@@ -4,6 +4,13 @@ return
     {
         "FlyCamera.lua"
     },
+    materials =
+    {
+        "Blue.lua",
+        "Green.lua",
+        "Red.lua",
+        "Yellow.lua"
+    },
     meshes =
     {
         "Cube.lua",
@@ -11,9 +18,4 @@ return
         "Plane.lua",
         "Suzanne.lua"
     },
-    shaders =
-    {
-        { path = "Solid/Vertex.shader", arguments = { "vertex" } },
-        { path = "Solid/Fragment.shader", arguments = { "fragment" } },
-    }
 }
