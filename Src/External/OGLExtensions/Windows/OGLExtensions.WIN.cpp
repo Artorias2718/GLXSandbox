@@ -13,7 +13,7 @@
 
 namespace
 {
-	void* GetGLFunctionAddress( const char* i_functionName, std::string* o_errorMessage = NULL );
+	void* GetGLFunctionAddress(const char* i_functionName, std::string* o_errorMessage = NULL);
 }
 
 // Interface
@@ -26,6 +26,7 @@ PFNGLACTIVETEXTUREPROC glActiveTexture = NULL;
 PFNGLATTACHSHADERPROC glAttachShader = NULL;
 PFNGLBINDBUFFERPROC glBindBuffer = NULL;
 PFNGLBINDBUFFERBASEPROC glBindBufferBase = NULL;
+PFNGLBINDSAMPLERPROC glBindSampler = NULL;
 PFNGLBINDVERTEXARRAYPROC glBindVertexArray = NULL;
 PFNGLBUFFERDATAPROC glBufferData = NULL;
 PFNGLBUFFERSUBDATAPROC glBufferSubData = NULL;
@@ -39,6 +40,7 @@ PFNGLDELETESHADERPROC glDeleteShader = NULL;
 PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArray = NULL;
 PFNGLGENBUFFERSPROC glGenBuffers = NULL;
+PFNGLGENSAMPLERSPROC glGenSamplers = NULL;
 PFNGLGENVERTEXARRAYSPROC glGenVertexArrays = NULL;
 PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog = NULL;
 PFNGLGETPROGRAMIVPROC glGetProgramiv = NULL;
@@ -46,6 +48,7 @@ PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog = NULL;
 PFNGLGETSHADERIVPROC glGetShaderiv = NULL;
 PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation = NULL;
 PFNGLLINKPROGRAMPROC glLinkProgram = NULL;
+PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = NULL;
 PFNGLSHADERSOURCEPROC glShaderSource = NULL;
 PFNGLUSEPROGRAMPROC glUseProgram = NULL;
 PFNGLUNIFORM1FVPROC glUniform1fv = NULL;
@@ -56,13 +59,15 @@ PFNGLUNIFORM4FVPROC glUniform4fv = NULL;
 PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding = NULL;
 PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv = NULL;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = NULL;
+#if defined ( WINDOWS_API )
 PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
+#endif
 
 // Initialization
 //---------------
 
-bool External::OGLExtensions::Load( std::string* o_errorMessage )
+bool External::OGLExtensions::Load(std::string* o_errorMessage)
 {
 	bool wereThereErrors = false;
 
@@ -74,68 +79,70 @@ bool External::OGLExtensions::Load( std::string* o_errorMessage )
 	// all before doing anything with the main window)
 	HINSTANCE hInstance = NULL;
 	Engine::Windows::OGL::sHiddenWindowInfo hiddenWindowInfo;
-	if ( Engine::Windows::OGL::CreateHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
+	if (Engine::Windows::OGL::CreateHiddenContextWindow(hInstance, hiddenWindowInfo, o_errorMessage))
 	{
-		ASSERTF( wglGetCurrentContext() != NULL, "OpenGL extensions can't be loaded without a current OpenGL context" );
+		ASSERTF(wglGetCurrentContext() != NULL, "OpenGL extensions can't be loaded without a current OpenGL context");
 	}
 	else
 	{
 		wereThereErrors = true;
-		ASSERTF( false, o_errorMessage->c_str() );
+		ASSERTF(false, o_errorMessage->c_str());
 		goto OnExit;
 	}
 
 	// Load each extension
-#define OGLExtensions_LOADFUNCTION( i_functionName, i_functionType )														\
+#define OGLEXTENSIONS_LOADFUNCTION( i_functionName, i_functionType )														\
 		i_functionName = reinterpret_cast<i_functionType>( GetGLFunctionAddress( #i_functionName, o_errorMessage ) );	\
 		if ( !i_functionName )																							\
 			goto OnExit;
 
-	OGLExtensions_LOADFUNCTION( glActiveTexture, PFNGLACTIVETEXTUREPROC );
-	OGLExtensions_LOADFUNCTION( glAttachShader, PFNGLATTACHSHADERPROC );
-	OGLExtensions_LOADFUNCTION( glBindBuffer, PFNGLBINDBUFFERPROC );
-	OGLExtensions_LOADFUNCTION( glBindBufferBase, PFNGLBINDBUFFERBASEPROC );
-	OGLExtensions_LOADFUNCTION( glBindVertexArray, PFNGLBINDVERTEXARRAYPROC );
-	OGLExtensions_LOADFUNCTION( glBufferData, PFNGLBUFFERDATAPROC );
-	OGLExtensions_LOADFUNCTION( glBufferSubData, PFNGLBUFFERSUBDATAPROC );
-	OGLExtensions_LOADFUNCTION( glCompileShader, PFNGLCOMPILESHADERPROC );
-	OGLExtensions_LOADFUNCTION( glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC );
-	OGLExtensions_LOADFUNCTION( glCreateProgram, PFNGLCREATEPROGRAMPROC );
-	OGLExtensions_LOADFUNCTION( glCreateShader, PFNGLCREATESHADERPROC );
-	OGLExtensions_LOADFUNCTION( glDeleteBuffers, PFNGLDELETEBUFFERSPROC );
-	OGLExtensions_LOADFUNCTION( glDeleteProgram, PFNGLDELETEPROGRAMPROC );
-	OGLExtensions_LOADFUNCTION( glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC );
-	OGLExtensions_LOADFUNCTION( glDeleteShader, PFNGLDELETESHADERPROC );
-	OGLExtensions_LOADFUNCTION( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC );
-	OGLExtensions_LOADFUNCTION( glGenBuffers, PFNGLGENBUFFERSPROC );
-	OGLExtensions_LOADFUNCTION( glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC );
-	OGLExtensions_LOADFUNCTION( glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC );
-	OGLExtensions_LOADFUNCTION( glGetProgramiv, PFNGLGETPROGRAMIVPROC );
-	OGLExtensions_LOADFUNCTION( glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC );
-	OGLExtensions_LOADFUNCTION( glGetShaderiv, PFNGLGETSHADERIVPROC );
-	OGLExtensions_LOADFUNCTION( glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC );
-	OGLExtensions_LOADFUNCTION( glLinkProgram, PFNGLLINKPROGRAMPROC );
-	OGLExtensions_LOADFUNCTION( glShaderSource, PFNGLSHADERSOURCEPROC );
-	OGLExtensions_LOADFUNCTION( glUniform1fv, PFNGLUNIFORM1FVPROC );
-	OGLExtensions_LOADFUNCTION( glUniform1i, PFNGLUNIFORM1IPROC );
-	OGLExtensions_LOADFUNCTION( glUniform2fv, PFNGLUNIFORM2FVPROC );
-	OGLExtensions_LOADFUNCTION( glUniform3fv, PFNGLUNIFORM3FVPROC );
-	OGLExtensions_LOADFUNCTION( glUniform4fv, PFNGLUNIFORM4FVPROC );
-	OGLExtensions_LOADFUNCTION( glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC );
-	OGLExtensions_LOADFUNCTION( glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC );
-	OGLExtensions_LOADFUNCTION( glUseProgram, PFNGLUSEPROGRAMPROC );
-	OGLExtensions_LOADFUNCTION( glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC );
-	OGLExtensions_LOADFUNCTION( wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC );
-	OGLExtensions_LOADFUNCTION( wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC );
+	OGLEXTENSIONS_LOADFUNCTION(glActiveTexture, PFNGLACTIVETEXTUREPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glAttachShader, PFNGLATTACHSHADERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBindBuffer, PFNGLBINDBUFFERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBindBufferBase, PFNGLBINDBUFFERBASEPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBindSampler, PFNGLBINDSAMPLERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBindVertexArray, PFNGLBINDVERTEXARRAYPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBufferData, PFNGLBUFFERDATAPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glBufferSubData, PFNGLBUFFERSUBDATAPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glCompileShader, PFNGLCOMPILESHADERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glCreateProgram, PFNGLCREATEPROGRAMPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glCreateShader, PFNGLCREATESHADERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glDeleteBuffers, PFNGLDELETEBUFFERSPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glDeleteProgram, PFNGLDELETEPROGRAMPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glDeleteShader, PFNGLDELETESHADERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGenBuffers, PFNGLGENBUFFERSPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGenSamplers, PFNGLGENSAMPLERSPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGetProgramiv, PFNGLGETPROGRAMIVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGetShaderiv, PFNGLGETSHADERIVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glLinkProgram, PFNGLLINKPROGRAMPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glSamplerParameteri, PFNGLSAMPLERPARAMETERIPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glShaderSource, PFNGLSHADERSOURCEPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniform1fv, PFNGLUNIFORM1FVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniform1i, PFNGLUNIFORM1IPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniform2fv, PFNGLUNIFORM2FVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniform3fv, PFNGLUNIFORM3FVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniform4fv, PFNGLUNIFORM4FVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glUseProgram, PFNGLUSEPROGRAMPROC);
+	OGLEXTENSIONS_LOADFUNCTION(glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC);
+	OGLEXTENSIONS_LOADFUNCTION(wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC);
+	OGLEXTENSIONS_LOADFUNCTION(wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC);
+#undef OGLEXTENSIONS_LOADFUNCTION
 
-#undef OGLExtensions_LOADFUNCTION
+	OnExit :
 
-OnExit:
-
-	if ( !Engine::Windows::OGL::FreeHiddenContextWindow( hInstance, hiddenWindowInfo, o_errorMessage ) )
+	if (!Engine::Windows::OGL::FreeHiddenContextWindow(hInstance, hiddenWindowInfo, o_errorMessage))
 	{
 		wereThereErrors = true;
-		ASSERTF( false, o_errorMessage->c_str() );
+		ASSERTF(false, o_errorMessage->c_str());
 	}
 
 	return !wereThereErrors;
@@ -146,24 +153,24 @@ OnExit:
 
 namespace
 {
-	void* GetGLFunctionAddress( const char* i_functionName, std::string* o_errorMessage )
+	void* GetGLFunctionAddress(const char* i_functionName, std::string* o_errorMessage)
 	{
-		void* address = reinterpret_cast<void*>( wglGetProcAddress( i_functionName ) );
+		void* address = reinterpret_cast<void*>(wglGetProcAddress(i_functionName));
 		// The documentation says that NULL will be returned if the function isn't found,
 		// but according to https://www.opengl.org/wiki/Load_OpenGL_Functions
 		// other values can be returned by some implementations
-		if ( ( address != NULL )
-			&& ( address != reinterpret_cast<void*>( 1 ) ) && ( address != reinterpret_cast<void*>( 2 ) )
-			&& ( address != reinterpret_cast<void*>( 3 ) ) && ( address != reinterpret_cast<void*>( -1 ) ) )
+		if ((address != NULL)
+			&& (address != reinterpret_cast<void*>(1)) && (address != reinterpret_cast<void*>(2))
+			&& (address != reinterpret_cast<void*>(3)) && (address != reinterpret_cast<void*>(-1)))
 		{
 			return address;
 		}
 		std::string wglErrorMessage;
-		if ( address == NULL )
+		if (address == NULL)
 		{
 			wglErrorMessage = Engine::Windows::Functions::GetLastSystemError();
-			ASSERTF( false, "The OpenGL extension function \"%s\" wasn't found"
-				" (it will now be looked for in the non-extension Windows functions)", i_functionName );
+			ASSERTF(false, "The OpenGL extension function \"%s\" wasn't found"
+				" (it will now be looked for in the non-extension Windows functions)", i_functionName);
 		}
 		// wglGetProcAddress() won't return the address of any 1.1 or earlier OpenGL functions
 		// that are built into Windows' Opengl32.dll
@@ -172,22 +179,22 @@ namespace
 		{
 			// This library should already be loaded,
 			// and so this function will just retrieve a handle to it
-			HMODULE glLibrary = LoadLibrary( "Opengl32.dll" );
-			if ( glLibrary != NULL )
+			HMODULE glLibrary = LoadLibrary("Opengl32.dll");
+			if (glLibrary != NULL)
 			{
 				// Look for an old OpenGL function
-				void* address = reinterpret_cast<void*>( GetProcAddress( glLibrary, i_functionName ) );
+				void* address = reinterpret_cast<void*>(GetProcAddress(glLibrary, i_functionName));
 				// Decrement the library's reference count
-				FreeLibrary( glLibrary );
+				FreeLibrary(glLibrary);
 				// Return an address if it was found
-				if ( address != NULL )
+				if (address != NULL)
 				{
 					return address;
 				}
 				else
 				{
 					const std::string windowsErrorMessage = Engine::Windows::Functions::GetLastSystemError();
-					if ( wglErrorMessage.empty() )
+					if (wglErrorMessage.empty())
 					{
 						wglErrorMessage = windowsErrorMessage;
 					}
@@ -195,16 +202,16 @@ namespace
 			}
 			else
 			{
-				ASSERT( false );
+				ASSERT(false);
 			}
 		}
 
 		// If this code is reached the OpenGL function wasn't found
-		if ( o_errorMessage )
+		if (o_errorMessage)
 		{
 			std::ostringstream errorMessage;
 			errorMessage << "Windows failed to find the address of the OpenGL function \"" << i_functionName << "\"";
-			if ( !wglErrorMessage.empty() )
+			if (!wglErrorMessage.empty())
 			{
 				errorMessage << ": " << wglErrorMessage;
 			}

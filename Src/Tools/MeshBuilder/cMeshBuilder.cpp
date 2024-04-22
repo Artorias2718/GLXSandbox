@@ -74,6 +74,32 @@ bool Tools::MeshBuilder::cMeshBuilder::Build(const std::vector<std::string>&)
 				lua_pushinteger(luaState, i);
 				lua_gettable(luaState, -2);
 
+				lua_pushstring(luaState, "texture");
+				lua_gettable(luaState, -2);
+
+				if (lua_istable(luaState, -1))
+				{
+					lua_pushstring(luaState, "u");
+					lua_gettable(luaState, -2);
+					vertices[i - 1].texture.u = static_cast<float>(lua_tonumber(luaState, -1));
+					lua_pop(luaState, 1);
+
+					lua_pushstring(luaState, "v");
+					lua_gettable(luaState, -2);
+					vertices[i - 1].texture.v =
+					#if defined D3D_API
+						1.0f - 
+					#endif
+						static_cast<float>(lua_tonumber(luaState, -1));
+					lua_pop(luaState, 1);
+
+					lua_pushstring(luaState, "z");
+					lua_gettable(luaState, -2);
+					vertices[i - 1].position.z = static_cast<float>(lua_tonumber(luaState, -1));
+					lua_pop(luaState, 1);
+				}
+				lua_pop(luaState, 1);
+
 				lua_pushstring(luaState, "position");
 				lua_gettable(luaState, -2);
 

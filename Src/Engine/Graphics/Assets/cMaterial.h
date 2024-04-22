@@ -24,6 +24,7 @@ namespace Engine
 		namespace Assets
 		{
 			class cEffect;
+			class cTexture;
 			class cMaterial
 			{
 			public:
@@ -41,6 +42,7 @@ namespace Engine
 				Structures::sMaterial* m_materialData;
 				Interfaces::cConstantBuffer* m_materialBuffer;
 				cEffect* m_effect;
+				cTexture* m_texture;
 			};
 		}
 	}

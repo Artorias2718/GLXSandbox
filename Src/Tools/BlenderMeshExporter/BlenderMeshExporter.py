@@ -29,6 +29,9 @@ class ExportMeshDataOperator(bpy.types.Operator):
         else:
             vertex_colors = None
 
+        # Get UV layer
+        uv_layer = mesh.uv_layers.active.data if mesh.uv_layers.active else None
+
         # Get world matrix
         world_matrix = obj.matrix_world
 
@@ -39,17 +42,25 @@ class ExportMeshDataOperator(bpy.types.Operator):
                     loop_index = poly.loop_indices[j]
                     loop = mesh.loops[loop_index]
                     vertex_index = loop.vertex_index
-                    
-                    #Transform vertex position by object's transformation matrix
+                
+                    # Transform vertex position by object's transformation matrix
                     vertex_co = world_matrix @ mesh.vertices[vertex_index].co
-                    
-                    # Add transformed vertex to vertices list
+                
+                    # Retrieve UV Coordinates
+                    if uv_layer:
+                        uv = uv_layer[loop_index].uv
+                    else:
+                        # Default UV coordinate if no UV layer
+                        uv = (0.0, 0.0) 
+
+                    # Add transformed vertex and UV to vertices list
                     if vertex_index not in vertex_indices:
                         if vertex_colors:
                             color = vertex_colors[loop_index].color
                         else:
-                            color = (1.0, 0.0, 0.0, 1.0)  # Default color
-                        vertices.append({'position': vertex_co, 'color': color})
+                            # Default color
+                            color = (1.0, 1.0, 1.0, 1.0)  
+                        vertices.append({'position': vertex_co, 'color': color, 'uv': uv})
                         vertex_indices[vertex_index] = len(vertices) - 1
                     indices.append(vertex_indices[vertex_index])
 
@@ -58,36 +69,59 @@ class ExportMeshDataOperator(bpy.types.Operator):
                     loop_index = poly.loop_indices[j]
                     loop = mesh.loops[loop_index]
                     vertex_index = loop.vertex_index
-                    
-                    #Transform vertex position by object's transformation matrix
+                
+                    # Transform vertex position by object's transformation matrix
                     vertex_co = world_matrix @ mesh.vertices[vertex_index].co
-                    
-                    # Add transformed vertex to vertices list
+                
+                    # Retrieve UV Coordinates
+                    if uv_layer:
+                        uv = uv_layer[loop_index].uv
+                    else:
+                        # Default UV coordinate if no UV layer
+                        uv = (0.0, 0.0) 
+                        
+                    # Add transformed vertex and UV to vertices list
                     if vertex_index not in vertex_indices:
                         if vertex_colors:
                             color = vertex_colors[loop_index].color
                         else:
-                            color = (1.0, 0.0, 0.0, 1.0)  # Default color
-                        vertices.append({'position': vertex_co, 'color': color})
+                            # Default color
+                            color = (1.0, 1.0, 1.0, 1.0)  
+                        vertices.append({'position': vertex_co, 'color': color, 'uv': uv})
                         vertex_indices[vertex_index] = len(vertices) - 1
                     indices.append(vertex_indices[vertex_index])
+
             else:  # Handle triangles
                 for loop_index in poly.loop_indices:
+                    loop_index = poly.loop_indices[j]
                     loop = mesh.loops[loop_index]
                     vertex_index = loop.vertex_index
-                    
-                    #Transform vertex position by object's transformation matrix
+                
+                    # Transform vertex position by object's transformation matrix
                     vertex_co = world_matrix @ mesh.vertices[vertex_index].co
-                    
-                    # Add transformed vertex to vertices list
+                
+                    # Retrieve UV Coordinates
+                    if uv_layer:
+                        uv = uv_layer[loop_index].uv
+                    else:
+                        # Default UV coordinate if no UV layer
+                        uv = (0.0, 0.0) 
+                        
+                    # Add transformed vertex and UV to vertices list
                     if vertex_index not in vertex_indices:
                         if vertex_colors:
                             color = vertex_colors[loop_index].color
                         else:
-                            color = (1.0, 0.0, 0.0, 1.0)  # Default color
-                        vertices.append({'position': vertex_co, 'color': color})
+                            # Default color
+                            color = (1.0, 1.0, 1.0, 1.0)  
+                        vertices.append({'position': vertex_co, 'color': color, 'uv': uv})
                         vertex_indices[vertex_index] = len(vertices) - 1
                     indices.append(vertex_indices[vertex_index])
+
+        # Once all UVs are collected, flatten the UV lists
+        for vertex in vertices:
+            # Assuming each vertex has one UV coordinate, adjust as needed
+            vertex['uv'] = vertex['uv']
 
         # Construct Lua-formatted string
         lua_str = "return {\n"
@@ -95,6 +129,7 @@ class ExportMeshDataOperator(bpy.types.Operator):
         for i, vertex in enumerate(vertices):
             lua_str += f"        -- Vertex {i}\n"
             lua_str += "        {\n"
+            lua_str += f"            texture = {{ u = {str(vertex['uv'][0])}, v = {str(vertex['uv'][1])} }},\n"
             lua_str += f"            position = {{ x = {str(vertex['position'].x)}, y = {str(vertex['position'].y)}, z = {str(vertex['position'].z)} }},\n"
             lua_str += f"            color = {{ r = {str(vertex['color'][0])}, g = {str(vertex['color'][1])}, b = {str(vertex['color'][2])}, a = {str(vertex['color'][3])} }},\n"
             lua_str += "        },\n"

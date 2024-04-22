@@ -47,6 +47,15 @@
     <ClInclude Include="Assets\cMaterial.h">
       <Filter>Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Structures\sTexture.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cTexture\cTexture.h">
+      <Filter>Assets\cTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cTexture\Internal.h">
+      <Filter>Assets\cTexture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp" />
@@ -78,6 +87,15 @@
     <ClCompile Include="Assets\cMaterial.cpp">
       <Filter>Assets</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\cTexture\cTexture.cpp">
+      <Filter>Assets\cTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D\Assets\cTexture.D3D.cpp">
+      <Filter>D3D\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="OGL\Assets\cTexture.OGL.cpp">
+      <Filter>OGL\Assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D">
@@ -103,6 +121,9 @@
     </Filter>
     <Filter Include="Interfaces">
       <UniqueIdentifier>{f6ae975f-ffe3-4508-b689-63f03119e042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\cTexture">
+      <UniqueIdentifier>{19b3ba40-b0fb-43af-a44e-43b356d3ad1d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

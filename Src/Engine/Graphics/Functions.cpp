@@ -20,11 +20,27 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 	{
 		// Slot 0
 
-		// POSITION
-		// 3 floats == 12 bytes
+		// TEXTURE
+		// 2 floats == 8 bytes
 		// Offset = 0
 		{
-			D3D11_INPUT_ELEMENT_DESC& positionElement = i_layoutDescription[0];
+			D3D11_INPUT_ELEMENT_DESC& textureElement = i_layoutDescription[0];
+
+			textureElement.SemanticName = "TEXTURE";
+			textureElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+			textureElement.Format = DXGI_FORMAT_R32G32_FLOAT;
+			textureElement.InputSlot = 0;
+			textureElement.AlignedByteOffset = offsetof(Engine::Graphics::Structures::sVertex, texture.u);
+			textureElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			textureElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+		}
+		{
+			// Slot 1 
+
+			// POSITION
+			// 3 floats == 12 bytes
+			// Offset = 1 
+			D3D11_INPUT_ELEMENT_DESC& positionElement = i_layoutDescription[1];
 
 			positionElement.SemanticName = "POSITION";
 			positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
@@ -34,23 +50,23 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 			positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 		}
-	}
-	{
-		// Slot 1 
-
-		// COLOR 
-		// 4 unsigned 8-bit integers == 4 bytes
-		// Offset = 1 
 		{
-			D3D11_INPUT_ELEMENT_DESC& colorElement = i_layoutDescription[1];
+			// Slot 2
 
-			colorElement.SemanticName = "COLOR";
-			colorElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-			colorElement.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			colorElement.InputSlot = 0;
-			colorElement.AlignedByteOffset = offsetof(Engine::Graphics::Structures::sVertex, color.r);
-			colorElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			colorElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+			// COLOR 
+			// 4 unsigned 8-bit integers == 4 bytes
+			// Offset = 1 
+			{
+				D3D11_INPUT_ELEMENT_DESC& colorElement = i_layoutDescription[2];
+
+				colorElement.SemanticName = "COLOR";
+				colorElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+				colorElement.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				colorElement.InputSlot = 0;
+				colorElement.AlignedByteOffset = offsetof(Engine::Graphics::Structures::sVertex, color.r);
+				colorElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				colorElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+			}
 		}
 	}
 #elif defined OGL_API
@@ -58,11 +74,44 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 	// (or, said another way, how far apart each position element is)
 	const GLsizei stride = sizeof(Engine::Graphics::Structures::sVertex);
 
-	// Position (0)
-	// 3 floats == 12 bytes
-	// Offset = 0
+	// Texture (0)
+	// 2 floats == 8 bytes
+	// Offset = 0 
 	{
 		const GLuint vertexElementLocation = 0;
+		const GLint elementCount = 2;
+		const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
+		glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
+			reinterpret_cast<GLvoid*>(offsetof(Engine::Graphics::Structures::sVertex, texture.u)));
+		const GLenum errorCode = glGetError();
+		if (errorCode == GL_NO_ERROR)
+		{
+			glEnableVertexAttribArray(vertexElementLocation);
+			const GLenum errorCode = glGetError();
+			if (errorCode != GL_NO_ERROR)
+			{
+				wereThereErrors = true;
+				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Engine::Logging::OutputError("OpenGL failed to enable the TEXTURE vertex attribute at location %u: %s",
+					vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				goto OnExit;
+			}
+		}
+		else
+		{
+			wereThereErrors = true;
+			ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			Engine::Logging::OutputError("OpenGL failed to set the POSITION vertex attribute at location %u: %s",
+				vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			goto OnExit;
+		}
+	}
+
+	// Position (1)
+	// 3 floats == 12 bytes
+	// Offset = 1 
+	{
+		const GLuint vertexElementLocation = 1;
 		const GLint elementCount = 3;
 		const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 		glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
@@ -90,11 +139,11 @@ bool Engine::Graphics::Functions::CreateVertexFormat()
 			goto OnExit;
 		}
 	}
-	// Color (1)
+	// Color (2)
 	// 4 unsigned 8-bit integers == 32 bytes
-	// Offset = 1
+	// Offset = 2 
 	{
-		const GLuint vertexElementLocation = 1;
+		const GLuint vertexElementLocation = 2;
 		const GLint elementCount = 4;
 		const GLboolean notNormalized = GL_TRUE;	// The given integers should be used as-is
 		glVertexAttribPointer(vertexElementLocation, elementCount, GL_UNSIGNED_BYTE, notNormalized, stride,

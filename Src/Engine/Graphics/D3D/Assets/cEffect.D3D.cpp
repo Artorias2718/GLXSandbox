@@ -113,7 +113,7 @@ bool Engine::Graphics::Assets::cEffect::CreateVertexFormat(Engine::Platform::sDa
 {
 	// Create the vertex layout
 	{
-		const unsigned int vertexElementCount = 2;
+		const unsigned int vertexElementCount = 3;
 
 		D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = { 0 };
 

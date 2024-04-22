@@ -21,13 +21,13 @@ namespace
 	const float OFFSET = 8.0f;
 	float angle = 0.0f;
 
-	Engine::Graphics::Assets::cMaterial* red;
-	Engine::Graphics::Assets::cMaterial* green;
-	Engine::Graphics::Assets::cMaterial* blue;
+	Engine::Graphics::Assets::cMaterial* crateMat;
+	Engine::Graphics::Assets::cMaterial* lavaMat;
+	Engine::Graphics::Assets::cMaterial* monkeyMat;
 	
-	Engine::Shared::cGameObject* cube;
-	Engine::Shared::cGameObject* suzanne;
-	Engine::Shared::cGameObject* plane;
+	Engine::Shared::cGameObject* crate;
+	Engine::Shared::cGameObject* lava;
+	Engine::Shared::cGameObject* monkey;
 	Engine::Shared::cCamera* camera;
 
 	bool Move(Engine::Shared::cGameObject* i_object);
@@ -52,31 +52,31 @@ Game::MyGame::cGame::~cGame()
 
 bool Game::MyGame::cGame::Initialize()
 {
-	red = new Engine::Graphics::Assets::cMaterial("red");
-	green = new Engine::Graphics::Assets::cMaterial("green");
-	blue = new Engine::Graphics::Assets::cMaterial("blue");
+	crateMat = new Engine::Graphics::Assets::cMaterial("mesh/crate");
+	lavaMat = new Engine::Graphics::Assets::cMaterial("mesh/lava");
+	monkeyMat = new Engine::Graphics::Assets::cMaterial("mesh/monkey");
 	
-	cube = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), red);
-	suzanne = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), green);
-	plane = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), blue);
+	crate = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("cube"), crateMat);
+	lava = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("plane"), lavaMat);
+	monkey = new Engine::Shared::cGameObject(new Engine::Graphics::Assets::cMesh("suzanne"), monkeyMat);
 	camera = new Engine::Shared::cCamera("flycamera");
 
-	suzanne->m_transform.position += 0.25f * Engine::Math::up;
-	plane->m_transform.scale *= 5.0f;
+	lava->m_transform.scale *= 5.0f;
+	monkey->m_transform.position += 0.25f * Engine::Math::up;
 
 	return true;
 }
 
 bool Game::MyGame::cGame::Update()
 {
-	Engine::Graphics::SubmitGameObject(cube);
-	Engine::Graphics::SubmitGameObject(suzanne);
-	Engine::Graphics::SubmitGameObject(plane);
+	Engine::Graphics::SubmitGameObject(crate);
+	//Engine::Graphics::SubmitGameObject(lava);
+	//Engine::Graphics::SubmitGameObject(monkey);
 	Engine::Graphics::SubmitGameObject(camera);
 
 	if (Engine::UserInput::IsKeyPressed(VK_RSHIFT))
 	{
-		suzanne->Move(OFFSET * Engine::Time::DeltaTime());
+		monkey->Move(OFFSET * Engine::Time::DeltaTime());
 	}
 	else
 	{
@@ -91,7 +91,7 @@ bool Game::MyGame::cGame::Update()
 	}
 
 	angle = glm::radians(64.0f) * Engine::Time::DeltaTime();
-	suzanne->Rotate(angle, suzanne->m_transform.up);
+	monkey->Rotate(angle, monkey->m_transform.up);
 	return true;
 }
 

@@ -17,14 +17,14 @@
 #include "../Structures/sMaterial.h"
 
 #if defined D3D_API
-Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
-	UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData)
-{
-	if (!Initialize(i_bufferType, i_bufferDescription, i_bufferSize, i_subResourceData, i_constantBufferData))
+	Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(Interfaces::eConstantBufferType i_bufferType, D3D11_BUFFER_DESC& i_bufferDescription,
+		UINT i_bufferSize, D3D11_SUBRESOURCE_DATA& i_subResourceData, void* i_constantBufferData)
+	{
+		if (!Initialize(i_bufferType, i_bufferDescription, i_bufferSize, i_subResourceData, i_constantBufferData))
 #elif defined OGL_API
-Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData)
-{
-	if (!Initialize(i_bufferType, i_bufferSize, i_constantBufferData))
+	Engine::Graphics::Interfaces::cConstantBuffer::cConstantBuffer(eConstantBufferType i_bufferType, size_t i_bufferSize, void* i_constantBufferData)
+	{
+		if (!Initialize(i_bufferType, i_bufferSize, i_constantBufferData))
 #endif
 	{
 		switch (i_bufferType)

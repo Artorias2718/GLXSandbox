@@ -45,6 +45,7 @@ namespace
 	// These are Windows-specific interfaces
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
+	GLuint s_samplerStateId = 0;
 #endif
 }
 
@@ -54,6 +55,7 @@ namespace
 namespace
 {
 	bool CreateConstantBuffers();
+	bool CreateSamplerState();
 #if defined D3D_API
 	bool CreateDevice(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
 	bool CreateViews(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight);
@@ -78,7 +80,7 @@ void Engine::Graphics::RenderFrame()
 	// by "clearing" the image buffer (filling it with a solid color)
 	{
 		// Black is usually used
-		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		Interfaces::D3DInterfaces::s_direct3dImmediateContext->ClearRenderTargetView(Interfaces::D3DInterfaces::s_renderTargetView, clearColor);
 	}
 	// Clear depth buffer
@@ -93,7 +95,7 @@ void Engine::Graphics::RenderFrame()
 	// by "clearing" the image buffer (filling it with a solid color)
 	{
 		// Black is usually used
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		ASSERT(glGetError() == GL_NO_ERROR);
 		glDepthMask(GL_TRUE);
 		glClearDepth(1.0f);
@@ -109,7 +111,7 @@ void Engine::Graphics::RenderFrame()
 	{
 		for (std::vector<Shared::cGameObject*>::iterator itor = meshes.begin(); itor != meshes.end(); ++itor)
 		{
-			Engine::Graphics::drawCallData.g_localToWorld = Engine::Math::UpdateTransform(((*itor)->m_transform));
+			Engine::Graphics::drawCallData.g_localToWorld = Math::UpdateTransform((*itor)->m_transform);
 			s_drawCallBuffer->Update(Interfaces::DRAWCALL, &Engine::Graphics::drawCallData);
 			(*itor)->m_material->Bind();
 			(*itor)->m_mesh->Render();
@@ -192,6 +194,13 @@ bool Engine::Graphics::Initialize(const sInitializationParameters& i_initializat
 		goto OnExit;
 	}
 
+	// Create a Texture Sampler State
+	if (!CreateSamplerState())
+	{
+		wereThereErrors = true;
+		goto OnExit;
+	}
+
 OnExit:
 
 	return !wereThereErrors;
@@ -229,6 +238,12 @@ bool Engine::Graphics::CleanUp()
 		{
 			Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView->Release();
 			Engine::Graphics::Interfaces::D3DInterfaces::s_renderTargetView = NULL;
+		}
+
+		if (Engine::Graphics::Interfaces::D3DInterfaces::s_depthStencilView)
+		{
+			Engine::Graphics::Interfaces::D3DInterfaces::s_depthStencilView->Release();
+			Engine::Graphics::Interfaces::D3DInterfaces::s_depthStencilView = NULL;
 		}
 
 		Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->Release();
@@ -381,6 +396,100 @@ namespace
 		Engine::Graphics::s_drawCallBuffer->Bind(Engine::Graphics::Interfaces::DRAWCALL);
 
 		return !wereThereErrors;
+	}
+
+	bool CreateSamplerState()
+	{
+#if defined D3D_API 
+		// Create a sampler state object
+		{
+			D3D11_SAMPLER_DESC samplerStateDescription;
+			{
+				// Linear filtering
+				samplerStateDescription.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+				// If UVs go outside [0,1] wrap them around (so that textures can tile)
+				samplerStateDescription.AddressU = samplerStateDescription.AddressV
+					= samplerStateDescription.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+				// Default values
+				samplerStateDescription.MipLODBias = 0.0f;
+				samplerStateDescription.MaxAnisotropy = 1;
+				samplerStateDescription.ComparisonFunc = D3D11_COMPARISON_NEVER;
+				samplerStateDescription.BorderColor[0] = samplerStateDescription.BorderColor[1]
+					= samplerStateDescription.BorderColor[2] = samplerStateDescription.BorderColor[3] = 1.0f;
+				samplerStateDescription.MinLOD = -FLT_MAX;
+				samplerStateDescription.MaxLOD = FLT_MAX;
+			}
+			const HRESULT result = Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dDevice->CreateSamplerState(&samplerStateDescription, &Engine::Graphics::Interfaces::D3DInterfaces::s_samplerState);
+			if (FAILED(result))
+			{
+				ASSERT(false);
+				Engine::Logging::OutputError("Direct3D failed to create a sampler state with HRESULT %#010x", result);
+				return false;
+			}
+		}
+		// Bind the sampler state
+		{
+			const unsigned int samplerStateRegister = 0; // This must match the SamplerState register defined in the shader
+			const unsigned int samplerStateCount = 1;
+			Engine::Graphics::Interfaces::D3DInterfaces::s_direct3dImmediateContext->PSSetSamplers(samplerStateRegister, samplerStateCount, &Engine::Graphics::Interfaces::D3DInterfaces::s_samplerState);
+		}
+#elif defined OGL_API 
+		// Create a sampler state object
+		{
+			const GLsizei samplerStateCount = 1;
+			glGenSamplers(samplerStateCount, &s_samplerStateId);
+			const GLenum errorCode = glGetError();
+			if (errorCode == GL_NO_ERROR)
+			{
+				if (s_samplerStateId != 0)
+				{
+					// Linear Filtering
+					glSamplerParameteri(s_samplerStateId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					ASSERT(glGetError() == GL_NO_ERROR);
+					glSamplerParameteri(s_samplerStateId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					ASSERT(glGetError() == GL_NO_ERROR);
+					// If UVs go outside [0,1] wrap them around (so that textures can tile)
+					glSamplerParameteri(s_samplerStateId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+					ASSERT(glGetError() == GL_NO_ERROR);
+					glSamplerParameteri(s_samplerStateId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+					ASSERT(glGetError() == GL_NO_ERROR);
+				}
+				else
+				{
+					ASSERT(false);
+					Engine::Logging::OutputError("OpenGL failed to create a sampler state");
+					return false;
+				}
+			}
+			else
+			{
+				ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Engine::Logging::OutputError("OpenGL failed to create a sampler state: %s",
+					reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				return false;
+			}
+		}
+		// Bind the sampler state
+		{
+			// We will never be required to use more than one texture in an Effect in this class,
+			// but it doesn't hurt to bind the state to a few extra texture units
+			// just in case you decide to try using more
+			const GLuint maxTextureUnitCountYouThinkYoullUse = 5;
+			for (GLuint i = 0; i < maxTextureUnitCountYouThinkYoullUse; ++i)
+			{
+				glBindSampler(i, s_samplerStateId);
+				const GLenum errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Engine::Logging::OutputError("OpenGL failed to bind the sampler state to texture unit %u: %s",
+						i, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					return false;
+				}
+			}
+		}
+#endif
+		return true;
 	}
 
 #if defined D3D_API
